@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Text;
+using Cairo;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -7,6 +8,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using Path = System.IO.Path;
 
 namespace GiMap.Client;
 
@@ -36,6 +38,18 @@ public class TopographicMapLayer : RGBMapLayer
     private ConcurrentQueue<ReadyMapPiece> readyMapPieces = new ConcurrentQueue<ReadyMapPiece>();
     private Dictionary<FastVec2i, MapPieceDB> toSaveList = new Dictionary<FastVec2i, MapPieceDB>();
     private ConcurrentDictionary<FastVec2i, TopographicMultiChunkMapComponent> loadedMapData = new ConcurrentDictionary<FastVec2i, TopographicMultiChunkMapComponent>();
+    
+    private readonly int borderColor = ColorUtil.ColorFromRgba(112, 71, 44, 255);
+    private readonly int semiBorderColor = ColorUtil.ColorFromRgba(112, 71, 44, 150);
+    
+    private readonly int soilColor = ColorUtil.ColorFromRgba(201, 234, 157, 255);
+    private readonly int sandColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
+    private readonly int gravelColor = ColorUtil.ColorFromRgba(200, 200, 200, 255);
+    private readonly int stoneColor = ColorUtil.ColorFromRgba(150, 150, 150, 255);
+    private readonly int waterColor = ColorUtil.ColorFromRgba(34, 164, 171, 255);
+    private readonly int iceColor = ColorUtil.ColorFromRgba(202, 237, 238, 255);
+    private readonly int snowColor = ColorUtil.ColorFromRgba(230, 230, 255, 255);
+    private readonly int errorColor = ColorUtil.ColorFromRgba(255, 0, 255, 255);
     
     public string getMapDbFilePath()
     {
@@ -484,8 +498,9 @@ public class TopographicMapLayer : RGBMapLayer
                 index = chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
                 block = api.World.Blocks[index];
             }
-            
-            resultPixelArray[k] = GetTopologicColor(topBlockHeight, 10);
+
+            var materialColor  = GetMaterialColor(block);
+            resultPixelArray[k] = GetTopologicColor(topBlockHeight, 10, materialColor);
         }
         
         for (int n = 0; n < chunksTmp.Length; n++)
@@ -501,12 +516,13 @@ public class TopographicMapLayer : RGBMapLayer
         return block.BlockMaterial == EnumBlockMaterial.Gravel
             || block.BlockMaterial == EnumBlockMaterial.Sand
             || block.BlockMaterial == EnumBlockMaterial.Soil
+            || block.BlockMaterial == EnumBlockMaterial.Stone
+            || block.BlockMaterial == EnumBlockMaterial.Ice
             || block.BlockMaterial == EnumBlockMaterial.Snow
-            || block.BlockMaterial == EnumBlockMaterial.Mantle
             || block.BlockMaterial == EnumBlockMaterial.Liquid;
     }
 
-    private int GetTopologicColor(int height, int delimeter)
+    private int GetTopologicColor(int height, int delimeter, int materialColor)
     {
         var semiDelimeter = delimeter / 2;
         
@@ -515,10 +531,21 @@ public class TopographicMapLayer : RGBMapLayer
         else if (height % semiDelimeter == 0)
             return semiBorderColor;
         else
-            return basicColor;
+            return materialColor;
     }
 
-    private int basicColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
-    private int borderColor = ColorUtil.ColorFromRgba(0, 0, 0, 255);
-    private int semiBorderColor = ColorUtil.ColorFromRgba(122, 122, 122, 255);
+    private int GetMaterialColor(Block block)
+    {
+        return block.BlockMaterial switch
+        {
+            EnumBlockMaterial.Gravel => gravelColor,
+            EnumBlockMaterial.Sand => sandColor,
+            EnumBlockMaterial.Soil => soilColor,
+            EnumBlockMaterial.Stone => stoneColor,
+            EnumBlockMaterial.Ice => iceColor,
+            EnumBlockMaterial.Snow => snowColor,
+            EnumBlockMaterial.Liquid => waterColor,
+            _ => errorColor,
+        };
+    }
 }

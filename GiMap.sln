@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiMap", "GiMap\GiMap.csproj", "{33887E66-9DDD-4CB8-BB07-0B12E69F1418}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZZCakeBuild", "ZZCakeBuild\ZZCakeBuild.csproj", "{97100D9B-F22F-47FA-B431-2299B336D5FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33887E66-9DDD-4CB8-BB07-0B12E69F1418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33887E66-9DDD-4CB8-BB07-0B12E69F1418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33887E66-9DDD-4CB8-BB07-0B12E69F1418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33887E66-9DDD-4CB8-BB07-0B12E69F1418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97100D9B-F22F-47FA-B431-2299B336D5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97100D9B-F22F-47FA-B431-2299B336D5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97100D9B-F22F-47FA-B431-2299B336D5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97100D9B-F22F-47FA-B431-2299B336D5FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

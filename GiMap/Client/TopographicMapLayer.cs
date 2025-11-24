@@ -39,9 +39,6 @@ public class TopographicMapLayer : RGBMapLayer
     private Dictionary<FastVec2i, MapPieceDB> toSaveList = new Dictionary<FastVec2i, MapPieceDB>();
     private ConcurrentDictionary<FastVec2i, TopographicMultiChunkMapComponent> loadedMapData = new ConcurrentDictionary<FastVec2i, TopographicMultiChunkMapComponent>();
     
-    private readonly int borderColor = ColorUtil.ColorFromRgba(112, 71, 44, 255);
-    private readonly int semiBorderColor = ColorUtil.ColorFromRgba(112, 71, 44, 150);
-    
     private readonly int soilColor = ColorUtil.ColorFromRgba(201, 234, 157, 255);
     private readonly int sandColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
     private readonly int gravelColor = ColorUtil.ColorFromRgba(200, 200, 200, 255);
@@ -499,8 +496,7 @@ public class TopographicMapLayer : RGBMapLayer
                 block = api.World.Blocks[index];
             }
 
-            var materialColor  = GetMaterialColor(block);
-            resultPixelArray[k] = GetTopologicColor(topBlockHeight, 10, materialColor);
+            resultPixelArray[k] = GetMaterialColor(block);
         }
         
         for (int n = 0; n < chunksTmp.Length; n++)
@@ -520,18 +516,6 @@ public class TopographicMapLayer : RGBMapLayer
             || block.BlockMaterial == EnumBlockMaterial.Ice
             || block.BlockMaterial == EnumBlockMaterial.Snow
             || block.BlockMaterial == EnumBlockMaterial.Liquid;
-    }
-
-    private int GetTopologicColor(int height, int delimeter, int materialColor)
-    {
-        var semiDelimeter = delimeter / 2;
-        
-        if (height % delimeter == 0)
-            return borderColor;
-        else if (height % semiDelimeter == 0)
-            return semiBorderColor;
-        else
-            return materialColor;
     }
 
     private int GetMaterialColor(Block block)

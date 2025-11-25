@@ -10,7 +10,6 @@ public class TopographicMultiChunkMapComponent : MultiChunkMapComponent
 {
     private TopographicMapLayer mapLayer;
     private int[][] pixelsToSet;
-    private int sideLength = 96;
     private Vec3d chunkWorldPos;
     private Vec2f viewPos;
     

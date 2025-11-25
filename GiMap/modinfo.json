@@ -1,13 +1,14 @@
 {
-  "type": "code",
+  "type": "Code",
   "modid": "gi-map",
   "name": "GiMap",
+  "side": "Client",
   "authors": [
     "Ginox"
   ],
   "description": "Ultimative map",
   "version": "1.0.0",
   "dependencies": {
-    "game": ""
+    "game": "1.21.0"
   }
 }

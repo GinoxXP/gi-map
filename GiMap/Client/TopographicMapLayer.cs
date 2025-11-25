@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Text;
-using Cairo;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -12,17 +11,12 @@ using Path = System.IO.Path;
 
 namespace GiMap.Client;
 
-public class TopographicMapLayer : RGBMapLayer
+public class TopographicMapLayer : MapLayer
 {
     public override string Title => "topographic";
     public override string LayerGroupCode => "topographic";
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
-    public override MapLegendItem[] LegendItems => throw new NotImplementedException();
-    public override EnumMinMagFilter MinFilter => EnumMinMagFilter.Linear;
-    public override EnumMinMagFilter MagFilter => EnumMinMagFilter.Nearest;
     
-    public Dictionary<string, int> colorsByBlockCode = new Dictionary<string, int>();
-    public HashSet<string> ignoredBlockCodes = new HashSet<string>();
     public Vec4f OverlayColor = new Vec4f(1, 1, 1, 1);
 
     private ICoreClientAPI capi;
@@ -48,33 +42,12 @@ public class TopographicMapLayer : RGBMapLayer
     private readonly int snowColor = ColorUtil.ColorFromRgba(230, 230, 255, 255);
     private readonly int errorColor = ColorUtil.ColorFromRgba(255, 0, 255, 255);
     
-    public string getMapDbFilePath()
-    {
-        string text = Path.Combine(GamePaths.DataPath, "Maps");
-        GamePaths.EnsurePathExists(text);
-        return Path.Combine(text, api.World.SavegameIdentifier + "-topology.db");
-    }
-    
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
-        // Get configurations objects
-        foreach (var item in ConfigManager.ConfigInstance.rockCodeColors)
-        {
-            if (colorsByBlockCode.ContainsKey(item.Key)) continue;
-
-            colorsByBlockCode[item.Key] = ColorUtil.ReverseColorBytes(ColorUtil.Hex2Int(item.Value) | -16777216);
-        }
-
-        foreach (var item in ConfigManager.ConfigInstance.ignoredRocks)
-        {
-            this.ignoredBlockCodes.Add(item);
-        }
-
         OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha;
 
         api.Event.ChunkDirty += OnChunkDirty;
 
-        // Client Side Setup
         this.Active = false;
         capi = api as ICoreClientAPI;
         if (api.Side == EnumAppSide.Client)
@@ -82,7 +55,7 @@ public class TopographicMapLayer : RGBMapLayer
             api.World.Logger.Notification("Loading world map cache db...");
             mapdb = new MapDB(api.World.Logger);
             string errorMessage = null;
-            string mapDbFilePath = getMapDbFilePath();
+            string mapDbFilePath = GetMapDbFilePath();
             mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
             if (errorMessage != null)
             {
@@ -103,44 +76,6 @@ public class TopographicMapLayer : RGBMapLayer
         }
     }
     
-    private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
-    {
-        foreach (TopographicMultiChunkMapComponent value in loadedMapData.Values)
-        {
-            value.ActuallyDispose();
-        }
-
-        loadedMapData.Clear();
-        lock (chunksToGenLock)
-        {
-            foreach (FastVec2i curVisibleChunk in curVisibleChunks)
-            {
-                chunksToGen.Enqueue(curVisibleChunk.Copy());
-            }
-        }
-
-        return TextCommandResult.Success("Redrawing map...");
-    }
-
-    // Taken from ChunkMapLayer.cs by Anego Studios 
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L160
-    private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
-    {
-        lock (chunksToGenLock)
-        {
-            if (!mapSink.IsOpened) return;
-
-            FastVec2i tmpMccoord = new FastVec2i(chunkCoord.X / MultiChunkMapComponent.ChunkLen, chunkCoord.Z / MultiChunkMapComponent.ChunkLen);
-            FastVec2i tmpCoord = new FastVec2i(chunkCoord.X, chunkCoord.Z);
-
-            if (!loadedMapData.ContainsKey(tmpMccoord) && !curVisibleChunks.Contains(tmpCoord)) return;
-
-            chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
-        }
-    }
-
-    // Adapted from ChunkMapLayer.cs by Anego Studios 
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L206
     public override void OnLoaded()
     {
         if (api.Side == EnumAppSide.Server)
@@ -149,18 +84,6 @@ public class TopographicMapLayer : RGBMapLayer
         }
 
         chunksTmp = new IWorldChunk[api.World.BlockAccessor.MapSizeY / 32];
-
-        BlockPos blockPos = new BlockPos(3);
-        IList<Block> blocks = api.World.Blocks;
-        for (int j = 0; j < blocks.Count; j++)
-        {
-            Block block = blocks[j];
-
-            //if (block.Code == null || !isBlockValid(block) || colorsByBlockCode.ContainsKey(block.Code)) continue;
-
-            int blockColor = block.GetColor(capi, blockPos) | -16777216;
-            colorsByBlockCode.Add(block.Code, blockColor);
-        }
     }
 
     public override void ComposeDialogExtras(GuiDialogWorldMap guiDialogWorldMap, GuiComposer compo)
@@ -230,9 +153,7 @@ public class TopographicMapLayer : RGBMapLayer
         MultiChunkMapComponent.tmpTexture?.Dispose();
         mapdb?.Dispose();
     }
-
-    // Taken from ChunkMapLayer.cs by Anego Studios 
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L284
+    
     public override void OnOffThreadTick(float dt)
     {
         genAccum += dt;
@@ -263,7 +184,7 @@ public class TopographicMapLayer : RGBMapLayer
                     MapPieceDB piece = mapdb.GetMapPiece(cord);
                     if (piece?.Pixels != null)
                     {
-                        loadFromChunkPixels(cord, piece.Pixels);
+                        LoadFromChunkPixels(cord, piece.Pixels);
                     }
                 }
                 catch (ProtoBuf.ProtoException)
@@ -291,7 +212,7 @@ public class TopographicMapLayer : RGBMapLayer
 
             toSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
 
-            loadFromChunkPixels(cord, tintedPixels);
+            LoadFromChunkPixels(cord, tintedPixels);
         }
 
         if (toSaveList.Count > 100 || diskSaveAccum > 4f)
@@ -302,8 +223,6 @@ public class TopographicMapLayer : RGBMapLayer
         }
     }
 
-    // Taken from ChunkMapLayer.cs by Anego Studios 
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L354
     public override void OnTick(float dt)
     {
         if (!readyMapPieces.IsEmpty)
@@ -380,41 +299,12 @@ public class TopographicMapLayer : RGBMapLayer
 
     public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
     {
-        if (!base.Active)
-        {
-            return;
-        }
-
-        foreach (KeyValuePair<FastVec2i, TopographicMultiChunkMapComponent> loadedMapDatum in loadedMapData)
-        {
-            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
-        }
     }
 
     public override void OnMouseUpClient(MouseEvent args, GuiElementMap mapElem)
     {
-        if (!base.Active)
-        {
-            return;
-        }
-
-        foreach (KeyValuePair<FastVec2i, TopographicMultiChunkMapComponent> loadedMapDatum in loadedMapData)
-        {
-            loadedMapDatum.Value.OnMouseUpOnElement(args, mapElem);
-        }
     }
-
-    private void loadFromChunkPixels(FastVec2i cord, int[] pixels)
-    {
-        readyMapPieces.Enqueue(new ReadyMapPiece
-        {
-            Pixels = pixels,
-            Cord = cord
-        });
-    }
-
-    // Taken from ChunkMapLayer.cs by Anego Studios 
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L452
+    
     public override void OnViewChangedClient(List<FastVec2i> nowVisible, List<FastVec2i> nowHidden)
     {
         foreach (var val in nowVisible)
@@ -458,10 +348,58 @@ public class TopographicMapLayer : RGBMapLayer
             }
         }
     }
+    
+    private string GetMapDbFilePath()
+    {
+        string text = Path.Combine(GamePaths.DataPath, "Maps");
+        GamePaths.EnsurePathExists(text);
+        return Path.Combine(text, api.World.SavegameIdentifier + "-topology.db");
+    }
+    
+    private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
+    {
+        foreach (TopographicMultiChunkMapComponent value in loadedMapData.Values)
+        {
+            value.ActuallyDispose();
+        }
 
-    // Adapted from ChunkMapLayer.cs by Anego Studios
-    // https://github.com/anegostudios/vsessentialsmod/blob/e9dbc197df1a329b5b8789e2aa086b525ff4d3c8/Systems/WorldMap/ChunkLayer/ChunkMapLayer.cs#L507
-    public int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
+        loadedMapData.Clear();
+        lock (chunksToGenLock)
+        {
+            foreach (FastVec2i curVisibleChunk in curVisibleChunks)
+            {
+                chunksToGen.Enqueue(curVisibleChunk.Copy());
+            }
+        }
+
+        return TextCommandResult.Success("Redrawing map...");
+    }
+    
+    private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
+    {
+        lock (chunksToGenLock)
+        {
+            if (!mapSink.IsOpened) return;
+
+            FastVec2i tmpMccoord = new FastVec2i(chunkCoord.X / MultiChunkMapComponent.ChunkLen, chunkCoord.Z / MultiChunkMapComponent.ChunkLen);
+            FastVec2i tmpCoord = new FastVec2i(chunkCoord.X, chunkCoord.Z);
+
+            if (!loadedMapData.ContainsKey(tmpMccoord) && !curVisibleChunks.Contains(tmpCoord)) return;
+
+            chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
+        }
+    }
+
+    private void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
+    {
+        readyMapPieces.Enqueue(new ReadyMapPiece
+        {
+            Pixels = pixels,
+            Cord = cord
+        });
+    }
+    
+    private int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {
         Vec2i vec2i = new Vec2i();
 

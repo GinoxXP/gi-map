@@ -9,9 +9,9 @@ class WorldMapManagerPatch
 {
     static void Postfix(ref List<string> __result)
     {
-        string topologyCode = "topology";
+        string topographicCode = "topographic";
         int terrainLayerIndex = __result.FindIndex(x => x.EqualsFast("terrain"));
-        __result.Remove(topologyCode);
-        __result.Insert(terrainLayerIndex + 1, topologyCode);
+        __result.Remove(topographicCode);
+        __result.Insert(terrainLayerIndex + 1, topographicCode);
     }
 }

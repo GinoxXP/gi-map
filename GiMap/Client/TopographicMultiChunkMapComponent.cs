@@ -21,10 +21,6 @@ public class TopographicMultiChunkMapComponent : MultiChunkMapComponent
         viewPos = new Vec2f();
     }
 
-    public override void OnMouseMove(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
-    {
-    }
-
     public new void setChunk(int dx, int dz, int[] pixels)
     {
         base.setChunk(dx, dz, pixels);

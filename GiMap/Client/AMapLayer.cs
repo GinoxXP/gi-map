@@ -114,13 +114,7 @@ where Component : MultiChunkMapComponent
         MultiChunkMapComponent.tmpTexture?.Dispose();
         _mapdb?.Dispose();
     }
-    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
-    {
-    }
-
-    public override void OnMouseUpClient(MouseEvent args, GuiElementMap mapElem)
-    {
-    }
+    
     public override void OnOffThreadTick(float dt)
     {
         _genAccum += dt;

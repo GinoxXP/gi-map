@@ -14,11 +14,16 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
     private int _maxHeight;
     private int _seaLevel;
     private int _hueOffset = 100;
-    private int _discriditationRate = 10;
+    private int _discriditationRate = 5;
 
     private Vec4i _mountainColor = new Vec4i(255, 0, 0, 255);
     private Vec4i _plainColor = new Vec4i(0, 255, 0, 255);
-    private Vec4i _lowLandColor = new Vec4i(0, 0, 255, 255);
+    private Vec4i _lowLandColor = new Vec4i(0, 150, 0, 255);
+    private Vec4i _seaLevelWaterColor = new Vec4i(0, 0, 255, 255);
+    private Vec4i _highWaterColor = new Vec4i(50, 255, 255, 255);
+    private Vec4i _trenchColor = new Vec4i(0, 0, 150, 255);
+
+    private string[] _waterBlocks = new[] { "game:water-", "game:saltwater-", "game:boilingwater-"};
 
     public HeightMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
@@ -163,7 +168,26 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
             if (topChunkIndex >= _chunksTmp.Length)
                 continue;
             
-            resultPixelArray[k] = GetColor(topBlockHeight);
+            MapUtil.PosInt2d(k, 32L, vec2i);
+            int index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+            Block block = api.World.Blocks[index];
+
+            if (IsWater(block))
+            {
+                while (topBlockHeight > 0 && IsWater(block))
+                {
+                    topBlockHeight--;
+                    topChunkIndex = topBlockHeight / 32;
+                    index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+                    block = api.World.Blocks[index];
+                }
+                
+                resultPixelArray[k] = GetColor(topBlockHeight, _highWaterColor, _seaLevelWaterColor, _trenchColor);
+            }
+            else
+            {
+                resultPixelArray[k] = GetColor(topBlockHeight, _mountainColor, _plainColor, _lowLandColor);
+            }
         }
         
         for (var n = 0; n < _chunksTmp.Length; n++)
@@ -172,7 +196,7 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
         return resultPixelArray;
     }
 
-    private int GetColor(int height)
+    private int GetColor(int height, Vec4i colorAboveSeaLevel, Vec4i colorSeaLevel ,Vec4i colorBelowSeaLevel)
     {
         float InverseLerp(float a, float b, float value)
         {
@@ -189,12 +213,12 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
         if (height >= _seaLevel)
         {
             var progress = 1 - InverseLerp(_seaLevel, _maxHeight, discreditationHeight);
-            color = MixColor(_mountainColor, _plainColor, progress);
+            color = MixColor(colorAboveSeaLevel, colorSeaLevel, progress);
         }
         else
         {
-            var progress = (float)discreditationHeight / (_maxHeight - _seaLevel);
-            color = MixColor(_plainColor, _lowLandColor, progress);
+            var progress = 1 - InverseLerp(0, _seaLevel, discreditationHeight);
+            color = MixColor(colorSeaLevel,colorBelowSeaLevel, progress);
         }
         return color;
     }
@@ -213,4 +237,12 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
     
     private int Discreditation(int value, int rate)
         => value / rate * rate;
+
+    private bool IsWater(Block block)
+    {
+        if (block.BlockMaterial == EnumBlockMaterial.Liquid)
+            return _waterBlocks.Any(b => block.Code.ToString().Contains(b));
+        
+        return false;
+    }
 }

@@ -9,7 +9,7 @@ namespace GiMap;
 
 public class GiMapModSystem : ModSystem
 {
-    private string patchId = "topographic";
+    private string patchId = "gimap";
     private Harmony harmonyInstance;
     
     public override void StartPre(ICoreAPI api)
@@ -32,6 +32,7 @@ public class GiMapModSystem : ModSystem
     {
         var mapManager = api.ModLoader.GetModSystem<WorldMapManager>();
         mapManager.RegisterMapLayer<TopographicMapLayer>("topographic", 1);
+        mapManager.RegisterMapLayer<HeightMapLayer>("height", 2);
     }
 
     public override void Dispose()

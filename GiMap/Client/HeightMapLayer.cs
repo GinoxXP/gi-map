@@ -7,7 +7,7 @@ namespace GiMap.Client;
 
 public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
 {
-    public override string Title => "height";
+    public override string Title => MapTypes.Height;
     
     private int _maxHeight;
     private int _seaLevel;

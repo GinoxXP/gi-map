@@ -31,8 +31,8 @@ public class GiMapModSystem : ModSystem
     public override void StartClientSide(ICoreClientAPI api)
     {
         var mapManager = api.ModLoader.GetModSystem<WorldMapManager>();
-        mapManager.RegisterMapLayer<TopographicMapLayer>("topographic", 1);
-        mapManager.RegisterMapLayer<HeightMapLayer>("height", 2);
+        mapManager.RegisterMapLayer<TopographicMapLayer>(MapTypes.Topographic, 1);
+        mapManager.RegisterMapLayer<HeightMapLayer>(MapTypes.Height, 2);
     }
 
     public override void Dispose()

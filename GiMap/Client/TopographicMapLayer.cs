@@ -7,7 +7,7 @@ namespace GiMap.Client;
 
 public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
 {
-    public override string Title => "topographic";
+    public override string Title => MapTypes.Topographic;
     
     private readonly int soilColor = ColorUtil.ColorFromRgba(201, 234, 157, 255);
     private readonly int sandColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);

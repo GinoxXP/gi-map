@@ -171,7 +171,15 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
             MapUtil.PosInt2d(k, 32L, vec2i);
             int index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
             Block block = api.World.Blocks[index];
-
+            
+            while (topBlockHeight > 0 && !IsBlockValid(block))
+            {
+                topBlockHeight--;
+                topChunkIndex = topBlockHeight / 32;
+                index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+                block = api.World.Blocks[index];
+            }
+            
             if (IsWater(block))
             {
                 while (topBlockHeight > 0 && IsWater(block))
@@ -244,5 +252,16 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
             return _waterBlocks.Any(b => block.Code.ToString().Contains(b));
         
         return false;
+    }
+    
+    private bool IsBlockValid(Block block)
+    {
+        return block.BlockMaterial == EnumBlockMaterial.Gravel
+               || block.BlockMaterial == EnumBlockMaterial.Sand
+               || block.BlockMaterial == EnumBlockMaterial.Soil
+               || block.BlockMaterial == EnumBlockMaterial.Stone
+               || block.BlockMaterial == EnumBlockMaterial.Ice
+               || block.BlockMaterial == EnumBlockMaterial.Snow
+               || block.BlockMaterial == EnumBlockMaterial.Liquid;
     }
 }

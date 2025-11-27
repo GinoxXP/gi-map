@@ -14,14 +14,14 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
     private int _hueOffset = 100;
     private int _discriditationRate = 5;
 
-    private Vec4i _mountainColor = new Vec4i(255, 0, 0, 255);
-    private Vec4i _plainColor = new Vec4i(0, 255, 0, 255);
-    private Vec4i _lowLandColor = new Vec4i(0, 150, 0, 255);
-    private Vec4i _seaLevelWaterColor = new Vec4i(0, 0, 255, 255);
-    private Vec4i _highWaterColor = new Vec4i(50, 255, 255, 255);
-    private Vec4i _trenchColor = new Vec4i(0, 0, 150, 255);
+    private readonly Vec4i _mountainColor = new(255, 0, 0, 255);
+    private readonly Vec4i _plainColor = new(0, 255, 0, 255);
+    private readonly Vec4i _lowLandColor = new(0, 150, 0, 255);
+    private readonly Vec4i _seaLevelWaterColor = new(0, 0, 255, 255);
+    private readonly Vec4i _highWaterColor = new(50, 255, 255, 255);
+    private readonly Vec4i _trenchColor = new(0, 0, 150, 255);
 
-    private string[] _waterBlocks = new[] { "game:water-", "game:saltwater-", "game:boilingwater-"};
+    private readonly string[] _waterBlocks = new[] { "game:water-", "game:saltwater-", "game:boilingwater-"};
 
     public HeightMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {

@@ -17,7 +17,16 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
     private readonly int iceColor = ColorUtil.ColorFromRgba(202, 237, 238, 255);
     private readonly int snowColor = ColorUtil.ColorFromRgba(230, 230, 255, 255);
     private readonly int errorColor = ColorUtil.ColorFromRgba(255, 0, 255, 255);
+    private readonly int roadColor = ColorUtil.ColorFromRgba(50, 50, 50, 255);
     
+    private readonly string[] _roadBlocks = new[]
+    {
+        "game:stonepath-",
+        "game:stonepathslab-",
+        "game:stonepathstairs-",
+        "game:woodenpath-",
+    };
+
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
     }
@@ -83,6 +92,9 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
 
     private int GetMaterialColor(Block block)
     {
+        if (IsRoad(block))
+            return roadColor;
+        
         return block.BlockMaterial switch
         {
             EnumBlockMaterial.Gravel => gravelColor,
@@ -95,4 +107,7 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
             _ => errorColor,
         };
     }
+
+    private bool IsRoad(Block block)
+        => _roadBlocks.Any(b => block.Code.ToString().Contains(b));
 }

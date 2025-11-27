@@ -29,64 +29,18 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
         _maxHeight = _capi.World.MapSizeY;
         _seaLevel = _capi.World.SeaLevel;
     }
-    
-    public override void OnTick(float dt)
+
+    protected override HeightMultiChunkMapComponent CreateComponent(ReadyMapPiece piece)
     {
-        if (!_readyMapPieces.IsEmpty)
-        {
-            int q = Math.Min(_readyMapPieces.Count, 200);
-            List<MultiChunkMapComponent> modified = new();
-            while (q-- > 0)
-            {
-                if (_readyMapPieces.TryDequeue(out var mappiece))
-                {
-                    FastVec2i mcord = new FastVec2i(mappiece.Cord.X / MultiChunkMapComponent.ChunkLen, mappiece.Cord.Y / MultiChunkMapComponent.ChunkLen);
-                    FastVec2i baseCord = new FastVec2i(mcord.X * MultiChunkMapComponent.ChunkLen, mcord.Y * MultiChunkMapComponent.ChunkLen);
+        FastVec2i mcord = new FastVec2i(piece.Cord.X / HeightMultiChunkMapComponent.ChunkLen, piece.Cord.Y / HeightMultiChunkMapComponent.ChunkLen);
+        FastVec2i baseCord = new FastVec2i(mcord.X * HeightMultiChunkMapComponent.ChunkLen, mcord.Y * HeightMultiChunkMapComponent.ChunkLen);
 
-                    if (!_loadedMapData.TryGetValue(mcord, out HeightMultiChunkMapComponent mccomp))
-                        _loadedMapData[mcord] = mccomp = new HeightMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
+        if (!_loadedMapData.TryGetValue(mcord, out HeightMultiChunkMapComponent mccomp))
+            _loadedMapData[mcord] = mccomp = new HeightMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
 
 
-                    mccomp.setChunk(mappiece.Cord.X - baseCord.X, mappiece.Cord.Y - baseCord.Y, mappiece.Pixels);
-                    modified.Add(mccomp);
-                }
-            }
-
-            foreach (var mccomp in modified) mccomp.FinishSetChunks();
-        }
-
-        _mtThread1secAccum += dt;
-        if (_mtThread1secAccum > 1)
-        {
-            List<FastVec2i> toRemove = new List<FastVec2i>();
-
-            foreach (var val in _loadedMapData)
-            {
-                MultiChunkMapComponent mcmp = val.Value;
-
-                if (!mcmp.AnyChunkSet || !mcmp.IsVisible(_curVisibleChunks))
-                {
-                    mcmp.TTL -= 1;
-
-                    if (mcmp.TTL <= 0)
-                    {
-                        FastVec2i mccord = val.Key;
-                        toRemove.Add(mccord);
-                        mcmp.ActuallyDispose();
-                    }
-                }
-                else
-                {
-                    mcmp.TTL = MultiChunkMapComponent.MaxTTL;
-                }
-            }
-
-            foreach (var val in toRemove)
-                _loadedMapData.TryRemove(val, out _);
-
-
-            _mtThread1secAccum = 0;
-        }
+        mccomp.setChunk(piece.Cord.X - baseCord.X, piece.Cord.Y - baseCord.Y, piece.Pixels);
+        return mccomp;
     }
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)

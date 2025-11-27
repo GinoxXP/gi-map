@@ -65,6 +65,55 @@ where Component : MultiChunkMapComponent
                 .EndSubCommand();
         }
     }
+    
+    public override void OnTick(float dt)
+    {
+        if (!_readyMapPieces.IsEmpty)
+        {
+            int q = Math.Min(_readyMapPieces.Count, 200);
+            List<Component> modified = new();
+            while (q-- > 0)
+            {
+                if (_readyMapPieces.TryDequeue(out var mappiece))
+                    modified.Add(CreateComponent(mappiece));
+            }
+
+            foreach (var mccomp in modified) mccomp.FinishSetChunks();
+        }
+
+        _mtThread1secAccum += dt;
+        if (_mtThread1secAccum > 1)
+        {
+            List<FastVec2i> toRemove = new List<FastVec2i>();
+
+            foreach (var val in _loadedMapData)
+            {
+                MultiChunkMapComponent mcmp = val.Value;
+
+                if (!mcmp.AnyChunkSet || !mcmp.IsVisible(_curVisibleChunks))
+                {
+                    mcmp.TTL -= 1;
+
+                    if (mcmp.TTL <= 0)
+                    {
+                        FastVec2i mccord = val.Key;
+                        toRemove.Add(mccord);
+                        mcmp.ActuallyDispose();
+                    }
+                }
+                else
+                {
+                    mcmp.TTL = MultiChunkMapComponent.MaxTTL;
+                }
+            }
+
+            foreach (var val in toRemove)
+                _loadedMapData.TryRemove(val, out _);
+
+
+            _mtThread1secAccum = 0;
+        }
+    }
 
     public override void OnLoaded()
     {
@@ -264,6 +313,8 @@ where Component : MultiChunkMapComponent
             }
         }
     }
+    
+    protected abstract Component CreateComponent(ReadyMapPiece piece);
     
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
     

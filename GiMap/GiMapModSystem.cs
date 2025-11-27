@@ -33,6 +33,7 @@ public class GiMapModSystem : ModSystem
         var mapManager = api.ModLoader.GetModSystem<WorldMapManager>();
         mapManager.RegisterMapLayer<TopographicMapLayer>(MapTypes.Topographic, 1);
         mapManager.RegisterMapLayer<HeightMapLayer>(MapTypes.Height, 2);
+        mapManager.RegisterMapLayer<FertilityMapLayer>(MapTypes.Fertility, 3);
     }
 
     public override void Dispose()

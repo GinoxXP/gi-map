@@ -13,6 +13,7 @@ namespace GiMap.Client;
 public abstract class AMapLayer<Component> : MapLayer
 where Component : MultiChunkMapComponent
 {
+    public override string LayerGroupCode => Title;
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
     
     protected ICoreClientAPI _capi;
@@ -40,6 +41,29 @@ where Component : MultiChunkMapComponent
         Active = false;
         
         _capi = api as ICoreClientAPI;
+        
+        if (api.Side == EnumAppSide.Client)
+        {
+            api.World.Logger.Notification("Loading world map cache db...");
+            _mapdb = new MapDB(api.World.Logger);
+            string errorMessage = null;
+            string mapDbFilePath = GetMapDbFilePath();
+            _mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
+            if (errorMessage != null)
+                throw new Exception($"Cannot open {mapDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
+
+            api.ChatCommands.GetOrCreate($"{Title}map").BeginSubCommand("purgedb").WithDescription("purge the map db")
+                .HandleWith(delegate
+                {
+                    _mapdb.Purge();
+                    return TextCommandResult.Success("Ok, db purged");
+                })
+                .EndSubCommand()
+                .BeginSubCommand("redraw")
+                .WithDescription("Redraw the map")
+                .HandleWith(OnMapCmdRedraw)
+                .EndSubCommand();
+        }
     }
 
     public override void OnLoaded()
@@ -240,8 +264,6 @@ where Component : MultiChunkMapComponent
             }
         }
     }
-
-    protected abstract void LoadFromChunkPixels(FastVec2i cord, int[] pixels);
     
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
     
@@ -260,5 +282,40 @@ where Component : MultiChunkMapComponent
 
             _chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
         }
+    }
+    
+    private string GetMapDbFilePath()
+    {
+        string text = Path.Combine(GamePaths.DataPath, "Maps");
+        GamePaths.EnsurePathExists(text);
+        return Path.Combine(text, api.World.SavegameIdentifier + $"-{Title}.db");
+    }
+    
+    private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
+    {
+        foreach (var value in _loadedMapData.Values)
+        {
+            value.ActuallyDispose();
+        }
+
+        _loadedMapData.Clear();
+        lock (_chunksToGenLock)
+        {
+            foreach (FastVec2i curVisibleChunk in _curVisibleChunks)
+            {
+                _chunksToGen.Enqueue(curVisibleChunk.Copy());
+            }
+        }
+
+        return TextCommandResult.Success("Redrawing map...");
+    }
+    
+    private void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
+    {
+        _readyMapPieces.Enqueue(new ReadyMapPiece
+        {
+            Pixels = pixels,
+            Cord = cord
+        });
     }
 }

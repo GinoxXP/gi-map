@@ -10,7 +10,6 @@ namespace GiMap.Client;
 public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
 {
     public override string Title => "topographic";
-    public override string LayerGroupCode => "topographic";
     
     private readonly int soilColor = ColorUtil.ColorFromRgba(201, 234, 157, 255);
     private readonly int sandColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
@@ -23,28 +22,6 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
     
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
-        if (api.Side == EnumAppSide.Client)
-        {
-            api.World.Logger.Notification("Loading world map cache db...");
-            _mapdb = new MapDB(api.World.Logger);
-            string errorMessage = null;
-            string mapDbFilePath = GetMapDbFilePath();
-            _mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
-            if (errorMessage != null)
-                throw new Exception($"Cannot open {mapDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
-
-            api.ChatCommands.GetOrCreate("topographicmap").BeginSubCommand("purgedb").WithDescription("purge the map db")
-                .HandleWith(delegate
-                {
-                    _mapdb.Purge();
-                    return TextCommandResult.Success("Ok, db purged");
-                })
-                .EndSubCommand()
-                .BeginSubCommand("redraw")
-                .WithDescription("Redraw the map")
-                .HandleWith(OnMapCmdRedraw)
-                .EndSubCommand();
-        }
     }
 
     public override void OnTick(float dt)
@@ -104,41 +81,6 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
 
             _mtThread1secAccum = 0;
         }
-    }
-    
-    private string GetMapDbFilePath()
-    {
-        string text = Path.Combine(GamePaths.DataPath, "Maps");
-        GamePaths.EnsurePathExists(text);
-        return Path.Combine(text, api.World.SavegameIdentifier + "-topology.db");
-    }
-    
-    private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
-    {
-        foreach (var value in _loadedMapData.Values)
-        {
-            value.ActuallyDispose();
-        }
-
-        _loadedMapData.Clear();
-        lock (_chunksToGenLock)
-        {
-            foreach (FastVec2i curVisibleChunk in _curVisibleChunks)
-            {
-                _chunksToGen.Enqueue(curVisibleChunk.Copy());
-            }
-        }
-
-        return TextCommandResult.Success("Redrawing map...");
-    }
-
-    protected override void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
-    {
-        _readyMapPieces.Enqueue(new ReadyMapPiece
-        {
-            Pixels = pixels,
-            Cord = cord
-        });
     }
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)

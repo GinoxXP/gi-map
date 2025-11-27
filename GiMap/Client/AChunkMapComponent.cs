@@ -18,16 +18,6 @@ where TMapLayer : MapLayer
         _chunkWorldPos = new Vec3d(baseChunkCord.X * 32, 0.0, baseChunkCord.Y * 32);
         _viewPos = new Vec2f();
     }
-    
-    public virtual new void setChunk(int dx, int dz, int[] pixels)
-    {
-        base.setChunk(dx, dz, pixels);
-
-        if (_pixelsToSet == null)
-            _pixelsToSet = new int[9][];
-
-        _pixelsToSet[dz * 3 + dx] = pixels;
-    }
 
     public override void Render(GuiElementMap map, float dt)
     {

@@ -1,8 +1,5 @@
-﻿using System.Text;
-using Vintagestory.API.Client;
-using Vintagestory.API.Config;
+﻿using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 

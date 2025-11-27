@@ -1,6 +1,5 @@
 ﻿using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -30,16 +29,11 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
         _seaLevel = _capi.World.SeaLevel;
     }
 
-    protected override HeightMultiChunkMapComponent CreateComponent(ReadyMapPiece piece)
+    protected override HeightMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
     {
-        FastVec2i mcord = new FastVec2i(piece.Cord.X / HeightMultiChunkMapComponent.ChunkLen, piece.Cord.Y / HeightMultiChunkMapComponent.ChunkLen);
-        FastVec2i baseCord = new FastVec2i(mcord.X * HeightMultiChunkMapComponent.ChunkLen, mcord.Y * HeightMultiChunkMapComponent.ChunkLen);
-
         if (!_loadedMapData.TryGetValue(mcord, out HeightMultiChunkMapComponent mccomp))
             _loadedMapData[mcord] = mccomp = new HeightMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
 
-
-        mccomp.setChunk(piece.Cord.X - baseCord.X, piece.Cord.Y - baseCord.Y, piece.Pixels);
         return mccomp;
     }
 

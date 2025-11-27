@@ -1,9 +1,7 @@
 ﻿using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
-using Path = System.IO.Path;
 
 namespace GiMap.Client;
 
@@ -23,17 +21,12 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
     }
-
-    protected override TopographicMultiChunkMapComponent CreateComponent(ReadyMapPiece piece)
+    
+    protected override TopographicMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
     {
-        FastVec2i mcord = new FastVec2i(piece.Cord.X / TopographicMultiChunkMapComponent.ChunkLen, piece.Cord.Y / TopographicMultiChunkMapComponent.ChunkLen);
-        FastVec2i baseCord = new FastVec2i(mcord.X * TopographicMultiChunkMapComponent.ChunkLen, mcord.Y * TopographicMultiChunkMapComponent.ChunkLen);
-
         if (!_loadedMapData.TryGetValue(mcord, out TopographicMultiChunkMapComponent mccomp))
             _loadedMapData[mcord] = mccomp = new TopographicMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
 
-
-        mccomp.setChunk(piece.Cord.X - baseCord.X, piece.Cord.Y - baseCord.Y, piece.Pixels);
         return mccomp;
     }
     

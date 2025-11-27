@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Text;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -17,23 +16,25 @@ where Component : MultiChunkMapComponent
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
     
     protected ICoreClientAPI _capi;
-    protected MapDB _mapdb;
+    private MapDB _mapdb;
     protected IWorldChunk[] _chunksTmp;
-    protected const int _chunksize = 32;
-    protected float _mtThread1secAccum;
-    protected float _genAccum;
-    protected float _diskSaveAccum;
-    protected object _chunksToGenLock = new object();
-    protected UniqueQueue<FastVec2i> _chunksToGen = new UniqueQueue<FastVec2i>();
-    protected HashSet<FastVec2i> _curVisibleChunks = new HashSet<FastVec2i>();
-    protected ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new ConcurrentQueue<ReadyMapPiece>();
-    protected Dictionary<FastVec2i, MapPieceDB> _toSaveList = new Dictionary<FastVec2i, MapPieceDB>();
-    protected ConcurrentDictionary<FastVec2i, Component> _loadedMapData = new ConcurrentDictionary<FastVec2i, Component>();
+    private int _chunksize;
+    private float _mtThread1secAccum;
+    private float _genAccum;
+    private float _diskSaveAccum;
+    private object _chunksToGenLock = new();
+    private UniqueQueue<FastVec2i> _chunksToGen = new();
+    private HashSet<FastVec2i> _curVisibleChunks = new();
+    private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
+    private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
+    protected ConcurrentDictionary<FastVec2i, Component> _loadedMapData = new();
     
     public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
 
     protected AMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        _chunksize = api.World.BlockAccessor.ChunkSize;
+
         OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha;
         
         api.Event.ChunkDirty += OnChunkDirty;
@@ -41,7 +42,7 @@ where Component : MultiChunkMapComponent
         Active = false;
         
         _capi = api as ICoreClientAPI;
-        
+
         if (api.Side == EnumAppSide.Client)
         {
             api.World.Logger.Notification("Loading world map cache db...");
@@ -75,7 +76,16 @@ where Component : MultiChunkMapComponent
             while (q-- > 0)
             {
                 if (_readyMapPieces.TryDequeue(out var mappiece))
-                    modified.Add(CreateComponent(mappiece));
+                {
+                    var mcord = new FastVec2i(mappiece.Cord.X / MultiChunkMapComponent.ChunkLen, mappiece.Cord.Y / MultiChunkMapComponent.ChunkLen);
+                    var baseCord = new FastVec2i(mcord.X * MultiChunkMapComponent.ChunkLen, mcord.Y * MultiChunkMapComponent.ChunkLen);
+
+                    var mccomp = CreateComponent(mcord, baseCord); 
+
+                    mccomp.setChunk(mappiece.Cord.X - baseCord.X, mappiece.Cord.Y - baseCord.Y, mappiece.Pixels);
+                    
+                    modified.Add(mccomp);
+                }
             }
 
             foreach (var mccomp in modified) mccomp.FinishSetChunks();
@@ -314,9 +324,9 @@ where Component : MultiChunkMapComponent
         }
     }
     
-    protected abstract Component CreateComponent(ReadyMapPiece piece);
-    
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
+    
+    protected abstract Component CreateComponent(FastVec2i mcord, FastVec2i baseCord);
     
     private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
     {

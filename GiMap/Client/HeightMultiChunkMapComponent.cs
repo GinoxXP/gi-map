@@ -1,6 +1,5 @@
 ﻿using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 

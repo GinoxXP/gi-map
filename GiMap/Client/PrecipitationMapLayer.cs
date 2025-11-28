@@ -7,11 +7,11 @@ namespace GiMap.Client;
 
 public class PrecipitationMapLayer : AMapLayer<PrecipitationMultiChunkMapComponent>
 {
-    private int _veryHighPrecipitation = ColorUtil.ColorFromRgba(70, 130, 230, 255);   // Яркий, чистый синий
-    private int _highPrecipitation = ColorUtil.ColorFromRgba(40, 175, 175, 255);     // Насыщенный аквамарин/циан
-    private int _mediumPrecipitation = ColorUtil.ColorFromRgba(110, 190, 110, 255);   // Яркий, свежий зеленый (умеренный климат)
-    private int _lowPrecipitation = ColorUtil.ColorFromRgba(190, 190, 100, 255);     // Яркий хаки/горчичный (сухая трава)
-    private int _veryLowPrecipitation = ColorUtil.ColorFromRgba(240, 230, 160, 255);  // Светлый песок/бежевый
+    private readonly int _veryHighPrecipitation = ColorUtil.ColorFromRgba(70, 130, 230, 255);
+    private readonly int _highPrecipitation = ColorUtil.ColorFromRgba(40, 175, 175, 255);
+    private readonly int _mediumPrecipitation = ColorUtil.ColorFromRgba(110, 190, 110, 255);
+    private readonly int _lowPrecipitation = ColorUtil.ColorFromRgba(190, 190, 100, 255);
+    private readonly int _veryLowPrecipitation = ColorUtil.ColorFromRgba(240, 230, 160, 255);
  
     public override string Title => MapTypes.Precipitation;
     

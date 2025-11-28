@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class TemperatureMapLayer : AClimateMapLayer<TemperatureChunkMapComponent>
+public class TemperatureMapLayer : ABlockMapLayer<TemperatureChunkMapComponent>
 {
     private readonly int _arcticCold = ColorUtil.ColorFromRgba(0, 0, 100, 255);
     private readonly int _extremeCold = ColorUtil.ColorFromRgba(0, 50, 180, 255);
@@ -34,8 +34,9 @@ public class TemperatureMapLayer : AClimateMapLayer<TemperatureChunkMapComponent
         return mccomp;
     }
 
-    protected override int GetColor(ClimateCondition climateCondition)
+    protected override int GetColor(BlockPos pos)
     {
+        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
         var temperature = climateCondition.WorldGenTemperature;
 
         if (temperature < -10f)

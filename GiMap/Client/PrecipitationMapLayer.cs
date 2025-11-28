@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class PrecipitationMapLayer : AClimateMapLayer<PrecipitationMultiChunkMapComponent>
+public class PrecipitationMapLayer : ABlockMapLayer<PrecipitationMultiChunkMapComponent>
 {
     private readonly int _veryHighPrecipitation = ColorUtil.ColorFromRgba(70, 130, 230, 255);
     private readonly int _highPrecipitation = ColorUtil.ColorFromRgba(40, 175, 175, 255);
@@ -27,8 +27,9 @@ public class PrecipitationMapLayer : AClimateMapLayer<PrecipitationMultiChunkMap
         return mccomp;
     }
     
-    protected override int GetColor(ClimateCondition climateCondition)
+    protected override int GetColor(BlockPos pos)
     {
+        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
         var rainfall = climateCondition.WorldgenRainfall;
         return GetColor(rainfall);
     }

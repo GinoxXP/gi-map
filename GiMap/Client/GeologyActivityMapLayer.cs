@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class GeologyActivityMapLayer : AClimateMapLayer<GeologyChunkMapComponent>
+public class GeologyActivityMapLayer : ABlockMapLayer<GeologyChunkMapComponent>
 {
     private readonly int _lowActivity = ColorUtil.ColorFromRgba(100, 100, 100, 255);
     private readonly int _moderateActivity = ColorUtil.ColorFromRgba(180, 140, 100, 255);
@@ -27,8 +27,9 @@ public class GeologyActivityMapLayer : AClimateMapLayer<GeologyChunkMapComponent
         return mccomp;
     }
 
-    protected override int GetColor(ClimateCondition climateCondition)
+    protected override int GetColor(BlockPos pos)
     {
+        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
         var geologicalActivity = climateCondition.GeologicActivity;
 
         if (geologicalActivity < 0.2f)

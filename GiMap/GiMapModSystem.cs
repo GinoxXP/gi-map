@@ -36,6 +36,7 @@ public class GiMapModSystem : ModSystem
         mapManager.RegisterMapLayer<FertilityMapLayer>(MapTypes.Fertility, 3);
         mapManager.RegisterMapLayer<PrecipitationMapLayer>(MapTypes.Precipitation, 4);
         mapManager.RegisterMapLayer<TemperatureMapLayer>(MapTypes.Temperature, 5);
+        mapManager.RegisterMapLayer<GeologyActivityMapLayer>(MapTypes.GeologyActivity, 6);
     }
 
     public override void Dispose()

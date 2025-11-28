@@ -16,6 +16,7 @@ class WorldMapManagerPatch
         MapTypes.Precipitation,
         MapTypes.Temperature,
         MapTypes.GeologyActivity,
+        MapTypes.Light,
     };
     
     static void Postfix(ref List<string> __result)

@@ -8,5 +8,6 @@ public static class MapTypes
     public static readonly string Precipitation = "precipitation";
     public static readonly string Temperature = "temperature";
     public static readonly string GeologyActivity = "geology-activity";
+    public static readonly string Light = "light";
 
 }

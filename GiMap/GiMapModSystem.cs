@@ -38,6 +38,7 @@ public class GiMapModSystem : ModSystem
         mapManager.RegisterMapLayer<TemperatureMapLayer>(MapTypes.Temperature, 5);
         mapManager.RegisterMapLayer<GeologyActivityMapLayer>(MapTypes.GeologyActivity, 6);
         mapManager.RegisterMapLayer<LightMapLayer>(MapTypes.Light, 7);
+        mapManager.RegisterMapLayer<ChunkGridMapLayer>(MapTypes.ChunkGrid, 8);
     }
 
     public override void Dispose()

@@ -17,6 +17,7 @@ class WorldMapManagerPatch
         MapTypes.Temperature,
         MapTypes.GeologyActivity,
         MapTypes.Light,
+        MapTypes.ChunkGrid,
     };
     
     static void Postfix(ref List<string> __result)

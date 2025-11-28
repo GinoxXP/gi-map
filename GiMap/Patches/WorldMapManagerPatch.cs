@@ -13,6 +13,7 @@ class WorldMapManagerPatch
         MapTypes.Topographic,
         MapTypes.Height,
         MapTypes.Fertility,
+        MapTypes.Precipitation,
     };
     
     static void Postfix(ref List<string> __result)
@@ -26,7 +27,7 @@ class WorldMapManagerPatch
         
         for (int i = 0; i < codes.Length; i++)
         {
-            __result.Insert(terrainLayerIndex + i, codes[i]);
+            __result.Insert(terrainLayerIndex + i + 1, codes[i]);
         }
     }
 }

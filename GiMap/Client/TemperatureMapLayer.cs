@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Config;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -7,19 +8,6 @@ namespace GiMap.Client;
 
 public class TemperatureMapLayer : ABlockMapLayer
 {
-    private readonly int _arcticCold = ColorUtil.ColorFromRgba(0, 0, 100, 255);
-    private readonly int _extremeCold = ColorUtil.ColorFromRgba(0, 50, 180, 255);
-    private readonly int _veryCold = ColorUtil.ColorFromRgba(0, 100, 220, 255);
-    private readonly int _cold = ColorUtil.ColorFromRgba(100, 180, 255, 255);
-
-    private readonly int _cool = ColorUtil.ColorFromRgba(150, 220, 150, 255);
-    private readonly int _temperate = ColorUtil.ColorFromRgba(50, 200, 50, 255);
-    private readonly int _mild = ColorUtil.ColorFromRgba(200, 200, 80, 255);
-
-    private readonly int _warm = ColorUtil.ColorFromRgba(240, 180, 0, 255);
-    private readonly int _hot = ColorUtil.ColorFromRgba(220, 80, 0, 255);
-    private readonly int _extremeHot = ColorUtil.ColorFromRgba(150, 30, 30, 255);
-    
     public override string Title => MapTypes.Temperature;
 
     public TemperatureMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
@@ -35,24 +23,24 @@ public class TemperatureMapLayer : ABlockMapLayer
         var temperature = climateCondition.WorldGenTemperature;
 
         if (temperature < -10f)
-            return _arcticCold;
+            return ConfigManager.ConfigInstance.TemperatureMode._arcticCold;
         if (temperature < -5f)
-            return _extremeCold;
+            return ConfigManager.ConfigInstance.TemperatureMode._extremeCold;
         if (temperature < 0f)
-            return _veryCold;
+            return ConfigManager.ConfigInstance.TemperatureMode._veryCold;
         if (temperature < 5f)
-            return _cold;
+            return ConfigManager.ConfigInstance.TemperatureMode._cold;
         if (temperature < 10f)
-            return _cool;
+            return ConfigManager.ConfigInstance.TemperatureMode._cool;
         if (temperature < 18f)
-            return _temperate;
+            return ConfigManager.ConfigInstance.TemperatureMode._temperate;
         if (temperature < 25f)
-            return _mild;
+            return ConfigManager.ConfigInstance.TemperatureMode._mild;
         if (temperature < 30f)
-            return _warm;
+            return ConfigManager.ConfigInstance.TemperatureMode._warm;
         if (temperature < 35f) 
-            return _hot;
+            return ConfigManager.ConfigInstance.TemperatureMode._hot;
 
-        return _extremeHot;
+        return ConfigManager.ConfigInstance.TemperatureMode._extremeHot;
     }
 }

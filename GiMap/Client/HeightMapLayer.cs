@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Config;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -11,15 +12,7 @@ public class HeightMapLayer : AMapLayer
     
     private int _maxHeight;
     private int _seaLevel;
-    private int _hueOffset = 100;
     private int _discriditationRate = 5;
-
-    private readonly Vec4i _mountainColor = new(255, 0, 0, 255);
-    private readonly Vec4i _plainColor = new(0, 255, 0, 255);
-    private readonly Vec4i _lowLandColor = new(0, 150, 0, 255);
-    private readonly Vec4i _seaLevelWaterColor = new(0, 0, 255, 255);
-    private readonly Vec4i _highWaterColor = new(50, 255, 255, 255);
-    private readonly Vec4i _trenchColor = new(0, 0, 150, 255);
 
     private readonly string[] _waterBlocks = new[] { "game:water-", "game:saltwater-", "game:boilingwater-"};
 
@@ -73,11 +66,19 @@ public class HeightMapLayer : AMapLayer
                     block = api.World.Blocks[index];
                 }
                 
-                resultPixelArray[k] = GetColor(topBlockHeight, _highWaterColor, _seaLevelWaterColor, _trenchColor);
+                resultPixelArray[k] = GetColor(
+                    topBlockHeight,
+                    ConfigManager.ConfigInstance.HeightMode._highWaterColor,
+                    ConfigManager.ConfigInstance.HeightMode._seaLevelWaterColor,
+                    ConfigManager.ConfigInstance.HeightMode._trenchColor);
             }
             else
             {
-                resultPixelArray[k] = GetColor(topBlockHeight, _mountainColor, _plainColor, _lowLandColor);
+                resultPixelArray[k] = GetColor(
+                    topBlockHeight,
+                    ConfigManager.ConfigInstance.HeightMode._mountainColor,
+                    ConfigManager.ConfigInstance.HeightMode._plainColor,
+                    ConfigManager.ConfigInstance.HeightMode._lowLandColor);
             }
         }
         

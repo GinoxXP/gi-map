@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Config;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -8,16 +9,6 @@ namespace GiMap.Client;
 public class TopographicMapLayer : AMapLayer
 {
     public override string Title => MapTypes.Topographic;
-    
-    private readonly int soilColor = ColorUtil.ColorFromRgba(201, 234, 157, 255);
-    private readonly int sandColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
-    private readonly int gravelColor = ColorUtil.ColorFromRgba(200, 200, 200, 255);
-    private readonly int stoneColor = ColorUtil.ColorFromRgba(150, 150, 150, 255);
-    private readonly int waterColor = ColorUtil.ColorFromRgba(34, 164, 171, 255);
-    private readonly int iceColor = ColorUtil.ColorFromRgba(202, 237, 238, 255);
-    private readonly int snowColor = ColorUtil.ColorFromRgba(230, 230, 255, 255);
-    private readonly int errorColor = ColorUtil.ColorFromRgba(255, 0, 255, 255);
-    private readonly int roadColor = ColorUtil.ColorFromRgba(50, 50, 50, 255);
     
     private readonly string[] _roadBlocks = new[]
     {
@@ -88,18 +79,18 @@ public class TopographicMapLayer : AMapLayer
     private int GetMaterialColor(Block block)
     {
         if (IsRoad(block))
-            return roadColor;
+            return ConfigManager.ConfigInstance.TopographicMode.roadColor;
         
         return block.BlockMaterial switch
         {
-            EnumBlockMaterial.Gravel => gravelColor,
-            EnumBlockMaterial.Sand => sandColor,
-            EnumBlockMaterial.Soil => soilColor,
-            EnumBlockMaterial.Stone => stoneColor,
-            EnumBlockMaterial.Ice => iceColor,
-            EnumBlockMaterial.Snow => snowColor,
-            EnumBlockMaterial.Liquid => waterColor,
-            _ => errorColor,
+            EnumBlockMaterial.Gravel => ConfigManager.ConfigInstance.TopographicMode.gravelColor,
+            EnumBlockMaterial.Sand => ConfigManager.ConfigInstance.TopographicMode.sandColor,
+            EnumBlockMaterial.Soil => ConfigManager.ConfigInstance.TopographicMode.soilColor,
+            EnumBlockMaterial.Stone => ConfigManager.ConfigInstance.TopographicMode.stoneColor,
+            EnumBlockMaterial.Ice => ConfigManager.ConfigInstance.TopographicMode.iceColor,
+            EnumBlockMaterial.Snow => ConfigManager.ConfigInstance.TopographicMode.snowColor,
+            EnumBlockMaterial.Liquid => ConfigManager.ConfigInstance.TopographicMode.waterColor,
+            _ => ConfigManager.ConfigInstance.errorColor,
         };
     }
 

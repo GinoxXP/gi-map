@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Config;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -14,15 +15,6 @@ public class FertilityMapLayer : AMapLayer
     private readonly string[] _mediumFertilityBlocks = {"game:soil-medium-", "game:farmland-dry-medium", "game:farmland-moist-medium" };
     private readonly string[] _highFertilityBlocks = {"game:soil-compost-", "game:farmland-dry-compost", "game:farmland-moist-compost" };
     private readonly string[] _extreameFertilityBlocks = {"game:soil-high-", "game:farmland-dry-high", "game:farmland-moist-high" };
-
-    private readonly int _veryLowFertilityColor = ColorUtil.ColorFromRgba(255, 0, 0, 255);
-    private readonly int _lowFertilityColor = ColorUtil.ColorFromRgba(255, 171, 0, 255);
-    private readonly int _mediumFertilityColor = ColorUtil.ColorFromRgba(255, 255, 0, 255);
-    private readonly int _highFertilityColor = ColorUtil.ColorFromRgba(0, 255, 0, 255);
-    private readonly int _extreameFertilityColor = ColorUtil.ColorFromRgba(0, 150, 0, 255);
-    
-    private readonly int _waterColor = ColorUtil.ColorFromRgba(50, 50, 255, 255);
-    private readonly int _noFertilityColor = ColorUtil.ColorFromRgba(100, 100, 100, 255);
     
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
@@ -85,24 +77,24 @@ public class FertilityMapLayer : AMapLayer
     private int GetMaterialColor(Block block)
     {
         if (IsFertilityGroup(block, _veryLowFertilityBlocks))
-            return _veryLowFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode._veryLowFertilityColor;
         
         if (IsFertilityGroup(block, _lowFertilityBlocks))
-            return _lowFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode._lowFertilityColor;
         
         if (IsFertilityGroup(block, _mediumFertilityBlocks))
-            return _mediumFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode._mediumFertilityColor;
         
         if (IsFertilityGroup(block, _highFertilityBlocks))
-            return _highFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode._highFertilityColor;
         
         if (IsFertilityGroup(block, _extreameFertilityBlocks))
-            return _extreameFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode._extreameFertilityColor;
         
         if (block.BlockMaterial == EnumBlockMaterial.Liquid)
-            return _waterColor;
+            return ConfigManager.ConfigInstance.FertilityMode._waterColor;
         
-        return _noFertilityColor;
+        return ConfigManager.ConfigInstance.FertilityMode._noFertilityColor;
     }
     
     private bool IsFertilityGroup(Block block, string[] fertilityGroup)

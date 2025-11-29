@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Config;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -7,12 +8,6 @@ namespace GiMap.Client;
 
 public class PrecipitationMapLayer : ABlockMapLayer
 {
-    private readonly int _veryHighPrecipitation = ColorUtil.ColorFromRgba(70, 130, 230, 255);
-    private readonly int _highPrecipitation = ColorUtil.ColorFromRgba(40, 175, 175, 255);
-    private readonly int _mediumPrecipitation = ColorUtil.ColorFromRgba(110, 190, 110, 255);
-    private readonly int _lowPrecipitation = ColorUtil.ColorFromRgba(190, 190, 100, 255);
-    private readonly int _veryLowPrecipitation = ColorUtil.ColorFromRgba(240, 230, 160, 255);
- 
     public override string Title => MapTypes.Precipitation;
     
     public PrecipitationMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
@@ -31,11 +26,11 @@ public class PrecipitationMapLayer : ABlockMapLayer
     
     private int GetColor(float precipitation)
     {
-        if (precipitation < 0.15f) return _veryLowPrecipitation; 
-        if (precipitation < 0.45f) return _lowPrecipitation; 
-        if (precipitation < 0.70f) return _mediumPrecipitation; 
-        if (precipitation < 0.90f) return _highPrecipitation;
+        if (precipitation < 0.15f) return ConfigManager.ConfigInstance.PrecipitationMode._veryLowPrecipitation; 
+        if (precipitation < 0.45f) return ConfigManager.ConfigInstance.PrecipitationMode._lowPrecipitation; 
+        if (precipitation < 0.70f) return ConfigManager.ConfigInstance.PrecipitationMode._mediumPrecipitation; 
+        if (precipitation < 0.90f) return ConfigManager.ConfigInstance.PrecipitationMode._highPrecipitation;
 
-        return _veryHighPrecipitation; 
+        return ConfigManager.ConfigInstance.PrecipitationMode._veryHighPrecipitation; 
     }
 }

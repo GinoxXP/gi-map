@@ -6,5 +6,6 @@
     "maplayer-temperature": "Lämpötila",
     "maplayer-geology-activity": "Geologinen aktiivisuus",
     "maplayer-light": "Valaistus",
-    "maplayer-chunk-grid": "Lohkoruudukko"
+    "maplayer-chunk-grid": "Lohkoruudukko",
+    "maplayer-ore": "Malmi"
 }

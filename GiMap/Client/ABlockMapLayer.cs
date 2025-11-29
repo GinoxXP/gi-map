@@ -45,7 +45,12 @@ public abstract class ABlockMapLayer<Component> : AMapLayer<Component>
                 index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
                 block = api.World.Blocks[index];
             }
-            
+
+            if (topBlockHeight == 0)
+            {
+                resultPixelArray[k] = ColorUtil.ColorFromRgba(0, 0, 0, 0);
+                continue;
+            }
             int localX = k % 32;
             int localZ = k / 32;
             

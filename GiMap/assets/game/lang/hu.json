@@ -6,5 +6,6 @@
     "maplayer-temperature": "Hőmérséklet",
     "maplayer-geology-activity": "Geológiai aktivitás",
     "maplayer-light": "Világítás",
-    "maplayer-chunk-grid": "Blokkrács"
+    "maplayer-chunk-grid": "Blokkrács",
+    "maplayer-ore": "Érc"
 }

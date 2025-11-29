@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatura",
     "maplayer-geology-activity": "Aktywność geologiczna",
     "maplayer-light": "Oświetlenie",
-    "maplayer-chunk-grid": "Siatka chunków"
+    "maplayer-chunk-grid": "Siatka chunków",
+    "maplayer-ore": "Ruda"
 }

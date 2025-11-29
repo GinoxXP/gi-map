@@ -6,5 +6,6 @@
     "maplayer-temperature": "Teplota",
     "maplayer-geology-activity": "Geologická aktivita",
     "maplayer-light": "Osvetlenie",
-    "maplayer-chunk-grid": "Mriežka segmentov"
+    "maplayer-chunk-grid": "Mriežka segmentov",
+    "maplayer-ore": "Ruda"
 }

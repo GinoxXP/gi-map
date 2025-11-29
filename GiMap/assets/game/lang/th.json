@@ -6,5 +6,6 @@
     "maplayer-temperature": "อุณหภูมิ",
     "maplayer-geology-activity": "กิจกรรมทางธรณีวิทยา",
     "maplayer-light": "แสงสว่าง",
-    "maplayer-chunk-grid": "ตารางส่วนย่อย"
+    "maplayer-chunk-grid": "ตารางส่วนย่อย",
+    "maplayer-ore": "แร่"
 }

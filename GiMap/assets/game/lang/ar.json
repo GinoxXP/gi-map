@@ -6,5 +6,6 @@
     "maplayer-temperature": "درجة الحرارة",
     "maplayer-geology-activity": "النشاط الجيولوجي",
     "maplayer-light": "الإضاءة",
-    "maplayer-chunk-grid": "شبكة القطع"
+    "maplayer-chunk-grid": "شبكة القطع",
+    "maplayer-ore": "خام"
 }

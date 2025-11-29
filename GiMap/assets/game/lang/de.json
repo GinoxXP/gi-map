@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatur",
     "maplayer-geology-activity": "Geologische Aktivität",
     "maplayer-light": "Beleuchtung",
-    "maplayer-chunk-grid": "Chunk-Gitter"
+    "maplayer-chunk-grid": "Chunk-Gitter",
+    "maplayer-ore": "Erz"
 }

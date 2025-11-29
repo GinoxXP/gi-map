@@ -6,5 +6,6 @@
     "maplayer-temperature": "氣溫",
     "maplayer-geology-activity": "地質活動",
     "maplayer-light": "光照",
-    "maplayer-chunk-grid": "區塊網格"
+    "maplayer-chunk-grid": "區塊網格",
+    "maplayer-ore": "礦石"
 }

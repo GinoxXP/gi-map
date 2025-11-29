@@ -4,6 +4,7 @@ using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
+using OreMapLayer = GiMap.Client.OreMapLayer;
 
 namespace GiMap;
 
@@ -39,6 +40,7 @@ public class GiMapModSystem : ModSystem
         mapManager.RegisterMapLayer<GeologyActivityMapLayer>(MapTypes.GeologyActivity, 6);
         mapManager.RegisterMapLayer<LightMapLayer>(MapTypes.Light, 7);
         mapManager.RegisterMapLayer<ChunkGridMapLayer>(MapTypes.ChunkGrid, 8);
+        mapManager.RegisterMapLayer<OreMapLayer>(MapTypes.Ore, 9);
     }
 
     public override void Dispose()

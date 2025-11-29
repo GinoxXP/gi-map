@@ -18,6 +18,7 @@ class WorldMapManagerPatch
         MapTypes.GeologyActivity,
         MapTypes.Light,
         MapTypes.ChunkGrid,
+        MapTypes.Ore,
     };
     
     static void Postfix(ref List<string> __result)

@@ -6,5 +6,6 @@
     "maplayer-temperature": "Hitastig",
     "maplayer-geology-activity": "Jarðfræðileg virkni",
     "maplayer-light": "Lýsing",
-    "maplayer-chunk-grid": "Reitakerfi"
+    "maplayer-chunk-grid": "Reitakerfi",
+    "maplayer-ore": "Málmur"
 }

@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatura",
     "maplayer-geology-activity": "Attività geologica",
     "maplayer-light": "Illuminazione",
-    "maplayer-chunk-grid": "Griglia dei blocchi"
+    "maplayer-chunk-grid": "Griglia dei blocchi",
+    "maplayer-ore": "Minerale"
 }

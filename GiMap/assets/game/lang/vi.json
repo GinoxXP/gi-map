@@ -6,5 +6,6 @@
     "maplayer-temperature": "Nhiệt độ",
     "maplayer-geology-activity": "Hoạt động địa chất",
     "maplayer-light": "Ánh sáng",
-    "maplayer-chunk-grid": "Lưới khối"
+    "maplayer-chunk-grid": "Lưới khối",
+    "maplayer-ore": "Quặng"
 }

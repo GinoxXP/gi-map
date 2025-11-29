@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatur",
     "maplayer-geology-activity": "Geologisk aktivitet",
     "maplayer-light": "Belysning",
-    "maplayer-chunk-grid": "Chunk-gitter"
+    "maplayer-chunk-grid": "Chunk-gitter",
+    "maplayer-ore": "Malm"
 }

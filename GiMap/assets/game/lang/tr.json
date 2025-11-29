@@ -6,5 +6,6 @@
     "maplayer-temperature": "Sıcaklık",
     "maplayer-geology-activity": "Jeolojik aktivite",
     "maplayer-light": "Aydınlatma",
-    "maplayer-chunk-grid": "Blok ızgarası"
+    "maplayer-chunk-grid": "Blok ızgarası",
+    "maplayer-ore": "Cevher"
 }

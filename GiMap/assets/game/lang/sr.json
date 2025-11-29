@@ -6,5 +6,6 @@
     "maplayer-temperature": "Температура",
     "maplayer-geology-activity": "Геолошка активност",
     "maplayer-light": "Осветљење",
-    "maplayer-chunk-grid": "Мрежа сегмената"
+    "maplayer-chunk-grid": "Мрежа сегмената",
+    "maplayer-ore": "Руда"
 }

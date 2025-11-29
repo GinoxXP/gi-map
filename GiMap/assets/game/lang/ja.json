@@ -6,5 +6,6 @@
     "maplayer-temperature": "気温",
     "maplayer-geology-activity": "地質学的活動",
     "maplayer-light": "照明",
-    "maplayer-chunk-grid": "チャンクグリッド"
+    "maplayer-chunk-grid": "チャンクグリッド",
+    "maplayer-ore": "鉱石"
 }

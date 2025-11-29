@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatura",
     "maplayer-geology-activity": "Actividad geológica",
     "maplayer-light": "Iluminación",
-    "maplayer-chunk-grid": "Cuadrícula de fragmentos"
+    "maplayer-chunk-grid": "Cuadrícula de fragmentos",
+    "maplayer-ore": "Mineral"
 }

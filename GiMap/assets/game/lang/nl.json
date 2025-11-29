@@ -6,5 +6,6 @@
     "maplayer-temperature": "Temperatuur",
     "maplayer-geology-activity": "Geologische activiteit",
     "maplayer-light": "Verlichting",
-    "maplayer-chunk-grid": "Chunk-raster"
+    "maplayer-chunk-grid": "Chunk-raster",
+    "maplayer-ore": "Erts"
 }

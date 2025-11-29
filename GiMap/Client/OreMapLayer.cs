@@ -7,6 +7,9 @@ namespace GiMap.Client;
 
 public class OreMapLayer : ABlockMapLayer
 {
+    private readonly string[] _blackListOres = {"game:ore-quartz-", "game:ore-olivine-"};
+    private readonly string[] _whitelistBlocks = {"game:meteorite-iron"};
+
     public override string Title => MapTypes.Ore;
 
     public OreMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
@@ -17,7 +20,9 @@ public class OreMapLayer : ABlockMapLayer
         => new OreChunkMapComponent(_capi, baseCord, this);
 
     protected override bool IsBlockValid(Block block)
-        => block.BlockMaterial == EnumBlockMaterial.Ore;
+        => (block.BlockMaterial == EnumBlockMaterial.Ore &&
+           !_blackListOres.Any(b => block.Code.ToString().Contains(b)))
+            || _whitelistBlocks.Any(b => block.Code.ToString().Contains(b));
     
 
     protected override int GetColor(BlockPos pos)

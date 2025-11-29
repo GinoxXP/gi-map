@@ -23,14 +23,14 @@ public class GeologyActivityMapLayer : ABlockMapLayer
         var geologicalActivity = climateCondition.GeologicActivity;
 
         if (geologicalActivity < 0.2f)
-            return ConfigManager.ConfigInstance.GeologyActivityMode._lowActivity;
+            return ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity;
         if (geologicalActivity < 0.4f)
-            return ConfigManager.ConfigInstance.GeologyActivityMode._moderateActivity;
+            return ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity;
         if (geologicalActivity < 0.6f)
-            return ConfigManager.ConfigInstance.GeologyActivityMode._significantActivity;
+            return ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity;
         if (geologicalActivity < 0.8f)
-            return ConfigManager.ConfigInstance.GeologyActivityMode._highActivity;
+            return ConfigManager.ConfigInstance.GeologyActivityMode.highActivity;
 
-        return ConfigManager.ConfigInstance.GeologyActivityMode._extremeActivity;
+        return ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity;
     }
 }

@@ -68,17 +68,17 @@ public class HeightMapLayer : AMapLayer
                 
                 resultPixelArray[k] = GetColor(
                     topBlockHeight,
-                    ConfigManager.ConfigInstance.HeightMode._highWaterColor,
-                    ConfigManager.ConfigInstance.HeightMode._seaLevelWaterColor,
-                    ConfigManager.ConfigInstance.HeightMode._trenchColor);
+                    ConfigManager.ConfigInstance.HeightMode.highWaterColor,
+                    ConfigManager.ConfigInstance.HeightMode.seaLevelWaterColor,
+                    ConfigManager.ConfigInstance.HeightMode.trenchColor);
             }
             else
             {
                 resultPixelArray[k] = GetColor(
                     topBlockHeight,
-                    ConfigManager.ConfigInstance.HeightMode._mountainColor,
-                    ConfigManager.ConfigInstance.HeightMode._plainColor,
-                    ConfigManager.ConfigInstance.HeightMode._lowLandColor);
+                    ConfigManager.ConfigInstance.HeightMode.mountainColor,
+                    ConfigManager.ConfigInstance.HeightMode.plainColor,
+                    ConfigManager.ConfigInstance.HeightMode.lowLandColor);
             }
         }
         

@@ -77,24 +77,24 @@ public class FertilityMapLayer : AMapLayer
     private int GetMaterialColor(Block block)
     {
         if (IsFertilityGroup(block, _veryLowFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode._veryLowFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor;
         
         if (IsFertilityGroup(block, _lowFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode._lowFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor;
         
         if (IsFertilityGroup(block, _mediumFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode._mediumFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor;
         
         if (IsFertilityGroup(block, _highFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode._highFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode.highFertilityColor;
         
         if (IsFertilityGroup(block, _extreameFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode._extreameFertilityColor;
+            return ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor;
         
         if (block.BlockMaterial == EnumBlockMaterial.Liquid)
-            return ConfigManager.ConfigInstance.FertilityMode._waterColor;
+            return ConfigManager.ConfigInstance.FertilityMode.waterColor;
         
-        return ConfigManager.ConfigInstance.FertilityMode._noFertilityColor;
+        return ConfigManager.ConfigInstance.FertilityMode.noFertilityColor;
     }
     
     private bool IsFertilityGroup(Block block, string[] fertilityGroup)

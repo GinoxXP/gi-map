@@ -23,24 +23,24 @@ public class TemperatureMapLayer : ABlockMapLayer
         var temperature = climateCondition.WorldGenTemperature;
 
         if (temperature < -10f)
-            return ConfigManager.ConfigInstance.TemperatureMode._arcticCold;
+            return ConfigManager.ConfigInstance.TemperatureMode.arcticCold;
         if (temperature < -5f)
-            return ConfigManager.ConfigInstance.TemperatureMode._extremeCold;
+            return ConfigManager.ConfigInstance.TemperatureMode.extremeCold;
         if (temperature < 0f)
-            return ConfigManager.ConfigInstance.TemperatureMode._veryCold;
+            return ConfigManager.ConfigInstance.TemperatureMode.veryCold;
         if (temperature < 5f)
-            return ConfigManager.ConfigInstance.TemperatureMode._cold;
+            return ConfigManager.ConfigInstance.TemperatureMode.cold;
         if (temperature < 10f)
-            return ConfigManager.ConfigInstance.TemperatureMode._cool;
+            return ConfigManager.ConfigInstance.TemperatureMode.cool;
         if (temperature < 18f)
-            return ConfigManager.ConfigInstance.TemperatureMode._temperate;
+            return ConfigManager.ConfigInstance.TemperatureMode.temperate;
         if (temperature < 25f)
-            return ConfigManager.ConfigInstance.TemperatureMode._mild;
+            return ConfigManager.ConfigInstance.TemperatureMode.mild;
         if (temperature < 30f)
-            return ConfigManager.ConfigInstance.TemperatureMode._warm;
+            return ConfigManager.ConfigInstance.TemperatureMode.warm;
         if (temperature < 35f) 
-            return ConfigManager.ConfigInstance.TemperatureMode._hot;
+            return ConfigManager.ConfigInstance.TemperatureMode.hot;
 
-        return ConfigManager.ConfigInstance.TemperatureMode._extremeHot;
+        return ConfigManager.ConfigInstance.TemperatureMode.extremeHot;
     }
 }

@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografio"
+    "maplayer-topographic": "Topografio",
+    "maplayer-height": "Altecoj",
+    "maplayer-fertility": "Fekundeco",
+    "maplayer-precipitation": "Precipitaĵo",
+    "maplayer-temperature": "Temperaturo",
+    "maplayer-geology-activity": "Geologia aktiveco",
+    "maplayer-light": "Lumigo",
+    "maplayer-chunk-grid": "Reto de blokoj"
 }

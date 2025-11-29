@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Топографиjа"
+    "maplayer-topographic": "Топографија",
+    "maplayer-height": "Висина",
+    "maplayer-fertility": "Плодност",
+    "maplayer-precipitation": "Падавине",
+    "maplayer-temperature": "Температура",
+    "maplayer-geology-activity": "Геолошка активност",
+    "maplayer-light": "Осветљење",
+    "maplayer-chunk-grid": "Мрежа сегмената"
 }

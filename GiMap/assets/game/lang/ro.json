@@ -1,3 +1,10 @@
 ﻿{
-    "maplayer-topographic": "Topografie"
+    "maplayer-topographic": "Topografie",
+    "maplayer-height": "Altitudine",
+    "maplayer-fertility": "Fertilitate",
+    "maplayer-precipitation": "Precipitații",
+    "maplayer-temperature": "Temperatură",
+    "maplayer-geology-activity": "Activitate geologică",
+    "maplayer-light": "Iluminare",
+    "maplayer-chunk-grid": "Grilă de segmente"
 }

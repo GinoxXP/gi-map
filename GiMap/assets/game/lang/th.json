@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "ภูมิประเทศ"
+    "maplayer-topographic": "ภูมิประเทศ",
+    "maplayer-height": "ระดับความสูง",
+    "maplayer-fertility": "ความอุดมสมบูรณ์",
+    "maplayer-precipitation": "ปริมาณน้ำฝน",
+    "maplayer-temperature": "อุณหภูมิ",
+    "maplayer-geology-activity": "กิจกรรมทางธรณีวิทยา",
+    "maplayer-light": "แสงสว่าง",
+    "maplayer-chunk-grid": "ตารางส่วนย่อย"
 }

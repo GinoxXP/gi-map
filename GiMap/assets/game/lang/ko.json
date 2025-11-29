@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "지형학"
+    "maplayer-topographic": "지형",
+    "maplayer-height": "고도",
+    "maplayer-fertility": "비옥도",
+    "maplayer-precipitation": "강수량",
+    "maplayer-temperature": "온도",
+    "maplayer-geology-activity": "지질 활동",
+    "maplayer-light": "조명",
+    "maplayer-chunk-grid": "청크 그리드"
 }

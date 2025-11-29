@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topográfia"
+    "maplayer-topographic": "Topográfia",
+    "maplayer-height": "Tengerszint feletti magasság",
+    "maplayer-fertility": "Termékenység",
+    "maplayer-precipitation": "Csapadék",
+    "maplayer-temperature": "Hőmérséklet",
+    "maplayer-geology-activity": "Geológiai aktivitás",
+    "maplayer-light": "Világítás",
+    "maplayer-chunk-grid": "Blokkrács"
 }

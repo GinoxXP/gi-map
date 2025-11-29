@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografi"
+    "maplayer-topographic": "Topografi",
+    "maplayer-height": "Høyde",
+    "maplayer-fertility": "Fruktbarhet",
+    "maplayer-precipitation": "Nedbør",
+    "maplayer-temperature": "Temperatur",
+    "maplayer-geology-activity": "Geologisk aktivitet",
+    "maplayer-light": "Belysning",
+    "maplayer-chunk-grid": "Blokkrutenett"
 }

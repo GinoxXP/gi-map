@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografi"
+    "maplayer-topographic": "Topografi",
+    "maplayer-height": "Höjd",
+    "maplayer-fertility": "Fertilitet",
+    "maplayer-precipitation": "Nederbörd",
+    "maplayer-temperature": "Temperatur",
+    "maplayer-geology-activity": "Geologisk aktivitet",
+    "maplayer-light": "Belysning",
+    "maplayer-chunk-grid": "Rutnät över bitar"
 }

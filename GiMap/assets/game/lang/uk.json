@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Топографія"
+    "maplayer-topographic": "Топографія",
+    "maplayer-height": "Висота",
+    "maplayer-fertility": "Родючість",
+    "maplayer-precipitation": "Опади",
+    "maplayer-temperature": "Температура",
+    "maplayer-geology-activity": "Геологічна активність",
+    "maplayer-light": "Освітлення",
+    "maplayer-chunk-grid": "Сітка чанків"
 }

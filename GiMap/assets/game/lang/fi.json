@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografia"
+    "maplayer-topographic": "Topografia",
+    "maplayer-height": "Korkeus",
+    "maplayer-fertility": "Hedelmällisyys",
+    "maplayer-precipitation": "Sademäärä",
+    "maplayer-temperature": "Lämpötila",
+    "maplayer-geology-activity": "Geologinen aktiivisuus",
+    "maplayer-light": "Valaistus",
+    "maplayer-chunk-grid": "Lohkoruudukko"
 }

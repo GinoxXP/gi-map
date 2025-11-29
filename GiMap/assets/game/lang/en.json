@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topography"
+    "maplayer-topographic": "Topographic",
+    "maplayer-height": "Height",
+    "maplayer-fertility": "Fertility",
+    "maplayer-precipitation": "Precipitation",
+    "maplayer-temperature": "Temperature",
+    "maplayer-geology-activity": "Geological Activity",
+    "maplayer-light": "Lighting",
+    "maplayer-chunk-grid": "Chunk Grid"
 }

@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografía"
+    "maplayer-topographic": "Topografía",
+    "maplayer-height": "Altitud",
+    "maplayer-fertility": "Fertilidad",
+    "maplayer-precipitation": "Precipitación",
+    "maplayer-temperature": "Temperatura",
+    "maplayer-geology-activity": "Actividad geológica",
+    "maplayer-light": "Iluminación",
+    "maplayer-chunk-grid": "Cuadrícula de fragmentos"
 }

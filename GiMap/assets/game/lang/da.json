@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografi"
+    "maplayer-topographic": "Topografi",
+    "maplayer-height": "Højde",
+    "maplayer-fertility": "Frugtbarhed",
+    "maplayer-precipitation": "Nedbør",
+    "maplayer-temperature": "Temperatur",
+    "maplayer-geology-activity": "Geologisk aktivitet",
+    "maplayer-light": "Belysning",
+    "maplayer-chunk-grid": "Chunk-gitter"
 }

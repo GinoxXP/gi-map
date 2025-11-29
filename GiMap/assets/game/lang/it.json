@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografia"
+    "maplayer-topographic": "Topografia",
+    "maplayer-height": "Altitudine",
+    "maplayer-fertility": "Fertilità",
+    "maplayer-precipitation": "Precipitazioni",
+    "maplayer-temperature": "Temperatura",
+    "maplayer-geology-activity": "Attività geologica",
+    "maplayer-light": "Illuminazione",
+    "maplayer-chunk-grid": "Griglia dei blocchi"
 }

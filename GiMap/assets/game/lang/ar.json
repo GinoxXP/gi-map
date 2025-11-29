@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "تضاريس"
+    "maplayer-topographic": "الطبوغرافيا",
+    "maplayer-height": "الارتفاع",
+    "maplayer-fertility": "الخصوبة",
+    "maplayer-precipitation": "هطول الأمطار",
+    "maplayer-temperature": "درجة الحرارة",
+    "maplayer-geology-activity": "النشاط الجيولوجي",
+    "maplayer-light": "الإضاءة",
+    "maplayer-chunk-grid": "شبكة القطع"
 }

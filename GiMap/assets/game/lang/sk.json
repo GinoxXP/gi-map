@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografia"
+    "maplayer-topographic": "Topografia",
+    "maplayer-height": "Nadmorská výška",
+    "maplayer-fertility": "Úrodnosť",
+    "maplayer-precipitation": "Zrážky",
+    "maplayer-temperature": "Teplota",
+    "maplayer-geology-activity": "Geologická aktivita",
+    "maplayer-light": "Osvetlenie",
+    "maplayer-chunk-grid": "Mriežka segmentov"
 }

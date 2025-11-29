@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "地形学"
+    "maplayer-topographic": "地形",
+    "maplayer-height": "高度",
+    "maplayer-fertility": "肥沃度",
+    "maplayer-precipitation": "降水量",
+    "maplayer-temperature": "気温",
+    "maplayer-geology-activity": "地質学的活動",
+    "maplayer-light": "照明",
+    "maplayer-chunk-grid": "チャンクグリッド"
 }

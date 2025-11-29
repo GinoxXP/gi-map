@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografie"
+    "maplayer-topographic": "Topografisch",
+    "maplayer-height": "Hoogte",
+    "maplayer-fertility": "Vruchtbaarheid",
+    "maplayer-precipitation": "Neerslag",
+    "maplayer-temperature": "Temperatuur",
+    "maplayer-geology-activity": "Geologische activiteit",
+    "maplayer-light": "Verlichting",
+    "maplayer-chunk-grid": "Chunk-raster"
 }

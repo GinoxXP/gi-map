@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Địa hình"
+    "maplayer-topographic": "Địa hình",
+    "maplayer-height": "Độ cao",
+    "maplayer-fertility": "Độ màu mỡ",
+    "maplayer-precipitation": "Lượng mưa",
+    "maplayer-temperature": "Nhiệt độ",
+    "maplayer-geology-activity": "Hoạt động địa chất",
+    "maplayer-light": "Ánh sáng",
+    "maplayer-chunk-grid": "Lưới khối"
 }

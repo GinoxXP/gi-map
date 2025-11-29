@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Топография"
+    "maplayer-topographic": "Топография",
+    "maplayer-height": "Высот",
+    "maplayer-fertility": "Плодородность",
+    "maplayer-precipitation": "Осадки",
+    "maplayer-temperature": "Температура",
+    "maplayer-geology-activity": "Геологическая активность",
+    "maplayer-light": "Освещение",
+    "maplayer-chunk-grid": "Сетка чанков"
 }

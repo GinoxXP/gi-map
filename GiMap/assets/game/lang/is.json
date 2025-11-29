@@ -1,3 +1,10 @@
 {
-    "maplayer-topographic": "Topografía"
+    "maplayer-topographic": "Topografía",
+    "maplayer-height": "Hæð",
+    "maplayer-fertility": "Frjósemi",
+    "maplayer-precipitation": "Úrkoma",
+    "maplayer-temperature": "Hitastig",
+    "maplayer-geology-activity": "Jarðfræðileg virkni",
+    "maplayer-light": "Lýsing",
+    "maplayer-chunk-grid": "Reitakerfi"
 }

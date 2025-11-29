@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
+public class HeightMapLayer : AMapLayer
 {
     public override string Title => MapTypes.Height;
     
@@ -28,14 +28,9 @@ public class HeightMapLayer : AMapLayer<HeightMultiChunkMapComponent>
         _maxHeight = _capi.World.MapSizeY;
         _seaLevel = _capi.World.SeaLevel;
     }
-
-    protected override HeightMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out HeightMultiChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new HeightMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new HeightMultiChunkMapComponent(_capi, baseCord, this);
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

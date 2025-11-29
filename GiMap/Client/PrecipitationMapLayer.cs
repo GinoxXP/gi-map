@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class PrecipitationMapLayer : ABlockMapLayer<PrecipitationMultiChunkMapComponent>
+public class PrecipitationMapLayer : ABlockMapLayer
 {
     private readonly int _veryHighPrecipitation = ColorUtil.ColorFromRgba(70, 130, 230, 255);
     private readonly int _highPrecipitation = ColorUtil.ColorFromRgba(40, 175, 175, 255);
@@ -19,13 +19,8 @@ public class PrecipitationMapLayer : ABlockMapLayer<PrecipitationMultiChunkMapCo
     {
     }
     
-    protected override PrecipitationMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out PrecipitationMultiChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new PrecipitationMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new PrecipitationMultiChunkMapComponent(_capi, baseCord, this);
     
     protected override int GetColor(BlockPos pos)
     {

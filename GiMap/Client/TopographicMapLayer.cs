@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
+public class TopographicMapLayer : AMapLayer
 {
     public override string Title => MapTypes.Topographic;
     
@@ -31,13 +31,8 @@ public class TopographicMapLayer : AMapLayer<TopographicMultiChunkMapComponent>
     {
     }
     
-    protected override TopographicMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out TopographicMultiChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new TopographicMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new TopographicMultiChunkMapComponent(_capi, baseCord, this);
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

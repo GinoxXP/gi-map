@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class LightMapLayer : ABlockMapLayer<LightChunkMapComponent>
+public class LightMapLayer : ABlockMapLayer
 {
     public override string Title => MapTypes.Light;
     
@@ -13,13 +13,8 @@ public class LightMapLayer : ABlockMapLayer<LightChunkMapComponent>
     {
     }
     
-    protected override LightChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out LightChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new LightChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new LightChunkMapComponent(_capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos)
     {

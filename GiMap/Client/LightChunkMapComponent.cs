@@ -3,7 +3,7 @@ using Vintagestory.API.MathTools;
 
 namespace GiMap.Client;
 
-public class LightChunkMapComponent : AChunkMapComponent<LightMapLayer>
+public class LightChunkMapComponent : AChunkMapComponent
 {
     public LightChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, LightMapLayer mapLayer) : base(capi, baseChunkCord, mapLayer)
     {

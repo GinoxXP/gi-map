@@ -9,8 +9,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public abstract class AMapLayer<Component> : MapLayer
-where Component : MultiChunkMapComponent
+public abstract class AMapLayer : MapLayer
 {
     public override string LayerGroupCode => Title;
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
@@ -27,7 +26,7 @@ where Component : MultiChunkMapComponent
     private HashSet<FastVec2i> _curVisibleChunks = new();
     private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
     private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
-    protected ConcurrentDictionary<FastVec2i, Component> _loadedMapData = new();
+    protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
     
     public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
 
@@ -72,18 +71,18 @@ where Component : MultiChunkMapComponent
         if (!_readyMapPieces.IsEmpty)
         {
             int q = Math.Min(_readyMapPieces.Count, 200);
-            List<Component> modified = new();
+            List<AChunkMapComponent> modified = new();
             while (q-- > 0)
             {
                 if (_readyMapPieces.TryDequeue(out var mappiece))
                 {
                     var mcord = new FastVec2i(mappiece.Cord.X / MultiChunkMapComponent.ChunkLen, mappiece.Cord.Y / MultiChunkMapComponent.ChunkLen);
                     var baseCord = new FastVec2i(mcord.X * MultiChunkMapComponent.ChunkLen, mcord.Y * MultiChunkMapComponent.ChunkLen);
-
-                    var mccomp = CreateComponent(mcord, baseCord); 
-
-                    mccomp.setChunk(mappiece.Cord.X - baseCord.X, mappiece.Cord.Y - baseCord.Y, mappiece.Pixels);
                     
+                    if (!_loadedMapData.TryGetValue(mcord, out var mccomp))
+                        _loadedMapData[mcord] = mccomp = CreateComponent(baseCord);
+                    
+                    mccomp.setChunk(mappiece.Cord.X - baseCord.X, mappiece.Cord.Y - baseCord.Y, mappiece.Pixels);
                     modified.Add(mccomp);
                 }
             }
@@ -274,7 +273,7 @@ where Component : MultiChunkMapComponent
             return;
         }
 
-        foreach (KeyValuePair<FastVec2i, Component> loadedMapDatum in _loadedMapData)
+        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
         {
             loadedMapDatum.Value.Render(mapElem, dt);
         }
@@ -302,7 +301,7 @@ where Component : MultiChunkMapComponent
                 int dz = cord.Y % MultiChunkMapComponent.ChunkLen;
                 if (dx < 0 || dz < 0) continue;
 
-                if (_loadedMapData.TryGetValue(tmpMccoord, out Component mcomp))
+                if (_loadedMapData.TryGetValue(tmpMccoord, out var mcomp))
                 {
                     if (mcomp.IsChunkSet(dx, dz)) continue;
                 }
@@ -317,7 +316,7 @@ where Component : MultiChunkMapComponent
 
             FastVec2i mcord = new FastVec2i(cord.X / MultiChunkMapComponent.ChunkLen, cord.Y / MultiChunkMapComponent.ChunkLen);
 
-            if (_loadedMapData.TryGetValue(mcord, out Component mc))
+            if (_loadedMapData.TryGetValue(mcord, out var mc))
             {
                 mc.unsetChunk(cord.X % MultiChunkMapComponent.ChunkLen, cord.Y % MultiChunkMapComponent.ChunkLen);
             }
@@ -326,7 +325,7 @@ where Component : MultiChunkMapComponent
     
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
     
-    protected abstract Component CreateComponent(FastVec2i mcord, FastVec2i baseCord);
+    protected abstract AChunkMapComponent CreateComponent(FastVec2i baseCord);
     
     private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
     {

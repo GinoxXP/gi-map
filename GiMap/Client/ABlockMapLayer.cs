@@ -4,8 +4,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public abstract class ABlockMapLayer<Component> : AMapLayer<Component>
-    where Component : MultiChunkMapComponent
+public abstract class ABlockMapLayer : AMapLayer
 {
     protected ABlockMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {

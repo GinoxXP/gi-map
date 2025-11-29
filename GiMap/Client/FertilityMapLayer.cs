@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class FertilityMapLayer : AMapLayer<FertilityMultiChunkMapComponent>
+public class FertilityMapLayer : AMapLayer
 {
     public override string Title => MapTypes.Fertility;
 
@@ -27,14 +27,9 @@ public class FertilityMapLayer : AMapLayer<FertilityMultiChunkMapComponent>
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
     }
-
-    protected override FertilityMultiChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out FertilityMultiChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new FertilityMultiChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new FertilityMultiChunkMapComponent(_capi, baseCord, this);
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

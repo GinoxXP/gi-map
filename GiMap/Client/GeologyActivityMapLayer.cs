@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class GeologyActivityMapLayer : ABlockMapLayer<GeologyChunkMapComponent>
+public class GeologyActivityMapLayer : ABlockMapLayer
 {
     private readonly int _lowActivity = ColorUtil.ColorFromRgba(100, 100, 100, 255);
     private readonly int _moderateActivity = ColorUtil.ColorFromRgba(180, 140, 100, 255);
@@ -19,13 +19,8 @@ public class GeologyActivityMapLayer : ABlockMapLayer<GeologyChunkMapComponent>
     {
     }
     
-    protected override GeologyChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out GeologyChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new GeologyChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new GeologyChunkMapComponent(_capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos)
     {

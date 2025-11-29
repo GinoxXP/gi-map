@@ -3,7 +3,7 @@ using Vintagestory.API.MathTools;
 
 namespace GiMap.Client;
 
-public class ChunkGridMultiChunkComponent : AChunkMapComponent<ChunkGridMapLayer>
+public class ChunkGridMultiChunkComponent : AChunkMapComponent
 {
     public ChunkGridMultiChunkComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, ChunkGridMapLayer mapLayer) : base(capi, baseChunkCord, mapLayer)
     {

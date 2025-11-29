@@ -4,15 +4,14 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public abstract class AChunkMapComponent<TMapLayer> : MultiChunkMapComponent
-where TMapLayer : MapLayer
+public abstract class AChunkMapComponent : MultiChunkMapComponent
 {
-    protected TMapLayer _mapLayer;
+    protected AMapLayer _mapLayer;
     protected int[][] _pixelsToSet;
     protected Vec3d _chunkWorldPos;
     protected Vec2f _viewPos;
     
-    public AChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, TMapLayer mapLayer) : base(capi, baseChunkCord)
+    public AChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, AMapLayer mapLayer) : base(capi, baseChunkCord)
     {
         _mapLayer = mapLayer;
         _chunkWorldPos = new Vec3d(baseChunkCord.X * 32, 0.0, baseChunkCord.Y * 32);
@@ -28,7 +27,8 @@ where TMapLayer : MapLayer
             (int)(map.Bounds.renderY + (double)_viewPos.Y),
             (int)((float)Texture.Width * map.ZoomLevel),
             (int)((float)Texture.Height * map.ZoomLevel),
-            renderZ);
+            renderZ,
+            _mapLayer.OverlayColor);
     }
     
     public override void Dispose()

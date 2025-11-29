@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class TemperatureMapLayer : ABlockMapLayer<TemperatureChunkMapComponent>
+public class TemperatureMapLayer : ABlockMapLayer
 {
     private readonly int _arcticCold = ColorUtil.ColorFromRgba(0, 0, 100, 255);
     private readonly int _extremeCold = ColorUtil.ColorFromRgba(0, 50, 180, 255);
@@ -25,14 +25,9 @@ public class TemperatureMapLayer : ABlockMapLayer<TemperatureChunkMapComponent>
     public TemperatureMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
     }
-
-    protected override TemperatureChunkMapComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out TemperatureChunkMapComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new TemperatureChunkMapComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new TemperatureChunkMapComponent(_capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos)
     {

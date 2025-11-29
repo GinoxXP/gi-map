@@ -5,7 +5,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public class ChunkGridMapLayer : ABlockMapLayer<ChunkGridMultiChunkComponent>
+public class ChunkGridMapLayer : ABlockMapLayer
 {
     private readonly int _borderColor = ColorUtil.ColorFromRgba(0, 0, 0, 255);
     private readonly int _smallBorderColor = ColorUtil.ColorFromRgba(0, 0, 0, 150);
@@ -18,13 +18,8 @@ public class ChunkGridMapLayer : ABlockMapLayer<ChunkGridMultiChunkComponent>
     {
     }
     
-    protected override ChunkGridMultiChunkComponent CreateComponent(FastVec2i mcord, FastVec2i baseCord)
-    {
-        if (!_loadedMapData.TryGetValue(mcord, out ChunkGridMultiChunkComponent mccomp))
-            _loadedMapData[mcord] = mccomp = new ChunkGridMultiChunkComponent(api as ICoreClientAPI, baseCord, this);
-
-        return mccomp;
-    }
+    protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
+        => new ChunkGridMultiChunkComponent(_capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos)
     {

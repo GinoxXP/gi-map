@@ -63,6 +63,12 @@ Displays ore deposits.
 
 ![chunk-grid](.promo/ore.png)
 
+### Temporal stability
+
+Build your house so that your friend's room is in the unstable zone.
+
+![temporal-stability](.promo/temporal-stability.png)
+
 ## Mix modes
 
 Why? Yes.
@@ -73,3 +79,5 @@ Why? Yes.
 
 I used [Geology Map](https://github.com/carlosganhao/VS-GeologyMap) as an example. I'm not sure if
 anything from the original solution remains as this point, but I decided to mention it nonetheless.
+
+[TemporalityMap](https://github.com/kryptokatze/TemporalityMap/)

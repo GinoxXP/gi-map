@@ -7,5 +7,6 @@
     "maplayer-geology-activity": "Aktywność geologiczna",
     "maplayer-light": "Oświetlenie",
     "maplayer-chunk-grid": "Siatka chunków",
-    "maplayer-ore": "Ruda"
+    "maplayer-ore": "Ruda",
+    "maplayer-temporal-stability": "Stabilność temporalna"
 }

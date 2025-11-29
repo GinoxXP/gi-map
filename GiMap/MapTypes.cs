@@ -11,5 +11,6 @@ public static class MapTypes
     public static readonly string Light = "light";
     public static readonly string ChunkGrid = "chunk-grid";
     public static readonly string Ore = "ore";
+    public static readonly string TemporalStability = "temporal-stability";
 
 }

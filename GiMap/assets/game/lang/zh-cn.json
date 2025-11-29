@@ -7,5 +7,6 @@
     "maplayer-geology-activity": "地质活动",
     "maplayer-light": "光照",
     "maplayer-chunk-grid": "区块网格",
-    "maplayer-ore": "矿石"
+    "maplayer-ore": "矿石",
+    "maplayer-temporal-stability": "时间稳定性"
 }

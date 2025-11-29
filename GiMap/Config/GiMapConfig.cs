@@ -14,6 +14,7 @@ public class GiMapConfig
     public Temperature TemperatureMode = new Temperature();
     public GeologyActivity GeologyActivityMode = new GeologyActivity();
     public ChunkGrid ChunkGridMode = new ChunkGrid();
+    public TemporalStability TemporalStabilityMode = new TemporalStability();
     
     public struct Topographic
     {
@@ -116,6 +117,20 @@ public class GiMapConfig
 
         public ChunkGrid()
         {
+        }
+    }
+
+    public struct TemporalStability
+    {
+        public int _colorMax = ColorUtil.ColorFromRgba(34, 139, 34, 255);
+        public int _colorHigh = ColorUtil.ColorFromRgba(85, 170, 85, 255);
+        public int _colorMid = ColorUtil.ColorFromRgba(255, 255, 0, 255);
+        public int _colorLow = ColorUtil.ColorFromRgba(255, 165, 0, 255);
+        public int _colorMin = ColorUtil.ColorFromRgba(220, 20, 60, 255);
+
+        public TemporalStability()
+        {
+            
         }
     }
 }

@@ -7,5 +7,6 @@
     "maplayer-geology-activity": "Geological Activity",
     "maplayer-light": "Lighting",
     "maplayer-chunk-grid": "Chunk Grid",
-    "maplayer-ore": "Ore"
+    "maplayer-ore": "Ore",
+    "maplayer-temporal-stability": "Temporal Stability"
 }

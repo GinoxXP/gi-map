@@ -19,6 +19,7 @@ class WorldMapManagerPatch
         MapTypes.Light,
         MapTypes.ChunkGrid,
         MapTypes.Ore,
+        MapTypes.TemporalStability,
     };
     
     static void Postfix(ref List<string> __result)

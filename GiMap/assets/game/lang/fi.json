@@ -7,5 +7,6 @@
     "maplayer-geology-activity": "Geologinen aktiivisuus",
     "maplayer-light": "Valaistus",
     "maplayer-chunk-grid": "Lohkoruudukko",
-    "maplayer-ore": "Malmi"
+    "maplayer-ore": "Malmi",
+    "maplayer-temporal-stability": "Temporaalinen vakaus"
 }

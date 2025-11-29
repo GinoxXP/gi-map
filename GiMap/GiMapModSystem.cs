@@ -41,6 +41,7 @@ public class GiMapModSystem : ModSystem
         mapManager.RegisterMapLayer<LightMapLayer>(MapTypes.Light, 7);
         mapManager.RegisterMapLayer<ChunkGridMapLayer>(MapTypes.ChunkGrid, 8);
         mapManager.RegisterMapLayer<OreMapLayer>(MapTypes.Ore, 9);
+        mapManager.RegisterMapLayer<TemporalStabilityMapLayer>(MapTypes.TemporalStability, 10);
     }
 
     public override void Dispose()

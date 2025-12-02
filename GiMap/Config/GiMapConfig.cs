@@ -14,6 +14,7 @@ public class GiMapConfig
     public Temperature TemperatureMode = new Temperature();
     public GeologyActivity GeologyActivityMode = new GeologyActivity();
     public ChunkGrid ChunkGridMode = new ChunkGrid();
+    public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
     
     public struct Topographic
@@ -117,6 +118,57 @@ public class GiMapConfig
 
         public ChunkGrid()
         {
+        }
+    }
+
+    public struct Ore
+    {
+        public int copperColor = ColorUtil.ColorFromRgba(184, 115, 51, 255);
+        public int malachiteColor = ColorUtil.ColorFromRgba(11, 218, 81, 255);
+
+        public int cassiteriteColor = ColorUtil.ColorFromRgba(70, 42, 41, 255);
+        public int sphaleriteColor = ColorUtil.ColorFromRgba(149, 93, 38, 255);
+        public int bismuthiniteColor = ColorUtil.ColorFromRgba(150, 150, 150, 255);
+        public int galenaColor = ColorUtil.ColorFromRgba(115, 115, 130, 255);
+
+        public int limoniteColor = ColorUtil.ColorFromRgba(181, 137, 53, 255);
+        public int magnetiteColor = ColorUtil.ColorFromRgba(40, 40, 40, 255);
+        public int hematiteColor = ColorUtil.ColorFromRgba(121, 6, 4, 255);
+        public int meteoriteIronColor = ColorUtil.ColorFromRgba(180, 185, 190, 255);
+
+        public int goldColor = ColorUtil.ColorFromRgba(255, 215, 0, 255);
+        public int silverColor = ColorUtil.ColorFromRgba(192, 192, 192, 255);
+
+        public int ilmeniteColor = ColorUtil.ColorFromRgba(46, 40, 40, 255);
+        public int pentlanditeColor = ColorUtil.ColorFromRgba(180, 160, 100, 255);
+        public int chromiteColor = ColorUtil.ColorFromRgba(50, 45, 45, 255);
+
+        public int alumColor = ColorUtil.ColorFromRgba(240, 240, 240, 255);
+        public int boraxColor = ColorUtil.ColorFromRgba(245, 245, 220, 255);
+        public int sulfurColor = ColorUtil.ColorFromRgba(255, 255, 0, 255);
+        public int cinnabarColor = ColorUtil.ColorFromRgba(227, 66, 52, 255);
+        public int sylviteColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
+        public int lapislazuliColor = ColorUtil.ColorFromRgba(3, 100, 175, 255);
+
+        public int ligniteColor = ColorUtil.ColorFromRgba(105, 70, 40, 255);
+        public int bituminouscoalColor = ColorUtil.ColorFromRgba(30, 30, 30, 255);
+        public int anthraciteColor = ColorUtil.ColorFromRgba(10, 10, 10, 255);
+
+        public int emeraldColor = ColorUtil.ColorFromRgba(80, 200, 120, 255);
+        public int diamondColor = ColorUtil.ColorFromRgba(255, 255, 255, 255);
+        public int peridotColor = ColorUtil.ColorFromRgba(173, 255, 47, 255);
+
+        public int uraniumColor = ColorUtil.ColorFromRgba(60, 120, 90, 255);
+        public int rhodochrositeColor = ColorUtil.ColorFromRgba(219, 112, 147, 255);
+        public int graphiteColor = ColorUtil.ColorFromRgba(90, 90, 90, 255);
+        public int fluoriteColor = ColorUtil.ColorFromRgba(128, 0, 128, 255);
+        public int phosphoriteColor = ColorUtil.ColorFromRgba(169, 169, 169, 255);
+        public int kerniteColor = ColorUtil.ColorFromRgba(230, 230, 230, 255);
+        public int korundumColor = ColorUtil.ColorFromRgba(150, 0, 24, 255);
+        
+        public Ore()
+        {
+            
         }
     }
 

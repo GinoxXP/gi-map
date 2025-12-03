@@ -8,7 +8,7 @@ public static class ConfigManager
     private static readonly string configPath = "GiMapConfig.json";
     private static readonly string backupConfigPath = "GiMapConfig.jsonbackup";
     
-    private static readonly string[] compatibleConfigVersions = ["1.2.0"];
+    private static readonly string[] compatibleConfigVersions = [GiMapModSystem.Version];
 
     public static void LoadModConfig(ICoreAPI api)
     {
@@ -39,7 +39,7 @@ public static class ConfigManager
 
     private static void CheckCompatibleConfigVersion(ICoreAPI api)
     {
-        if (compatibleConfigVersions.Any(version => version == GiMapModSystem.Version))
+        if (compatibleConfigVersions.Any(version => version == ConfigInstance.Version))
             return;
         
         api.StoreModConfig(ConfigInstance, backupConfigPath);

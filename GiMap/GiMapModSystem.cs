@@ -12,11 +12,15 @@ public class GiMapModSystem : ModSystem
 {
     private string patchId = "gimap";
     private Harmony harmonyInstance;
+
+    public static string Version { get; private set;}
     
     public override void StartPre(ICoreAPI api)
     {
         base.StartPre(api);
 
+        Version = Mod.Info.Version;
+        
         if (api.Side == EnumAppSide.Client)
         {
             ConfigManager.LoadModConfig(api);

@@ -5,7 +5,10 @@ namespace GiMap.Config;
 public static class ConfigManager
 {
     public static GiMapConfig ConfigInstance { get; internal set; }
-    private static string configPath = "GiMapConfig.json";
+    private static readonly string configPath = "GiMapConfig.json";
+    private static readonly string backupConfigPath = "GiMapConfig.jsonbackup";
+    
+    private static readonly string[] compatibleConfigVersions = ["1.2.0"];
 
     public static void LoadModConfig(ICoreAPI api)
     {
@@ -18,6 +21,8 @@ public static class ConfigManager
             }
 
             api.StoreModConfig<GiMapConfig>(ConfigInstance, configPath);
+
+            CheckCompatibleConfigVersion(api);
         }
         catch (Exception e)
         {
@@ -30,5 +35,15 @@ public static class ConfigManager
     public static void SaveModConfig(ICoreAPI api)
     {
         api.StoreModConfig(ConfigInstance, configPath);
+    }
+
+    private static void CheckCompatibleConfigVersion(ICoreAPI api)
+    {
+        if (compatibleConfigVersions.Any(version => version == GiMapModSystem.Version))
+            return;
+        
+        api.StoreModConfig(ConfigInstance, backupConfigPath);
+        
+        throw new Exception("Unsupported config version! Your old config has been saved as jsonbackup.");
     }
 }

@@ -4,6 +4,8 @@ namespace GiMap.Config;
 
 public class GiMapConfig
 {
+    public string Version = GiMapModSystem.Version;
+    
     public float overlayAlpha = 1;
     public int errorColor = ColorUtil.ColorFromRgba(255, 0, 255, 255);
 

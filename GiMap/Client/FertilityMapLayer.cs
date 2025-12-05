@@ -77,24 +77,24 @@ public class FertilityMapLayer : AMapLayer
     private int GetMaterialColor(Block block)
     {
         if (IsFertilityGroup(block, _veryLowFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor);
         
         if (IsFertilityGroup(block, _lowFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor);
         
         if (IsFertilityGroup(block, _mediumFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor);
         
         if (IsFertilityGroup(block, _highFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode.highFertilityColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor);
         
         if (IsFertilityGroup(block, _extreameFertilityBlocks))
-            return ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor);
         
         if (block.BlockMaterial == EnumBlockMaterial.Liquid)
-            return ConfigManager.ConfigInstance.FertilityMode.waterColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor);
         
-        return ConfigManager.ConfigInstance.FertilityMode.noFertilityColor;
+        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor);
     }
     
     private bool IsFertilityGroup(Block block, string[] fertilityGroup)

@@ -26,11 +26,11 @@ public class PrecipitationMapLayer : ABlockMapLayer
     
     private int GetColor(float precipitation)
     {
-        if (precipitation < 0.15f) return ConfigManager.ConfigInstance.PrecipitationMode.veryLowPrecipitation; 
-        if (precipitation < 0.45f) return ConfigManager.ConfigInstance.PrecipitationMode.lowPrecipitation; 
-        if (precipitation < 0.70f) return ConfigManager.ConfigInstance.PrecipitationMode.mediumPrecipitation; 
-        if (precipitation < 0.90f) return ConfigManager.ConfigInstance.PrecipitationMode.highPrecipitation;
+        if (precipitation < 0.15f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryLowPrecipitation); 
+        if (precipitation < 0.45f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.lowPrecipitation); 
+        if (precipitation < 0.70f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.mediumPrecipitation); 
+        if (precipitation < 0.90f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.highPrecipitation);
 
-        return ConfigManager.ConfigInstance.PrecipitationMode.veryHighPrecipitation; 
+        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryHighPrecipitation); 
     }
 }

@@ -24,15 +24,15 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
         float stability = temporalStabilitySystem.GetTemporalStability(pos.X, pos.Y, pos.Z);
         
         if (stability < 0.6)
-            return ConfigManager.ConfigInstance.TemporalStabilityMode.minColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.minColor);
         if (stability < 0.8)
-            return ConfigManager.ConfigInstance.TemporalStabilityMode.lowColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.lowColor);
         if (stability < 1)
-            return ConfigManager.ConfigInstance.TemporalStabilityMode.mediumColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.mediumColor);
         if (stability < 1.2)
-            return ConfigManager.ConfigInstance.TemporalStabilityMode.highColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.highColor);
         
-        return ConfigManager.ConfigInstance.TemporalStabilityMode.maxColor;
+        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.maxColor);
     }
     
     protected override bool IsBlockValid(Block block)

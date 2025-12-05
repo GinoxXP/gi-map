@@ -20,14 +20,14 @@ public class ChunkGridMapLayer : ABlockMapLayer
     protected override int GetColor(BlockPos pos)
     {
         if (pos.X % 32 == 0 || pos.Z % 32 == 0)
-            return ConfigManager.ConfigInstance.ChunkGridMode.borderColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.ChunkGridMode.borderColor);
         
         if (pos.X % 16 == 0 || pos.Z % 16 == 0)
-            return ConfigManager.ConfigInstance.ChunkGridMode.smallBorderColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.ChunkGridMode.smallBorderColor);
         
         if (pos.X % 8 == 0 || pos.Z % 8 == 0)
-            return ConfigManager.ConfigInstance.ChunkGridMode.verySmallBorderColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.ChunkGridMode.verySmallBorderColor);
         
-        return ConfigManager.ConfigInstance.ChunkGridMode.backgroundColor;
+        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.ChunkGridMode.backgroundColor);
     }
 }

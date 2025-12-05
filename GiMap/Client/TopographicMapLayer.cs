@@ -1,5 +1,4 @@
 ﻿using GiMap.Config;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -76,21 +75,20 @@ public class TopographicMapLayer : AMapLayer
             || block.BlockMaterial == EnumBlockMaterial.Liquid;
     }
 
-    private int GetMaterialColor(Block block)
-    {
+    private int GetMaterialColor(Block block) {
         if (IsRoad(block))
-            return ConfigManager.ConfigInstance.TopographicMode.roadColor;
+            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.roadColor);
         
         return block.BlockMaterial switch
         {
-            EnumBlockMaterial.Gravel => ConfigManager.ConfigInstance.TopographicMode.gravelColor,
-            EnumBlockMaterial.Sand => ConfigManager.ConfigInstance.TopographicMode.sandColor,
-            EnumBlockMaterial.Soil => ConfigManager.ConfigInstance.TopographicMode.soilColor,
-            EnumBlockMaterial.Stone => ConfigManager.ConfigInstance.TopographicMode.stoneColor,
-            EnumBlockMaterial.Ice => ConfigManager.ConfigInstance.TopographicMode.iceColor,
-            EnumBlockMaterial.Snow => ConfigManager.ConfigInstance.TopographicMode.snowColor,
-            EnumBlockMaterial.Liquid => ConfigManager.ConfigInstance.TopographicMode.waterColor,
-            _ => ConfigManager.ConfigInstance.errorColor,
+            EnumBlockMaterial.Gravel => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.gravelColor),
+            EnumBlockMaterial.Sand => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.sandColor),
+            EnumBlockMaterial.Soil => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.soilColor),
+            EnumBlockMaterial.Stone => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.stoneColor),
+            EnumBlockMaterial.Ice => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.iceColor),
+            EnumBlockMaterial.Snow => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.snowColor),
+            EnumBlockMaterial.Liquid => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor),
+            _ => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor),
         };
     }
 

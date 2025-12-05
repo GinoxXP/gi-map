@@ -75,6 +75,34 @@ Why? Yes.
 
 ![mix](.promo/mix.png)
 
+## Config
+
+You can change default config. It can be founded by path _\VintagestoryData\ModConfig\GiMapConfig.json_
+
+All colors defined as HEX format, ex.
+```json
+"TopographicMode": {
+    "soilColor": "#c9ea9d",
+    "sandColor": "#ffffff",
+    "gravelColor": "#c8c8c8",
+    "stoneColor": "#969696",
+    "waterColor": "#22a4ab",
+    "iceColor": "#caedee",
+    "snowColor": "#e6e6ff",
+    "roadColor": "#323232"
+  },
+```
+
+or RGBA, ex.
+```json
+"mountainColor": {
+      "X": 255,
+      "Y": 0,
+      "Z": 0,
+      "W": 255
+    },
+```
+
 ## Credits
 
 I used [Geology Map](https://github.com/carlosganhao/VS-GeologyMap) as an example. I'm not sure if

@@ -103,6 +103,13 @@ or RGBA, ex.
     },
 ```
 
+You can disable unnecessary modes. For do it change
+```json
+"isEnable":
+```
+
+to false
+
 ## Credits
 
 I used [Geology Map](https://github.com/carlosganhao/VS-GeologyMap) as an example. I'm not sure if

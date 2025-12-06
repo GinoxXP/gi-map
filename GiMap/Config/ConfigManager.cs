@@ -16,9 +16,7 @@ public static class ConfigManager
         {
             ConfigInstance = api.LoadModConfig<GiMapConfig>(configPath);
             if (ConfigInstance == null)
-            {
                 ConfigInstance = new GiMapConfig();
-            }
 
             api.StoreModConfig<GiMapConfig>(ConfigInstance, configPath);
 

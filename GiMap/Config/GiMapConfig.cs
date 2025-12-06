@@ -16,11 +16,14 @@ public class GiMapConfig
     public Temperature TemperatureMode = new Temperature();
     public GeologyActivity GeologyActivityMode = new GeologyActivity();
     public ChunkGrid ChunkGridMode = new ChunkGrid();
+    public Light LightMode = new Light();
     public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
     
     public struct Topographic
     {
+        public bool isEnabled = true;
+        
         public string soilColor = "#c9ea9d";
         public string sandColor = "#ffffff";
         public string gravelColor = "#c8c8c8";
@@ -37,6 +40,8 @@ public class GiMapConfig
     
     public struct Height
     {
+        public bool isEnabled = true;
+        
         public Vec4i mountainColor = new(255, 0, 0, 255);
         public Vec4i plainColor = new(0, 255, 0, 255);
         public Vec4i lowLandColor = new(0, 150, 0, 255);
@@ -51,6 +56,8 @@ public class GiMapConfig
 
     public struct Fertility
     {
+        public bool isEnabled = true;
+        
         public string veryLowFertilityColor = "#ff0000";
         public string lowFertilityColor = "#ffab00";
         public string mediumFertilityColor = "#ffff00";
@@ -67,6 +74,8 @@ public class GiMapConfig
 
     public struct Precipitation
     {
+        public bool isEnabled = true;
+        
         public string veryHighPrecipitation = "#4682e6";
         public string highPrecipitation = "#28afaf";
         public string mediumPrecipitation = "#6ebe6e";
@@ -80,6 +89,8 @@ public class GiMapConfig
 
     public struct Temperature
     {
+        public bool isEnabled = true;
+        
         public string arcticCold = "#000064";
         public string extremeCold = "#0032b4";
         public string veryCold = "#0064dc";
@@ -100,6 +111,8 @@ public class GiMapConfig
 
     public struct GeologyActivity
     {
+        public bool isEnabled = true;
+        
         public string lowActivity = "#646464";
         public string moderateActivity = "#b48c64";
         public string significantActivity = "#e6be50";
@@ -113,6 +126,8 @@ public class GiMapConfig
 
     public struct ChunkGrid
     {
+        public bool isEnabled = true;
+        
         public string borderColor = "#000000ff";
         public string smallBorderColor = "#00000096";
         public string verySmallBorderColor = "#00000064";
@@ -122,9 +137,21 @@ public class GiMapConfig
         {
         }
     }
+    
+    public struct Light
+    {
+        public bool isEnabled = true;
+
+        public Light()
+        {
+            
+        }
+    }
 
     public struct Ore
     {
+        public bool isEnabled = true;
+        
         public string copperColor = "#b87333";
         public string malachiteColor = "#0bda51";
         
@@ -176,6 +203,8 @@ public class GiMapConfig
 
     public struct TemporalStability
     {
+        public bool isEnabled = true;
+        
         public string maxColor = "#228b22";
         public string highColor = "#55aa55";
         public string mediumColor = "#ffff00";

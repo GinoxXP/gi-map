@@ -36,16 +36,36 @@ public class GiMapModSystem : ModSystem
     public override void StartClientSide(ICoreClientAPI api)
     {
         var mapManager = api.ModLoader.GetModSystem<WorldMapManager>();
-        mapManager.RegisterMapLayer<TopographicMapLayer>(MapTypes.Topographic, 1);
-        mapManager.RegisterMapLayer<HeightMapLayer>(MapTypes.Height, 2);
-        mapManager.RegisterMapLayer<FertilityMapLayer>(MapTypes.Fertility, 3);
-        mapManager.RegisterMapLayer<PrecipitationMapLayer>(MapTypes.Precipitation, 4);
-        mapManager.RegisterMapLayer<TemperatureMapLayer>(MapTypes.Temperature, 5);
-        mapManager.RegisterMapLayer<GeologyActivityMapLayer>(MapTypes.GeologyActivity, 6);
-        mapManager.RegisterMapLayer<LightMapLayer>(MapTypes.Light, 7);
-        mapManager.RegisterMapLayer<ChunkGridMapLayer>(MapTypes.ChunkGrid, 8);
-        mapManager.RegisterMapLayer<OreMapLayer>(MapTypes.Ore, 9);
-        mapManager.RegisterMapLayer<TemporalStabilityMapLayer>(MapTypes.TemporalStability, 10);
+        
+        if (ConfigManager.ConfigInstance.TopographicMode.isEnabled)
+            mapManager.RegisterMapLayer<TopographicMapLayer>(MapTypes.Topographic, 1);
+        
+        if (ConfigManager.ConfigInstance.HeightMode.isEnabled)
+            mapManager.RegisterMapLayer<HeightMapLayer>(MapTypes.Height, 2);
+        
+        if (ConfigManager.ConfigInstance.FertilityMode.isEnabled)
+            mapManager.RegisterMapLayer<FertilityMapLayer>(MapTypes.Fertility, 3);
+        
+        if (ConfigManager.ConfigInstance.PrecipitationMode.isEnabled)
+            mapManager.RegisterMapLayer<PrecipitationMapLayer>(MapTypes.Precipitation, 4);
+        
+        if (ConfigManager.ConfigInstance.TemperatureMode.isEnabled)
+            mapManager.RegisterMapLayer<TemperatureMapLayer>(MapTypes.Temperature, 5);
+        
+        if (ConfigManager.ConfigInstance.GeologyActivityMode.isEnabled)
+            mapManager.RegisterMapLayer<GeologyActivityMapLayer>(MapTypes.GeologyActivity, 6);
+        
+        if (ConfigManager.ConfigInstance.LightMode.isEnabled)
+            mapManager.RegisterMapLayer<LightMapLayer>(MapTypes.Light, 7);
+        
+        if (ConfigManager.ConfigInstance.ChunkGridMode.isEnabled)
+            mapManager.RegisterMapLayer<ChunkGridMapLayer>(MapTypes.ChunkGrid, 8);
+        
+        if (ConfigManager.ConfigInstance.OreMode.isEnabled)
+            mapManager.RegisterMapLayer<OreMapLayer>(MapTypes.Ore, 9);
+        
+        if (ConfigManager.ConfigInstance.TemporalStabilityMode.isEnabled)
+            mapManager.RegisterMapLayer<TemporalStabilityMapLayer>(MapTypes.TemporalStability, 10);
     }
 
     public override void Dispose()

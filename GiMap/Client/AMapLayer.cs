@@ -9,10 +9,13 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client;
 
-public abstract class AMapLayer : MapLayer
+public abstract class AMapLayer : RGBMapLayer
 {
     public override string LayerGroupCode => Title;
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
+    public override MapLegendItem[] LegendItems => null;
+    public override EnumMinMagFilter MinFilter => EnumMinMagFilter.Linear;
+    public override EnumMinMagFilter MagFilter => EnumMinMagFilter.Nearest;
     
     protected ICoreClientAPI _capi;
     private MapDB _mapdb;

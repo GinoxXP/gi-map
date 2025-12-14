@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -9,6 +10,9 @@ namespace GiMap.Client;
 
 public class OreMapLayer : ABlockMapLayer
 {
+    public readonly Dictionary<string, int> ColorsByBlockCode = new();
+    public readonly Dictionary<string, string> LocalizedNameByBlockCode = new();
+
     private readonly string[] _blackListOres = {"game:ore-quartz-", "game:ore-olivine-", "game:ore-flint"};
     private readonly string[] _whitelistBlocks = {"game:meteorite-iron"};
 
@@ -17,7 +21,246 @@ public class OreMapLayer : ABlockMapLayer
     public OreMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
     }
+
+    private void FillDictionaries(string blockCode, int color, string localizedName)
+    {
+        ColorsByBlockCode.Add(blockCode, color);
+        LocalizedNameByBlockCode.Add(blockCode, localizedName);
+    }
     
+    public override void OnLoaded()
+    {
+        base.OnLoaded();
+        
+        var blocks = api.World.Blocks;
+        foreach (var block in blocks)
+        {
+            var code = block.Code.ToString();
+
+            if (Regex.IsMatch(code, "game:ore-.*-nativecopper-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.copperColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+               
+        
+            if (Regex.IsMatch(code, "game:ore-.*-malachite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.malachiteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*-cassiterite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.cassiteriteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-sphalerite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sphaleriteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-bismuthinite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.bismuthiniteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-galena-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.galenaColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*-limonite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.limoniteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-magnetite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.magnetiteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-hematite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.hematiteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (code == "game:meteorite-iron")
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.meteoriteIronColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*_nativegold-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.goldColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*_nativesilver-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.silverColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*-ilmenite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.ilmeniteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-pentlandite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.pentlanditeColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-chromite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.chromiteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-alum-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.alumColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-borax-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.boraxColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-sulfur-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sulfurColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-cinnabar-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.cinnabarColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-sylvite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sylviteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-lapislazuli-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.lapislazuliColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-lignite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.ligniteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-bituminouscoal-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.bituminouscoalColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-anthracite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.anthraciteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*-emerald-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.emeraldColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-diamond-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.diamondColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*_peridot-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.peridotColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            
+            if (Regex.IsMatch(code, "game:ore-.*-uranium-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.uraniumColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-.*-rhodochrosite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.rhodochrositeColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-graphite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.graphiteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-fluorite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.fluoriteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-phosphorite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.phosphoriteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-kernite-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.kerniteColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:ore-korundum-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.korundumColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+        }
+    }
+    
+    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
+    {
+        if (!Active)
+            return;
+
+        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
+            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
+    }
+
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new OreChunkMapComponent(_capi, baseCord, this);
 
@@ -32,115 +275,8 @@ public class OreMapLayer : ABlockMapLayer
         var block = api.World.BlockAccessor.GetBlock(pos);
         var code = block.Code.ToString();
 
-        if (Regex.IsMatch(code, "game:ore-.*-nativecopper-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.copperColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-malachite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.malachiteColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*-cassiterite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.cassiteriteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-sphalerite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sphaleriteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-bismuthinite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.bismuthiniteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-galena-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.galenaColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*-limonite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.limoniteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-magnetite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.magnetiteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-hematite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.hematiteColor);
-        
-        if (code == "game:meteorite-iron")
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.meteoriteIronColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*_nativegold-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.goldColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*_nativesilver-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.silverColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*-ilmenite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.ilmeniteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-pentlandite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.pentlanditeColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-chromite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.chromiteColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-alum-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.alumColor);
-        
-        if (Regex.IsMatch(code, "game:ore-borax-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.boraxColor);
-        
-        if (Regex.IsMatch(code, "game:ore-sulfur-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sulfurColor);
-        
-        if (Regex.IsMatch(code, "game:ore-cinnabar-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.cinnabarColor);
-        
-        if (Regex.IsMatch(code, "game:ore-sylvite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.sylviteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-lapislazuli-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.lapislazuliColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-lignite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.ligniteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-bituminouscoal-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.bituminouscoalColor);
-        
-        if (Regex.IsMatch(code, "game:ore-anthracite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.anthraciteColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*-emerald-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.emeraldColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-diamond-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.diamondColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*_peridot-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.peridotColor);
-        
-        
-        if (Regex.IsMatch(code, "game:ore-.*-uranium-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.uraniumColor);
-        
-        if (Regex.IsMatch(code, "game:ore-.*-rhodochrosite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.rhodochrositeColor);
-        
-        if (Regex.IsMatch(code, "game:ore-graphite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.graphiteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-fluorite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.fluoriteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-phosphorite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.phosphoriteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-kernite-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.kerniteColor);
-        
-        if (Regex.IsMatch(code, "game:ore-korundum-.*"))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.korundumColor);
+        if (ColorsByBlockCode.TryGetValue(code, out var color))
+            return color;
         
         return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor);
     }

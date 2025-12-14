@@ -31,6 +31,18 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
             _mapLayer.OverlayColor);
     }
     
+    public new void setChunk(int dx, int dz, int[] pixels)
+    {
+        base.setChunk(dx, dz, pixels);
+
+        if (_pixelsToSet == null)
+        {
+            _pixelsToSet = new int[9][];
+        }
+
+        _pixelsToSet[dz * 3 + dx] = pixels;
+    }
+    
     public override void Dispose()
     {
         base.Dispose();

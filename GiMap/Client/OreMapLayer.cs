@@ -14,7 +14,7 @@ public class OreMapLayer : ABlockMapLayer
     public readonly Dictionary<string, string> LocalizedNameByBlockCode = new();
 
     private readonly string[] _blackListOres = {"game:ore-quartz-", "game:ore-olivine-", "game:ore-flint"};
-    private readonly string[] _whitelistBlocks = {"game:meteorite-iron"};
+    private readonly string[] _whitelistBlocks = {"game:meteorite-iron", "game:rawclay-blue-", "game:rawclay-red-", "game:rawclay-fire-", "game:rock-halite"};
 
     public override string Title => MapTypes.Ore;
 
@@ -248,6 +248,30 @@ public class OreMapLayer : ABlockMapLayer
                 FillDictionaries(
                     code,
                     ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.korundumColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:rawclay-blue-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.blueClayColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:rawclay-red-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.redClayColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:rawclay-fire-.*"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.fireClayColor),
+                    block.GetHeldItemName(new ItemStack(block)));
+            
+            if (Regex.IsMatch(code, "game:rock-halite"))
+                FillDictionaries(
+                    code,
+                    ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.OreMode.haliteColor),
                     block.GetHeldItemName(new ItemStack(block)));
         }
     }

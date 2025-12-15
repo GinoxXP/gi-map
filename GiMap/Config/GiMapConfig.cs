@@ -195,6 +195,11 @@ public class GiMapConfig
         public string kerniteColor = "#e6e6e6";
         public string korundumColor = "#960018";
         
+        public string blueClayColor = "#527aab";
+        public string redClayColor = "#b34b57";
+        public string fireClayColor = "#c99169";
+        public string haliteColor = "#ffc9dd";
+        
         public Ore()
         {
             

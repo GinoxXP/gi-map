@@ -17,9 +17,7 @@ public static class ConfigManager
             ConfigInstance = api.LoadModConfig<GiMapConfig>(configPath);
             if (ConfigInstance == null)
                 ConfigInstance = new GiMapConfig();
-
-            api.StoreModConfig<GiMapConfig>(ConfigInstance, configPath);
-
+            
             CheckCompatibleConfigVersion(api);
         }
         catch (Exception e)
@@ -28,6 +26,8 @@ public static class ConfigManager
             api.Logger.Error(e);
             ConfigInstance = new GiMapConfig();
         }
+        
+        api.StoreModConfig<GiMapConfig>(ConfigInstance, configPath);
     }
 
     public static void SaveModConfig(ICoreAPI api)

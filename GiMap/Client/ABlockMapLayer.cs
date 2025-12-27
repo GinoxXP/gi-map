@@ -36,12 +36,25 @@ public abstract class ABlockMapLayer : AMapLayer
             MapUtil.PosInt2d(k, 32L, vec2i);
             int index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
             Block block = api.World.Blocks[index];
-            
-            while (topBlockHeight > 0 && !IsBlockValid(block))
+
+            while (topBlockHeight > 0)
             {
+                try
+                {
+                    if (IsBlockValid(block))
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    var message = $"An exception occurred while processing a block\n{ex.Message}\n{ex.StackTrace}";
+                    api.Logger.Error(message);
+                    continue;
+                }
+                
                 topBlockHeight--;
                 topChunkIndex = topBlockHeight / 32;
-                index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+                index = _chunksTmp[topChunkIndex]
+                    .UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
                 block = api.World.Blocks[index];
             }
 

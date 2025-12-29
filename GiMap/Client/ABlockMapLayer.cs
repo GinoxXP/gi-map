@@ -67,5 +67,5 @@ public abstract class ABlockMapLayer : AMapLayer
     protected abstract int GetColor(BlockPos pos);
     
     protected virtual bool IsBlockValid(Block block)
-        => true;
+        => block != null && block.Code != null;
 }

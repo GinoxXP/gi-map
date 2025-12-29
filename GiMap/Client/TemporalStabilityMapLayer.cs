@@ -37,6 +37,9 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
     
     protected override bool IsBlockValid(Block block)
     {
+        if (!base.IsBlockValid(block))
+            return false;
+        
         return block.BlockMaterial == EnumBlockMaterial.Gravel
                || block.BlockMaterial == EnumBlockMaterial.Sand
                || block.BlockMaterial == EnumBlockMaterial.Soil

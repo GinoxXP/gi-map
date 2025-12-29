@@ -289,9 +289,18 @@ public class OreMapLayer : ABlockMapLayer
         => new OreChunkMapComponent(_capi, baseCord, this);
 
     protected override bool IsBlockValid(Block block)
-        => (block.BlockMaterial == EnumBlockMaterial.Ore &&
-           !_blackListOres.Any(b => block.Code.ToString().Contains(b)))
-            || _whitelistBlocks.Any(b => block.Code.ToString().Contains(b));
+    {
+        if (!base.IsBlockValid(block))
+            return false;
+
+        string code = block.Code.ToString();
+
+        bool isOre = block.BlockMaterial == EnumBlockMaterial.Ore;
+        bool blacklisted = _blackListOres.Any(b => code.Contains(b));
+        bool whitelisted = _whitelistBlocks.Any(b => code.Contains(b));
+
+        return (isOre && !blacklisted) || whitelisted;
+    }
     
 
     protected override int GetColor(BlockPos pos)

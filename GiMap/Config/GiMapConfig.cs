@@ -150,55 +150,61 @@ public class GiMapConfig
 
     public struct Ore
     {
-        public bool isEnabled = true;
+        public bool isEnabled = false;
+
+        public Dictionary<string, string> ores = new()
+        {
+            {"game:ore-.*-nativecopper-.*", "#b87333"},
+            {"game:ore-.*-malachite-.*", "#0bda51"},
+            {"game:ore-.*-cassiterite-.*", "#462a29"},
+            {"game:ore-.*-sphalerite-.*", "#955d26"},
+            {"game:ore-.*-bismuthinite-.*", "#969696"},
+            {"game:ore-.*-galena-.*", "#737382"},
+            {"game:ore-.*-limonite-.*", "#b58935"},
+            {"game:ore-.*-magnetite-.*", "#282828"},
+            {"game:ore-.*-hematite-.*", "#790604"},
+            {"game:ore-.*_nativegold-.*", "#ffd700"},
+            {"game:ore-.*_nativesilver-.*", "#c0c0c0"},
+            {"game:ore-.*-ilmenite-.*", "#2e2828"},
+            {"game:ore-.*-pentlandite-.*", "#b4a064"},
+            {"game:ore-.*-chromite-.*", "#322d2d"},
+            {"game:ore-alum-.*", "#f0f0f0"},
+            {"game:ore-borax-.*", "#f5f5dc"},
+            {"game:ore-sulfur-.*", "#ffff00"},
+            {"game:ore-cinnabar-.*", "#e34234"},
+            {"game:ore-sylvite-.*", "#fefefe"},
+            {"game:ore-lapislazuli-.*", "#0364af"},
+            {"game:ore-lignite-.*", "#694628"},
+            {"game:ore-bituminouscoal-.*", "#1e1e1e"},
+            {"game:ore-anthracite-.*", "#0a0a0a"},
+            {"game:ore-.*-emerald-.*", "#50c878"},
+            {"game:ore-.*-diamond-.*", "#ffffff"},
+            {"game:ore-.*_peridot-.*", "#adff2f"},
+            {"game:ore-.*-uranium-.*", "#3c785a"},
+            {"game:ore-.*-rhodochrosite-.*", "#db7093"},
+            {"game:ore-graphite-.*", "#5a5a5a"},
+            {"game:ore-fluorite-.*", "#800080"},
+            {"game:ore-phosphorite-.*", "#a9a9a9"},
+            {"game:ore-kernite-.*", "#e6e6e6"},
+            {"game:ore-korundum-.*", "#960018"}
+        };
+
+        public Dictionary<string, string> whitelist = new()
+        {
+            {"game:meteorite-iron", "#b4b9be"},
+            {"game:rawclay-blue-.*", "#527aab"},
+            {"game:rawclay-red-.*", "#b34b57"},
+            {"game:rawclay-fire-.*", "#c99169"},
+            {"game:rock-halite", "#ffc9dd"}
+        };
         
-        public string copperColor = "#b87333";
-        public string malachiteColor = "#0bda51";
+        public string[] blacklist = new[]
+        {
+            "game:ore-quartz-.*",
+            "game:ore-olivine-.*",
+            "game:ore-flint"
+        };
         
-        public string cassiteriteColor = "#462a29";
-        public string sphaleriteColor = "#955d26";
-        public string bismuthiniteColor = "#969696";
-        public string galenaColor = "#737382";
-        
-        public string limoniteColor = "#b58935";
-        public string magnetiteColor = "#282828";
-        public string hematiteColor = "#790604";
-        public string meteoriteIronColor = "#b4b9be";
-        
-        public string goldColor = "#ffd700";
-        public string silverColor = "#c0c0c0";
-        
-        public string ilmeniteColor = "#2e2828";
-        public string pentlanditeColor = "#b4a064";
-        public string chromiteColor = "#322d2d";
-        
-        public string alumColor = "#f0f0f0";
-        public string boraxColor = "#f5f5dc";
-        public string sulfurColor = "#ffff00";
-        public string cinnabarColor = "#e34234";
-        public string sylviteColor = "#ffffff";
-        public string lapislazuliColor = "#0364af";
-        
-        public string ligniteColor = "#694628";
-        public string bituminouscoalColor = "#1e1e1e";
-        public string anthraciteColor = "#0a0a0a";
-        
-        public string emeraldColor = "#50c878";
-        public string diamondColor = "#ffffff";
-        public string peridotColor = "#adff2f";
-        
-        public string uraniumColor = "#3c785a";
-        public string rhodochrositeColor = "#db7093";
-        public string graphiteColor = "#5a5a5a";
-        public string fluoriteColor = "#800080";
-        public string phosphoriteColor = "#a9a9a9";
-        public string kerniteColor = "#e6e6e6";
-        public string korundumColor = "#960018";
-        
-        public string blueClayColor = "#527aab";
-        public string redClayColor = "#b34b57";
-        public string fireClayColor = "#c99169";
-        public string haliteColor = "#ffc9dd";
         
         public Ore()
         {

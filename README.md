@@ -58,6 +58,8 @@ Brutal chunk grid. x32, x16 and x8.
 ![chunk-grid](.promo/chunk-grid.png)
 
 ### Ore
+ 
+_Since 1.6.0 ore map is default disabled. To start use you need enable it in config section_
 
 Displays ore deposits.
 
@@ -109,6 +111,15 @@ You can disable unnecessary modes. For do it change
 ```
 
 to false
+
+You can add your own ores from mods or remove unwanted.
+```json
+"game:ore-.*-nativecopper-.*": "#b87333",
+"game:ore-.*-malachite-.*": "#0bda51",
+"game:ore-.*-cassiterite-.*": "#462a29",
+```
+
+Keys use regular expression format. For more information see [that](https://learn.microsoft.com/dotnet/standard/base-types/regular-expressions).
 
 ## Credits
 

@@ -72,7 +72,7 @@ public class TopographicMapLayer : AMapLayer
             || block.BlockMaterial == EnumBlockMaterial.Stone
             || block.BlockMaterial == EnumBlockMaterial.Ice
             || block.BlockMaterial == EnumBlockMaterial.Snow
-            || block.BlockMaterial == EnumBlockMaterial.Liquid;
+            || block.BlockMaterial == EnumBlockMaterial.Water;
     }
 
     private int GetMaterialColor(Block block) {
@@ -87,7 +87,7 @@ public class TopographicMapLayer : AMapLayer
             EnumBlockMaterial.Stone => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.stoneColor),
             EnumBlockMaterial.Ice => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.iceColor),
             EnumBlockMaterial.Snow => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.snowColor),
-            EnumBlockMaterial.Liquid => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor),
+            EnumBlockMaterial.Water => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor),
             _ => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor),
         };
     }

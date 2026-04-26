@@ -132,7 +132,7 @@ public class HeightMapLayer : AMapLayer
 
     private bool IsWater(Block block)
     {
-        if (block.BlockMaterial == EnumBlockMaterial.Liquid)
+        if (block.BlockMaterial == EnumBlockMaterial.Water)
             return _waterBlocks.Any(b => block.Code.ToString().Contains(b));
         
         return false;
@@ -146,6 +146,6 @@ public class HeightMapLayer : AMapLayer
                || block.BlockMaterial == EnumBlockMaterial.Stone
                || block.BlockMaterial == EnumBlockMaterial.Ice
                || block.BlockMaterial == EnumBlockMaterial.Snow
-               || block.BlockMaterial == EnumBlockMaterial.Liquid;
+               || block.BlockMaterial == EnumBlockMaterial.Water;
     }
 }

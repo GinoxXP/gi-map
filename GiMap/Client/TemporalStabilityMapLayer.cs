@@ -46,6 +46,6 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
                || block.BlockMaterial == EnumBlockMaterial.Stone
                || block.BlockMaterial == EnumBlockMaterial.Ice
                || block.BlockMaterial == EnumBlockMaterial.Snow
-               || block.BlockMaterial == EnumBlockMaterial.Liquid;
+               || block.BlockMaterial == EnumBlockMaterial.Water;
     }
 }

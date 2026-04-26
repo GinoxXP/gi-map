@@ -71,7 +71,7 @@ public class FertilityMapLayer : AMapLayer
                || block.BlockMaterial == EnumBlockMaterial.Stone
                || block.BlockMaterial == EnumBlockMaterial.Ice
                || block.BlockMaterial == EnumBlockMaterial.Snow
-               || block.BlockMaterial == EnumBlockMaterial.Liquid;
+               || block.BlockMaterial == EnumBlockMaterial.Water;
     }
     
     private int GetMaterialColor(Block block)
@@ -91,7 +91,7 @@ public class FertilityMapLayer : AMapLayer
         if (IsFertilityGroup(block, _extreameFertilityBlocks))
             return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor);
         
-        if (block.BlockMaterial == EnumBlockMaterial.Liquid)
+        if (block.BlockMaterial == EnumBlockMaterial.Water)
             return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor);
         
         return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor);

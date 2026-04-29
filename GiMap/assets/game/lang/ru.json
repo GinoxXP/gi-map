@@ -8,5 +8,13 @@
     "maplayer-light": "Освещение",
     "maplayer-chunk-grid": "Сетка чанков",
     "maplayer-ore": "Руда",
-    "maplayer-temporal-stability": "Темпоральная стабильность"
+    "maplayer-temporal-stability": "Темпоральная стабильность",
+    "fertility-very-low": "Крайне низкая",
+    "fertility-low": "Низкая",
+    "fertility-medium": "Средняя",
+    "fertility-high": "Высокая",
+    "fertility-very-high": "Крайне высокая",
+    "fertility-no": "Не плодородно",
+    "water": "Вода",
+    "na": "Н/Д"
 }

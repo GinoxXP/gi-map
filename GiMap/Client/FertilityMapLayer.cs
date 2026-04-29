@@ -1,6 +1,10 @@
-﻿using GiMap.Config;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -16,12 +20,40 @@ public class FertilityMapLayer : AMapLayer
     private readonly string[] _highFertilityBlocks = {"game:soil-compost-", "game:farmland-dry-compost", "game:farmland-moist-compost" };
     private readonly string[] _extreameFertilityBlocks = {"game:soil-high-", "game:farmland-dry-high", "game:farmland-moist-high" };
     
+    public readonly Dictionary<int, string> LocalizedNameByColor = new();
+    
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        FillDictionaries();
+    }
+
+    private void FillDictionaries()
+    {
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor), Lang.Get("fertility-very-low"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor), Lang.Get("fertility-low"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor), Lang.Get("fertility-medium"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor), Lang.Get("fertility-high"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor), Lang.Get("fertility-very-high"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor), Lang.Get("water"));
+        FillDictionaries(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor), Lang.Get("fertility-no"));
+    }
+    
+    private void FillDictionaries(int color, string localizedName)
+    {
+        LocalizedNameByColor.Add(color, localizedName);
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new FertilityMultiChunkMapComponent(_capi, baseCord, this);
+    
+    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
+    {
+        if (!Active)
+            return;
+
+        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
+            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
+    }
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

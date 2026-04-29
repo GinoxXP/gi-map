@@ -8,5 +8,13 @@
     "maplayer-light": "Lighting",
     "maplayer-chunk-grid": "Chunk Grid",
     "maplayer-ore": "Ore",
-    "maplayer-temporal-stability": "Temporal Stability"
+    "maplayer-temporal-stability": "Temporal Stability",
+    "fertility-very-low": "Very low",
+    "fertility-low": "Low",
+    "fertility-medium": "Medium",
+    "fertility-high": "High",
+    "fertility-very-high": "Very high",
+    "fertility-no": "Not fertility",
+    "water": "Вода",
+    "na": "N/A"
 }

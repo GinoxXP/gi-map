@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using GiMap.Client.Height;
+using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 
 namespace GiMap.Client;

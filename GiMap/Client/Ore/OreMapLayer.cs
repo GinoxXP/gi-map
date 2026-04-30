@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using GiMap.Config;
 using Vintagestory.API.Client;
@@ -8,7 +6,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client;
+namespace GiMap.Client.Ore;
 
 public class OreMapLayer : ABlockMapLayer
 {

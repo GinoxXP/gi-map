@@ -1,10 +1,19 @@
 ﻿using GiMap.Client;
+using GiMap.Client.Chunk;
+using GiMap.Client.Fertility;
+using GiMap.Client.GeologyActivity;
+using GiMap.Client.Height;
+using GiMap.Client.Light;
+using GiMap.Client.Precipitation;
+using GiMap.Client.Temperature;
+using GiMap.Client.TemporalStability;
+using GiMap.Client.Topographic;
 using GiMap.Config;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
-using OreMapLayer = GiMap.Client.OreMapLayer;
+using OreMapLayer = GiMap.Client.Ore.OreMapLayer;
 
 namespace GiMap;
 

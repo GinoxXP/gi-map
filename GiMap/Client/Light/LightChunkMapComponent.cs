@@ -1,7 +1,7 @@
 ﻿using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 
-namespace GiMap.Client;
+namespace GiMap.Client.Light;
 
 public class LightChunkMapComponent : AChunkMapComponent
 {

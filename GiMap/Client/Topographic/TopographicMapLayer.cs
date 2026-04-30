@@ -3,7 +3,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client;
+namespace GiMap.Client.Topographic;
 
 public class TopographicMapLayer : AMapLayer
 {

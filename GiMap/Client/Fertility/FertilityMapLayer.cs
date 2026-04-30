@@ -6,7 +6,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client;
+namespace GiMap.Client.Fertility;
 
 public class FertilityMapLayer : AMapLayer
 {

@@ -1,10 +1,9 @@
 ﻿using GiMap.Config;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client;
+namespace GiMap.Client.Temperature;
 
 public class TemperatureMapLayer : ABlockMapLayer
 {

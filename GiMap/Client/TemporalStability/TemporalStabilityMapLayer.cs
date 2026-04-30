@@ -30,7 +30,7 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new TemporalStabilityMultiChunkComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos)
+    protected override int GetColor(BlockPos pos, Block block)
     {
         float stability = temporalStabilitySystem.GetTemporalStability(pos.X, pos.Y, pos.Z);
         

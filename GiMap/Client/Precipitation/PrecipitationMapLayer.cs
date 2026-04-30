@@ -27,7 +27,7 @@ public class PrecipitationMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new PrecipitationMultiChunkMapComponent(_capi, baseCord, this);
     
-    protected override int GetColor(BlockPos pos)
+    protected override int GetColor(BlockPos pos, Block block)
     {
         var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
         var rainfall = climateCondition.WorldgenRainfall;

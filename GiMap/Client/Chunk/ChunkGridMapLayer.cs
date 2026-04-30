@@ -16,7 +16,7 @@ public class ChunkGridMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new ChunkGridMultiChunkComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos)
+    protected override int GetColor(BlockPos pos, Block block)
     {
         if (pos.X % 32 == 0 || pos.Z % 32 == 0)
             return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.ChunkGridMode.borderColor);

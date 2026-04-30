@@ -49,14 +49,14 @@ public abstract class ABlockMapLayer : AMapLayer
             int localX = k % 32;
             int localZ = k / 32;
             pos.Set(baseWorldX + localX, topBlockHeight, baseWorldZ + localZ);
-            resultPixelArray[k] = GetColor(pos);
+            resultPixelArray[k] = GetColor(pos, block);
         }
 
         ClearChunks();
         return resultPixelArray;
     }
 
-    protected abstract int GetColor(BlockPos pos);
+    protected abstract int GetColor(BlockPos pos, Block block);
     
     protected virtual bool IsBlockValid(Block block)
         => block != null && block.Code != null;

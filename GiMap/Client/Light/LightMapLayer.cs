@@ -15,7 +15,7 @@ public class LightMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new LightChunkMapComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos)
+    protected override int GetColor(BlockPos pos, Block block)
     {
         var light = api.World.BlockAccessor.GetLightRGBs(pos);
         

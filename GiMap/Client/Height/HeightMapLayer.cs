@@ -26,14 +26,10 @@ public class HeightMapLayer : AMapLayer
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {
-        var vec2i = new Vec2i();
+        if (!TryLoadChunks(chunkPos))
+            return null;
 
-        for (var i = 0; i < _chunksTmp.Length; i++)
-        {
-            _chunksTmp[i] = _capi.World.BlockAccessor.GetChunk(chunkPos.X, i, chunkPos.Y);
-            if (_chunksTmp[i] == null || !(_chunksTmp[i] as IClientChunk).LoadedFromServer)
-                return null;
-        }
+        var vec2i = new Vec2i();
 
         var resultPixelArray = new int[1024];
         for (var k = 0; k < resultPixelArray.Length; k++)
@@ -81,9 +77,7 @@ public class HeightMapLayer : AMapLayer
             }
         }
         
-        for (var n = 0; n < _chunksTmp.Length; n++)
-            _chunksTmp[n] = null;
-            
+        ClearChunks();
         return resultPixelArray;
     }
 

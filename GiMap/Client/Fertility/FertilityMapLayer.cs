@@ -37,15 +37,10 @@ public class FertilityMapLayer : AMapLayer
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {
+        if (!TryLoadChunks(chunkPos))
+            return null;
+
         var vec2i = new Vec2i();
-
-        for (var i = 0; i < _chunksTmp.Length; i++)
-        {
-            _chunksTmp[i] = _capi.World.BlockAccessor.GetChunk(chunkPos.X, i, chunkPos.Y);
-            if (_chunksTmp[i] == null || !(_chunksTmp[i] as IClientChunk).LoadedFromServer)
-                return null;
-        }
-
         var resultPixelArray = new int[1024];
         for (var k = 0; k < resultPixelArray.Length; k++)
         {
@@ -53,11 +48,11 @@ public class FertilityMapLayer : AMapLayer
             int topChunkIndex = topBlockHeight / 32;
             if (topChunkIndex >= _chunksTmp.Length)
                 continue;
-            
+
             MapUtil.PosInt2d(k, 32L, vec2i);
             int index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
             Block block = api.World.Blocks[index];
-            
+
             while (topBlockHeight > 0 && !IsBlockValid(block))
             {
                 topBlockHeight--;
@@ -68,10 +63,8 @@ public class FertilityMapLayer : AMapLayer
 
             resultPixelArray[k] = GetMaterialColor(block);
         }
-        
-        for (var n = 0; n < _chunksTmp.Length; n++)
-            _chunksTmp[n] = null;
-            
+
+        ClearChunks();
         return resultPixelArray;
     }
     

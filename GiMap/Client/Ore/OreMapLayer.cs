@@ -1,7 +1,5 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using GiMap.Config;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -23,6 +21,7 @@ public class OreMapLayer : ABlockMapLayer
     {
         ColorsByBlockCode.Add(blockCode, color);
         LocalizedNameByBlockCode.Add(blockCode, localizedName);
+        LocalizedNameByColor.TryAdd(color, localizedName);
     }
     
     public override void OnLoaded()
@@ -50,15 +49,6 @@ public class OreMapLayer : ABlockMapLayer
         }
     }
     
-    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
-    {
-        if (!Active)
-            return;
-
-        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
-            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
-    }
-
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new OreChunkMapComponent(_capi, baseCord, this);
 

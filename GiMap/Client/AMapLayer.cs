@@ -206,6 +206,7 @@ public abstract class AMapLayer : RGBMapLayer
     public override void OnOffThreadTick(float dt)
     {
         _genAccum += dt;
+        _diskSaveAccum += dt;
         if (_genAccum < 0.1) return;
         _genAccum = 0;
 
@@ -339,21 +340,29 @@ public abstract class AMapLayer : RGBMapLayer
     }
     
     public virtual string GetLocalizedStringByColor(int color)
-    {
-        try
-        {
-            return LocalizedNameByColor[color];
-        }
-        catch (KeyNotFoundException)
-        {
-            return Lang.Get("na");
-        }
-    }
+        => LocalizedNameByColor.TryGetValue(color, out var name) ? name : Lang.Get("na");
     
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
-    
+
     protected abstract AChunkMapComponent CreateComponent(FastVec2i baseCord);
-    
+
+    protected bool TryLoadChunks(FastVec2i chunkPos)
+    {
+        for (var i = 0; i < _chunksTmp.Length; i++)
+        {
+            _chunksTmp[i] = _capi.World.BlockAccessor.GetChunk(chunkPos.X, i, chunkPos.Y);
+            if (_chunksTmp[i] == null || !(_chunksTmp[i] as IClientChunk).LoadedFromServer)
+                return false;
+        }
+        return true;
+    }
+
+    protected void ClearChunks()
+    {
+        for (var i = 0; i < _chunksTmp.Length; i++)
+            _chunksTmp[i] = null;
+    }
+
     protected void FillDictionary(int color, string localizedName)
     {
         LocalizedNameByColor.Add(color, localizedName);

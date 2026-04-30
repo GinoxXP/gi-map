@@ -7,6 +7,5 @@ public class FertilityMultiChunkMapComponent : AChunkMapComponent
 {
     public FertilityMultiChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, FertilityMapLayer mapLayer) : base(capi, baseChunkCord, mapLayer)
     {
-        _mapLayer = mapLayer;
     }
 }

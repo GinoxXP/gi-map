@@ -1,5 +1,6 @@
 ﻿using GiMap.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -19,6 +20,19 @@ public class TopographicMapLayer : AMapLayer
 
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        FillDictionaries();
+    }
+    
+    private void FillDictionaries()
+    {
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.gravelColor), Lang.Get("topographic-gravel"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.iceColor), Lang.Get("topographic-ice"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.roadColor), Lang.Get("topographic-road"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.sandColor), Lang.Get("topographic-sand"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.snowColor), Lang.Get("topographic-snow"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.soilColor), Lang.Get("topographic-soil"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.stoneColor), Lang.Get("topographic-stone"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor), Lang.Get("water"));
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)

@@ -17,11 +17,11 @@ public class GeologyActivityMapLayer : ABlockMapLayer
 
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity), Lang.Get("geology-activity-very-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity), Lang.Get("geology-activity-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity), Lang.Get("geology-activity-medium"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.highActivity), Lang.Get("geology-activity-high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity), Lang.Get("geology-activity-very-high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity), Lang.Get("very-low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity), Lang.Get("low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity), Lang.Get("medium"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.highActivity), Lang.Get("high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity), Lang.Get("very-high"));
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)

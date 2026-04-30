@@ -1,5 +1,6 @@
 ﻿using GiMap.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -14,8 +15,18 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
     public TemporalStabilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
         temporalStabilitySystem = api.ModLoader.GetModSystem<SystemTemporalStability>();
+        FillDictionaries();
     }
 
+    private void FillDictionaries()
+    {
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.minColor), Lang.Get("very-low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.lowColor), Lang.Get("low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.mediumColor), Lang.Get("medium"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.highColor), Lang.Get("high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemporalStabilityMode.maxColor), Lang.Get("very-high"));
+    }
+    
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new TemporalStabilityMultiChunkComponent(_capi, baseCord, this);
 

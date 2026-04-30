@@ -1,5 +1,6 @@
 ﻿using GiMap.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -11,6 +12,21 @@ public class TemperatureMapLayer : ABlockMapLayer
 
     public TemperatureMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        FillDictionaries();
+    }
+
+    private void FillDictionaries()
+    {
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.arcticCold), Lang.Get("temperature-arctic-cold"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.extremeCold), Lang.Get("temperature-extreme-cold"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.veryCold), Lang.Get("temperature-very-cold"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.cold), Lang.Get("temperature-cold"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.cool), Lang.Get("temperature-cool"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.temperate), Lang.Get("temperature-temperate"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.mild), Lang.Get("temperature-mild"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.warm), Lang.Get("temperature-warm"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.hot), Lang.Get("temperature-hot"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TemperatureMode.extremeHot), Lang.Get("temperature-extreme-hot"));
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)

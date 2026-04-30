@@ -23,11 +23,11 @@ public class FertilityMapLayer : AMapLayer
 
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor), Lang.Get("fertility-very-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor), Lang.Get("fertility-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor), Lang.Get("fertility-medium"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor), Lang.Get("fertility-high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor), Lang.Get("fertility-very-high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor), Lang.Get("very-low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor), Lang.Get("low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor), Lang.Get("medium"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor), Lang.Get("high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor), Lang.Get("very-high"));
         FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor), Lang.Get("water"));
         FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor), Lang.Get("fertility-no"));
     }

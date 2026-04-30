@@ -31,6 +31,8 @@ public abstract class AMapLayer : RGBMapLayer
     private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
     protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
     
+    protected readonly Dictionary<int, string> LocalizedNameByColor = new();
+    
     public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
 
     protected AMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
@@ -326,9 +328,26 @@ public abstract class AMapLayer : RGBMapLayer
         }
     }
     
+    public virtual string GetLocalizedStringByColor(int color)
+    {
+        try
+        {
+            return LocalizedNameByColor[color];
+        }
+        catch (KeyNotFoundException)
+        {
+            return Lang.Get("na");
+        }
+    }
+    
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
     
     protected abstract AChunkMapComponent CreateComponent(FastVec2i baseCord);
+    
+    protected void FillDictionary(int color, string localizedName)
+    {
+        LocalizedNameByColor.Add(color, localizedName);
+    }
     
     private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
     {

@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -10,6 +11,9 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
     protected int[][] _pixelsToSet;
     protected Vec3d _chunkWorldPos;
     protected Vec2f _viewPos;
+    
+    private Vec3d _mouseWorldPos = new Vec3d();
+    private int _sideLength = 96;
     
     public AChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, AMapLayer mapLayer) : base(capi, baseChunkCord)
     {
@@ -48,5 +52,27 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
         base.Dispose();
         _mapLayer = null;
         _pixelsToSet = null;
+    }
+    
+    public override void OnMouseMove(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
+    {
+        _viewPos.X = args.X - (float)mapElem.Bounds.renderX;
+        _viewPos.Y = args.Y - (float)mapElem.Bounds.renderY;
+        mapElem.TranslateViewPosToWorldPos(_viewPos, ref _mouseWorldPos);
+
+        if (_mouseWorldPos.X < _chunkWorldPos.X ||
+            _mouseWorldPos.X >= _chunkWorldPos.X + _sideLength ||
+            _mouseWorldPos.Z < _chunkWorldPos.Z ||
+            _mouseWorldPos.Z >= _chunkWorldPos.Z + _sideLength)
+            return;
+        
+        var posInChunk = _mouseWorldPos - _chunkWorldPos;
+        var chunk = _pixelsToSet[posInChunk.XInt / 32 + (posInChunk.ZInt / 32) * 3];
+        if (chunk == null)
+            return;
+        
+        var color = chunk[posInChunk.XInt % 32 + (posInChunk.ZInt % 32) * 32];
+        var localizedString = _mapLayer.GetLocalizedStringByColor(color);
+        hoverText.Append(localizedString);
     }
 }

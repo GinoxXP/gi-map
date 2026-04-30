@@ -1,6 +1,4 @@
-﻿using System.Text;
-using GiMap.Config;
-using Vintagestory.API.Client;
+﻿using GiMap.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
@@ -36,15 +34,6 @@ public class FertilityMapLayer : AMapLayer
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new FertilityMultiChunkMapComponent(_capi, baseCord, this);
-
-    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
-    {
-        if (!Active)
-            return;
-
-        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
-            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
-    }
     
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

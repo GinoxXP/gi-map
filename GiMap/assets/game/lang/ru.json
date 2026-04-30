@@ -16,5 +16,10 @@
     "fertility-very-high": "Крайне высокая",
     "fertility-no": "Не плодородно",
     "water": "Вода",
-    "na": "Н/Д"
+    "na": "Н/Д",
+    "geology-activity-very-low": "Очень низкая",
+    "geology-activity-low": "Низкая",
+    "geology-activity-medium": "Средняя",
+    "geology-activity-high": "Высокая",
+    "geology-activity-very-high": "Очень высокая"
 }

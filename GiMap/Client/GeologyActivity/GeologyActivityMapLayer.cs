@@ -1,5 +1,6 @@
 ﻿using GiMap.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -11,6 +12,16 @@ public class GeologyActivityMapLayer : ABlockMapLayer
 
     public GeologyActivityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        FillDictionaries();
+    }
+
+    private void FillDictionaries()
+    {
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity), Lang.Get("geology-activity-very-low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity), Lang.Get("geology-activity-low"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity), Lang.Get("geology-activity-medium"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.highActivity), Lang.Get("geology-activity-high"));
+        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity), Lang.Get("geology-activity-very-high"));
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -326,6 +327,15 @@ public abstract class AMapLayer : RGBMapLayer
                 mc.unsetChunk(cord.X % MultiChunkMapComponent.ChunkLen, cord.Y % MultiChunkMapComponent.ChunkLen);
             }
         }
+    }
+    
+    public override void OnMouseMoveClient(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)
+    {
+        if (!Active)
+            return;
+
+        foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
+            loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
     }
     
     public virtual string GetLocalizedStringByColor(int color)

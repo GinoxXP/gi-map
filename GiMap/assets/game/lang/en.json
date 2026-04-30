@@ -16,5 +16,10 @@
     "fertility-very-high": "Very high",
     "fertility-no": "Not fertility",
     "water": "Water",
-    "na": "N/A"
+    "na": "N/A",
+    "geology-activity-very-low": "Very low",
+    "geology-activity-low": "Low",
+    "geology-activity-medium": "Medium",
+    "geology-activity-high": "High",
+    "geology-activity-very-high": "Very high"
 }

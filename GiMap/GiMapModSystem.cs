@@ -1,5 +1,6 @@
 ﻿using GiMap.Client;
 using GiMap.Client.Chunk;
+using GiMap.Client.Claim;
 using GiMap.Client.Fertility;
 using GiMap.Client.GeologyActivity;
 using GiMap.Client.Height;
@@ -75,6 +76,9 @@ public class GiMapModSystem : ModSystem
         
         if (ConfigManager.ConfigInstance.TemporalStabilityMode.isEnabled)
             mapManager.RegisterMapLayer<TemporalStabilityMapLayer>(MapTypes.TemporalStability, 10);
+        
+        if (ConfigManager.ConfigInstance.ClaimMode.isEnabled)
+            mapManager.RegisterMapLayer<ClaimMapLayer>(MapTypes.Claim, 11);
     }
 
     public override void Dispose()

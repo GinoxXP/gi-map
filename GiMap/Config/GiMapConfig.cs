@@ -20,6 +20,7 @@ public class GiMapConfig
     public Light LightMode = new Light();
     public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
+    public Claim ClaimMode = new Claim();
     
     public struct Topographic
     {
@@ -224,6 +225,16 @@ public class GiMapConfig
         public string minColor = "#dc143c";
 
         public TemporalStability()
+        {
+            
+        }
+    }
+
+    public struct Claim
+    {
+        public bool isEnabled = true;
+
+        public Claim()
         {
             
         }

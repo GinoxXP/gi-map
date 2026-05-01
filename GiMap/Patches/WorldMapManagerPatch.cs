@@ -49,6 +49,9 @@ class WorldMapManagerPatch
         
         if (ConfigManager.ConfigInstance.TemporalStabilityMode.isEnabled)
             result.Remove(MapTypes.TemporalStability);
+        
+        if (ConfigManager.ConfigInstance.ClaimMode.isEnabled)
+            result.Remove(MapTypes.Claim);
     }
     
     static void Insert(List<string> result, int index)
@@ -82,5 +85,8 @@ class WorldMapManagerPatch
         
         if (ConfigManager.ConfigInstance.TemporalStabilityMode.isEnabled)
             result.Insert(index++, MapTypes.TemporalStability);
+        
+        if (ConfigManager.ConfigInstance.ClaimMode.isEnabled)
+            result.Insert(index++, MapTypes.Claim);
     }
 }

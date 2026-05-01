@@ -12,7 +12,7 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
     protected Vec3d _chunkWorldPos;
     protected Vec2f _viewPos;
     
-    private Vec3d _mouseWorldPos = new Vec3d();
+    protected Vec3d _mouseWorldPos = new Vec3d();
     private int _sideLength = 96;
     
     public AChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, AMapLayer mapLayer) : base(capi, baseChunkCord)
@@ -66,6 +66,11 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
             _mouseWorldPos.Z >= _chunkWorldPos.Z + _sideLength)
             return;
         
+        SetHoverText(hoverText);
+    }
+
+    protected virtual void SetHoverText(StringBuilder hoverText)
+    {
         var posInChunk = _mouseWorldPos - _chunkWorldPos;
         var chunk = _pixelsToSet[posInChunk.XInt / 32 + (posInChunk.ZInt / 32) * 3];
         if (chunk == null)
@@ -73,6 +78,7 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
         
         var color = chunk[posInChunk.XInt % 32 + (posInChunk.ZInt % 32) * 32];
         var localizedString = _mapLayer.GetLocalizedStringByColor(color);
+
         hoverText.Append(localizedString);
     }
 }

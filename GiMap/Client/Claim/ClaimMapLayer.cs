@@ -32,11 +32,25 @@ public class ClaimMapLayer : ABlockMapLayer
 
     public LandClaim? GetClaim(BlockPos pos)
     {
-        return _claims
-            .ToArray()
-            .Where(c => c.Areas.Any(a => a.ContainsXZ(pos)))
-            .OrderBy(c => -c.Center.Y)
-            .FirstOrDefault();
+        LandClaim? bestClaim = null;
+        int maxY = int.MinValue;
+
+        var claimsSnapshot = _claims.ToArray(); 
+
+        foreach (var claim in claimsSnapshot)
+        {
+            if (claim?.Areas == null) continue;
+
+            if (claim.Areas.Any(a => a.ContainsXZ(pos)))
+            {
+                if (claim.Center.Y > maxY)
+                {
+                    maxY = claim.Center.Y;
+                    bestClaim = claim;
+                }
+            }
+        }
+        return bestClaim;
     }
     
     private void UpdateClaimRadar(float dt) 

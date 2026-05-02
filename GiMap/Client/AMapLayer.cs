@@ -19,17 +19,17 @@ public abstract class AMapLayer : RGBMapLayer
     public override EnumMinMagFilter MagFilter => EnumMinMagFilter.Nearest;
     
     protected ICoreClientAPI _capi;
-    private MapDB _mapdb;
+    protected MapDB _mapdb;
     protected IWorldChunk[] _chunksTmp;
-    private int _chunksize;
+    protected int _chunksize;
     private float _mtThread1secAccum;
     private float _genAccum;
-    private float _diskSaveAccum;
-    private object _chunksToGenLock = new();
-    private UniqueQueue<FastVec2i> _chunksToGen = new();
+    protected float _diskSaveAccum;
+    protected object _chunksToGenLock = new();
+    protected UniqueQueue<FastVec2i> _chunksToGen = new();
     private HashSet<FastVec2i> _curVisibleChunks = new();
     private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
-    private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
+    protected Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
     protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
     
     protected readonly Dictionary<int, string> LocalizedNameByColor = new();
@@ -411,7 +411,7 @@ public abstract class AMapLayer : RGBMapLayer
         return TextCommandResult.Success("Redrawing map...");
     }
     
-    private void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
+    protected void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
     {
         _readyMapPieces.Enqueue(new ReadyMapPiece
         {

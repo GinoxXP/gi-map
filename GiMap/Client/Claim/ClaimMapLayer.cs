@@ -14,12 +14,78 @@ public class ClaimMapLayer : ABlockMapLayer
     
     public ClaimMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
-        _capi.World.RegisterGameTickListener(UpdateClaimRadar, 1000);
     }
 
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new ClaimComponent(_capi, baseCord, this);
 
+    public override void OnOffThreadTick(float dt)
+    {
+        GenerateListShowClaim();
+
+        foreach (var claim in _claims)
+        {
+            foreach (var area in claim.Areas)
+            {
+                int minXChunk = area.MinX / _chunksize;
+                int maxXChunk = area.MaxX / _chunksize;
+                int minZChunk = area.MinZ / _chunksize;
+                int maxZChunk = area.MaxZ / _chunksize;
+
+                for (int xChunk = minXChunk; xChunk <= maxXChunk; xChunk++)
+                {
+                    for (int zChunk = minZChunk; zChunk <= maxZChunk; zChunk++)
+                    {
+                        var cord = new FastVec2i(xChunk, zChunk);
+                        IMapChunk mc = api.World.BlockAccessor.GetMapChunk(cord.X, cord.Y);
+
+                        if (mc == null)
+                        {
+                            try
+                            {
+                                MapPieceDB piece = _mapdb.GetMapPiece(cord);
+                                if (piece?.Pixels != null)
+                                {
+                                    LoadFromChunkPixels(cord, piece.Pixels);
+                                }
+                            }
+                            catch (ProtoBuf.ProtoException)
+                            {
+                                api.Logger.Warning("Failed loading map db section {0}/{1}, a protobuf exception was thrown. Will ignore.", cord.X, cord.Y);
+                            }
+                            catch (OverflowException)
+                            {
+                                api.Logger.Warning("Failed loading map db section {0}/{1}, a overflow exception was thrown. Will ignore.", cord.X, cord.Y);
+                            }
+
+                            continue;
+                        }
+
+                        int[] tintedPixels = GenerateChunkImage(cord, mc);
+                        if (tintedPixels == null)
+                        {
+                            lock (_chunksToGenLock)
+                            {
+                                _chunksToGen.Enqueue(cord.Copy());
+                            }
+                            continue;
+                        }
+
+                        _toSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
+                        LoadFromChunkPixels(cord, tintedPixels);
+                    }
+                }
+            }
+        }
+
+        if (_toSaveList.Count > 100 || _diskSaveAccum > 4f)
+        {
+            _diskSaveAccum = 0;
+            _mapdb.SetMapPieces(_toSaveList);
+            _toSaveList.Clear();
+        }
+    }
+    
     protected override int GetColor(BlockPos pos, Block block)
     {
         var claim = GetClaim(pos);
@@ -51,11 +117,6 @@ public class ClaimMapLayer : ABlockMapLayer
             }
         }
         return bestClaim;
-    }
-    
-    private void UpdateClaimRadar(float dt) 
-    {
-        GenerateListShowClaim();
     }
     
     private void GenerateListShowClaim() 

@@ -12,33 +12,35 @@ namespace GiMap.Client;
 
 public abstract class AMapLayer : RGBMapLayer
 {
+    private readonly HashSet<FastVec2i> _curVisibleChunks = new();
+    private readonly ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
+    private readonly ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
+    
+    protected readonly ICoreClientAPI Capi;
+    protected readonly MapDB Mapdb;
+    protected readonly int Chunksize;
+    protected readonly object ChunksToGenLock = new();
+    protected readonly UniqueQueue<FastVec2i> ChunksToGen = new();
+    protected readonly Dictionary<FastVec2i, MapPieceDB> ToSaveList = new();
+    protected readonly Dictionary<int, string> LocalizedNameByColor = new();
+    
+    private float _mtThread1SecAccum;
+    private float _genAccum;
+    
+    protected float DiskSaveAccum;
+    protected IWorldChunk[] ChunksTmp;
+    
     public override string LayerGroupCode => Title;
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
     public override MapLegendItem[] LegendItems => null;
     public override EnumMinMagFilter MinFilter => EnumMinMagFilter.Linear;
     public override EnumMinMagFilter MagFilter => EnumMinMagFilter.Nearest;
     
-    protected ICoreClientAPI _capi;
-    protected MapDB _mapdb;
-    protected IWorldChunk[] _chunksTmp;
-    protected int _chunksize;
-    private float _mtThread1secAccum;
-    private float _genAccum;
-    protected float _diskSaveAccum;
-    protected object _chunksToGenLock = new();
-    protected UniqueQueue<FastVec2i> _chunksToGen = new();
-    private HashSet<FastVec2i> _curVisibleChunks = new();
-    private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
-    protected Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
-    protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
-    
-    protected readonly Dictionary<int, string> LocalizedNameByColor = new();
-    
-    public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
+    public Vec4f OverlayColor { get; } = new Vec4f(1, 1, 1, 1);
 
     protected AMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
-        _chunksize = api.World.BlockAccessor.ChunkSize;
+        Chunksize = api.World.BlockAccessor.ChunkSize;
 
         OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha;
         
@@ -46,22 +48,22 @@ public abstract class AMapLayer : RGBMapLayer
         
         Active = false;
         
-        _capi = api as ICoreClientAPI;
+        Capi = api as ICoreClientAPI;
 
         if (api.Side == EnumAppSide.Client)
         {
             api.World.Logger.Notification("Loading world map cache db...");
-            _mapdb = new MapDB(api.World.Logger);
+            Mapdb = new MapDB(api.World.Logger);
             string errorMessage = null;
             string mapDbFilePath = GetMapDbFilePath();
-            _mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
+            Mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
             if (errorMessage != null)
                 throw new Exception($"Cannot open {mapDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
 
             api.ChatCommands.GetOrCreate($"{Title}map").BeginSubCommand("purgedb").WithDescription("purge the map db")
                 .HandleWith(delegate
                 {
-                    _mapdb.Purge();
+                    Mapdb.Purge();
                     return TextCommandResult.Success("Ok, db purged");
                 })
                 .EndSubCommand()
@@ -96,8 +98,8 @@ public abstract class AMapLayer : RGBMapLayer
             foreach (var mccomp in modified) mccomp.FinishSetChunks();
         }
 
-        _mtThread1secAccum += dt;
-        if (_mtThread1secAccum > 1)
+        _mtThread1SecAccum += dt;
+        if (_mtThread1SecAccum > 1)
         {
             List<FastVec2i> toRemove = new List<FastVec2i>();
 
@@ -126,7 +128,7 @@ public abstract class AMapLayer : RGBMapLayer
                 _loadedMapData.TryRemove(val, out _);
 
 
-            _mtThread1secAccum = 0;
+            _mtThread1SecAccum = 0;
         }
     }
 
@@ -135,7 +137,7 @@ public abstract class AMapLayer : RGBMapLayer
         if (api.Side == EnumAppSide.Server)
             return;
 
-        _chunksTmp = new IWorldChunk[api.World.BlockAccessor.MapSizeY / 32];
+        ChunksTmp = new IWorldChunk[api.World.BlockAccessor.MapSizeY / 32];
     }
     
     public override void ComposeDialogExtras(GuiDialogWorldMap guiDialogWorldMap, GuiComposer compo)
@@ -159,7 +161,7 @@ public abstract class AMapLayer : RGBMapLayer
 
 
         guiDialogWorldMap.Composers[key] =
-            _capi.Gui
+            Capi.Gui
                 .CreateCompo(key, dlgBounds)
                 .AddShadedDialogBG(bgBounds, false)
                 .AddDialogTitleBar(Lang.Get("maplayer-"+LayerGroupCode), () => { guiDialogWorldMap.Composers[key].Enabled = false; })
@@ -176,8 +178,8 @@ public abstract class AMapLayer : RGBMapLayer
     
     public override void OnMapClosedClient()
     {
-        lock (_chunksToGenLock)
-            _chunksToGen.Clear();
+        lock (ChunksToGenLock)
+            ChunksToGen.Clear();
         
         _curVisibleChunks.Clear();
         ConfigManager.SaveModConfig(api);
@@ -200,17 +202,17 @@ public abstract class AMapLayer : RGBMapLayer
     public override void OnShutDown()
     {
         MultiChunkMapComponent.tmpTexture?.Dispose();
-        _mapdb?.Dispose();
+        Mapdb?.Dispose();
     }
     
     public override void OnOffThreadTick(float dt)
     {
         _genAccum += dt;
-        _diskSaveAccum += dt;
+        DiskSaveAccum += dt;
         if (_genAccum < 0.1) return;
         _genAccum = 0;
 
-        int quantityToGen = _chunksToGen.Count;
+        int quantityToGen = ChunksToGen.Count;
         while (quantityToGen > 0)
         {
             if (mapSink.IsShuttingDown) break;
@@ -218,20 +220,20 @@ public abstract class AMapLayer : RGBMapLayer
             quantityToGen--;
             FastVec2i cord;
 
-            lock (_chunksToGenLock)
+            lock (ChunksToGenLock)
             {
-                if (_chunksToGen.Count == 0) break;
-                cord = _chunksToGen.Dequeue();
+                if (ChunksToGen.Count == 0) break;
+                cord = ChunksToGen.Dequeue();
             }
 
-            if (!api.World.BlockAccessor.IsValidPos(cord.X * _chunksize, 1, cord.Y * _chunksize)) continue;
+            if (!api.World.BlockAccessor.IsValidPos(cord.X * Chunksize, 1, cord.Y * Chunksize)) continue;
 
             IMapChunk mc = api.World.BlockAccessor.GetMapChunk(cord.X, cord.Y);
             if (mc == null)
             {
                 try
                 {
-                    MapPieceDB piece = _mapdb.GetMapPiece(cord);
+                    MapPieceDB piece = Mapdb.GetMapPiece(cord);
                     if (piece?.Pixels != null)
                     {
                         LoadFromChunkPixels(cord, piece.Pixels);
@@ -252,24 +254,24 @@ public abstract class AMapLayer : RGBMapLayer
             int[] tintedPixels = GenerateChunkImage(cord, mc);
             if (tintedPixels == null)
             {
-                lock (_chunksToGenLock)
+                lock (ChunksToGenLock)
                 {
-                    _chunksToGen.Enqueue(cord);
+                    ChunksToGen.Enqueue(cord);
                 }
 
                 continue;
             }
 
-            _toSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
+            ToSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
 
             LoadFromChunkPixels(cord, tintedPixels);
         }
 
-        if (_toSaveList.Count > 100 || _diskSaveAccum > 4f)
+        if (ToSaveList.Count > 100 || DiskSaveAccum > 4f)
         {
-            _diskSaveAccum = 0;
-            _mapdb.SetMapPieces(_toSaveList);
-            _toSaveList.Clear();
+            DiskSaveAccum = 0;
+            Mapdb.SetMapPieces(ToSaveList);
+            ToSaveList.Clear();
         }
     }
     
@@ -298,7 +300,7 @@ public abstract class AMapLayer : RGBMapLayer
             _curVisibleChunks.Remove(val);
         }
 
-        lock (_chunksToGenLock)
+        lock (ChunksToGenLock)
         {
             foreach (FastVec2i cord in nowVisible)
             {
@@ -313,7 +315,7 @@ public abstract class AMapLayer : RGBMapLayer
                     if (mcomp.IsChunkSet(dx, dz)) continue;
                 }
 
-                _chunksToGen.Enqueue(cord.Copy());
+                ChunksToGen.Enqueue(cord.Copy());
             }
         }
 
@@ -348,10 +350,10 @@ public abstract class AMapLayer : RGBMapLayer
 
     protected bool TryLoadChunks(FastVec2i chunkPos)
     {
-        for (var i = 0; i < _chunksTmp.Length; i++)
+        for (var i = 0; i < ChunksTmp.Length; i++)
         {
-            _chunksTmp[i] = _capi.World.BlockAccessor.GetChunk(chunkPos.X, i, chunkPos.Y);
-            if (_chunksTmp[i] == null || !(_chunksTmp[i] as IClientChunk).LoadedFromServer)
+            ChunksTmp[i] = Capi.World.BlockAccessor.GetChunk(chunkPos.X, i, chunkPos.Y);
+            if (ChunksTmp[i] == null || !(ChunksTmp[i] as IClientChunk).LoadedFromServer)
                 return false;
         }
         return true;
@@ -359,8 +361,8 @@ public abstract class AMapLayer : RGBMapLayer
 
     protected void ClearChunks()
     {
-        for (var i = 0; i < _chunksTmp.Length; i++)
-            _chunksTmp[i] = null;
+        for (var i = 0; i < ChunksTmp.Length; i++)
+            ChunksTmp[i] = null;
     }
 
     protected void FillDictionary(int color, string localizedName)
@@ -370,7 +372,7 @@ public abstract class AMapLayer : RGBMapLayer
     
     private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)
     {
-        lock (_chunksToGenLock)
+        lock (ChunksToGenLock)
         {
             if (!mapSink.IsOpened)
                 return;
@@ -381,7 +383,7 @@ public abstract class AMapLayer : RGBMapLayer
             if (!_loadedMapData.ContainsKey(tmpMccoord) && !_curVisibleChunks.Contains(tmpCoord))
                 return;
 
-            _chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
+            ChunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
         }
     }
     
@@ -400,11 +402,11 @@ public abstract class AMapLayer : RGBMapLayer
         }
 
         _loadedMapData.Clear();
-        lock (_chunksToGenLock)
+        lock (ChunksToGenLock)
         {
             foreach (FastVec2i curVisibleChunk in _curVisibleChunks)
             {
-                _chunksToGen.Enqueue(curVisibleChunk.Copy());
+                ChunksToGen.Enqueue(curVisibleChunk.Copy());
             }
         }
 

@@ -18,7 +18,7 @@ public class ClaimMapLayer : ABlockMapLayer
     }
 
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new ClaimComponent(_capi, baseCord, this);
+        => new ClaimComponent(Capi, baseCord, this);
 
     public override void OnOffThreadTick(float dt)
     {
@@ -28,10 +28,10 @@ public class ClaimMapLayer : ABlockMapLayer
         {
             foreach (var area in claim.Areas)
             {
-                int minXChunk = area.MinX / _chunksize;
-                int maxXChunk = area.MaxX / _chunksize;
-                int minZChunk = area.MinZ / _chunksize;
-                int maxZChunk = area.MaxZ / _chunksize;
+                int minXChunk = area.MinX / Chunksize;
+                int maxXChunk = area.MaxX / Chunksize;
+                int minZChunk = area.MinZ / Chunksize;
+                int maxZChunk = area.MaxZ / Chunksize;
 
                 for (int xChunk = minXChunk; xChunk <= maxXChunk; xChunk++)
                 {
@@ -44,7 +44,7 @@ public class ClaimMapLayer : ABlockMapLayer
                         {
                             try
                             {
-                                MapPieceDB piece = _mapdb.GetMapPiece(cord);
+                                MapPieceDB piece = Mapdb.GetMapPiece(cord);
                                 if (piece?.Pixels != null)
                                 {
                                     LoadFromChunkPixels(cord, piece.Pixels);
@@ -65,25 +65,25 @@ public class ClaimMapLayer : ABlockMapLayer
                         int[] tintedPixels = GenerateChunkImage(cord, mc);
                         if (tintedPixels == null)
                         {
-                            lock (_chunksToGenLock)
+                            lock (ChunksToGenLock)
                             {
-                                _chunksToGen.Enqueue(cord.Copy());
+                                ChunksToGen.Enqueue(cord.Copy());
                             }
                             continue;
                         }
 
-                        _toSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
+                        ToSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
                         LoadFromChunkPixels(cord, tintedPixels);
                     }
                 }
             }
         }
 
-        if (_toSaveList.Count > 100 || _diskSaveAccum > 4f)
+        if (ToSaveList.Count > 100 || DiskSaveAccum > 4f)
         {
-            _diskSaveAccum = 0;
-            _mapdb.SetMapPieces(_toSaveList);
-            _toSaveList.Clear();
+            DiskSaveAccum = 0;
+            Mapdb.SetMapPieces(ToSaveList);
+            ToSaveList.Clear();
         }
     }
     
@@ -136,14 +136,14 @@ public class ClaimMapLayer : ABlockMapLayer
     private void GenerateListShowClaim() 
     {
         _claims.Clear();
-        List<LandClaim> allClaims = _capi.World.Claims.All.ToList();
+        List<LandClaim> allClaims = Capi.World.Claims.All.ToList();
         foreach (LandClaim claim in allClaims)
         {
             foreach (Cuboidi area in claim.Areas)
             {
-                if (DistanceXZTo(_capi.World.Player.Entity.Pos, area.Center.ToBlockPos()) < ClientSettings.ViewDistance ||
-                    DistanceXZTo(_capi.World.Player.Entity.Pos, area.Start.ToBlockPos()) < ClientSettings.ViewDistance ||
-                    DistanceXZTo(_capi.World.Player.Entity.Pos, area.End.ToBlockPos()) < ClientSettings.ViewDistance)
+                if (DistanceXZTo(Capi.World.Player.Entity.Pos, area.Center.ToBlockPos()) < ClientSettings.ViewDistance ||
+                    DistanceXZTo(Capi.World.Player.Entity.Pos, area.Start.ToBlockPos()) < ClientSettings.ViewDistance ||
+                    DistanceXZTo(Capi.World.Player.Entity.Pos, area.End.ToBlockPos()) < ClientSettings.ViewDistance)
                 {
                     _claims.Add(claim);
                     break;

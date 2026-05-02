@@ -25,18 +25,18 @@ public abstract class ABlockMapLayer : AMapLayer
         {
             int topBlockHeight = mc.RainHeightMap[k];
             int topChunkIndex = topBlockHeight / 32;
-            if (topChunkIndex >= _chunksTmp.Length)
+            if (topChunkIndex >= ChunksTmp.Length)
                 continue;
 
             MapUtil.PosInt2d(k, 32L, vec2i);
-            int index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+            int index = ChunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
             Block block = api.World.Blocks[index];
 
             while (topBlockHeight > 0 && !IsBlockValid(block))
             {
                 topBlockHeight--;
                 topChunkIndex = topBlockHeight / 32;
-                index = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+                index = ChunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
                 block = api.World.Blocks[index];
             }
 

@@ -30,7 +30,7 @@ public class TemperatureMapLayer : ABlockMapLayer
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new TemperatureChunkMapComponent(_capi, baseCord, this);
+        => new TemperatureChunkMapComponent(Capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos, Block block)
     {

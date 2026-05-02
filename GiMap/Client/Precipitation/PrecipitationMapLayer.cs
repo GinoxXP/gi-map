@@ -25,7 +25,7 @@ public class PrecipitationMapLayer : ABlockMapLayer
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new PrecipitationMultiChunkMapComponent(_capi, baseCord, this);
+        => new PrecipitationMultiChunkMapComponent(Capi, baseCord, this);
     
     protected override int GetColor(BlockPos pos, Block block)
     {

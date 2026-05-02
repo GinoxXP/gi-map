@@ -13,7 +13,7 @@ public class LightMapLayer : ABlockMapLayer
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new LightChunkMapComponent(_capi, baseCord, this);
+        => new LightChunkMapComponent(Capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos, Block block)
     {

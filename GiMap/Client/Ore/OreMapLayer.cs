@@ -52,7 +52,7 @@ public class OreMapLayer : ABlockMapLayer
     }
 
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new OreChunkMapComponent(_capi, baseCord, this);
+        => new OreChunkMapComponent(Capi, baseCord, this);
 
     protected override bool IsBlockValid(Block block)
         => block != null && _colorByBlockId.ContainsKey(block.Id);

@@ -14,7 +14,7 @@ public class ChunkGridMapLayer : ABlockMapLayer
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new ChunkGridMultiChunkComponent(_capi, baseCord, this);
+        => new ChunkGridMultiChunkComponent(Capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos, Block block)
     {

@@ -28,7 +28,7 @@ public class TemporalStabilityMapLayer : ABlockMapLayer
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
-        => new TemporalStabilityMultiChunkComponent(_capi, baseCord, this);
+        => new TemporalStabilityMultiChunkComponent(Capi, baseCord, this);
 
     protected override int GetColor(BlockPos pos, Block block)
     {

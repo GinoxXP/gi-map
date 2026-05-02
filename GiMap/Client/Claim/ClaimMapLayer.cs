@@ -9,6 +9,7 @@ namespace GiMap.Client.Claim;
 public class ClaimMapLayer : ABlockMapLayer
 {
     private List<LandClaim> _claims = new();
+    private readonly int _borderDeltaValue = 20;
     
     public override string Title => MapTypes.Claim;
     
@@ -92,8 +93,20 @@ public class ClaimMapLayer : ABlockMapLayer
         
         if (claim == null)
             return 0;
+
+        int deltaColor = 0;
+        foreach (var area in claim.Areas)
+        {
+            var facing = area.GetBoundaryFacingXZ(pos);
+
+            if (facing == BlockFacing.NORTH || facing == BlockFacing.WEST)
+                deltaColor = _borderDeltaValue;
+                
+            if (facing == BlockFacing.SOUTH || facing == BlockFacing.EAST)
+                deltaColor = -_borderDeltaValue;
+        }
         
-        return OwnerNameToColor(claim.LastKnownOwnerName);
+        return OwnerNameToColor(claim.LastKnownOwnerName, deltaColor);
     }
 
     public LandClaim? GetClaim(BlockPos pos)
@@ -116,6 +129,7 @@ public class ClaimMapLayer : ABlockMapLayer
                 }
             }
         }
+        
         return bestClaim;
     }
     
@@ -123,7 +137,7 @@ public class ClaimMapLayer : ABlockMapLayer
     {
         _claims.Clear();
         List<LandClaim> allClaims = _capi.World.Claims.All.ToList();
-        foreach (LandClaim claim in allClaims) 
+        foreach (LandClaim claim in allClaims)
         {
             foreach (Cuboidi area in claim.Areas)
             {
@@ -134,14 +148,14 @@ public class ClaimMapLayer : ABlockMapLayer
                     _claims.Add(claim);
                     break;
                 }
-            } 
+            }
         }
     }
     
     private double DistanceXZTo(EntityPos player, BlockPos cube) 
         => Math.Sqrt(Math.Pow(player.X - cube.X, 2) + Math.Pow(player.Z - cube.Z, 2));
     
-    private static int OwnerNameToColor(string input)
+    private static int OwnerNameToColor(string input, int deltaColor)
     {
         const uint firstPrime = 328514948;
         const uint secondPrime = 221669321;
@@ -162,6 +176,9 @@ public class ClaimMapLayer : ABlockMapLayer
             hashB ^= c;
         }
 
-        return ColorUtil.ToRgba(255, (int)(hashR % 256), (int)(hashG % 256), (int)(hashB % 256));
+        var r = Math.Clamp((int)(hashR % 256) + deltaColor, 0, 255);
+        var g = Math.Clamp((int)(hashG % 256) + deltaColor, 0, 255);
+        var b = Math.Clamp((int)(hashB % 256) + deltaColor, 0, 255);
+        return ColorUtil.ToRgba(255, r, g, b);
     }
 }

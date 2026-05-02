@@ -79,6 +79,6 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
         var color = chunk[posInChunk.XInt % 32 + (posInChunk.ZInt % 32) * 32];
         var localizedString = _mapLayer.GetLocalizedStringByColor(color);
 
-        hoverText.Append(localizedString);
+        hoverText.AppendLine(localizedString);
     }
 }

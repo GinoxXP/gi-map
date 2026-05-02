@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Vintagestory.API.Client;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace GiMap.Client.Claim;
@@ -19,10 +18,7 @@ public class ClaimComponent : AChunkMapComponent
         var claim = _claimMapLayer.GetClaim(_mouseWorldPos.AsBlockPos);
 
         if (claim == null)
-        {
-            hoverText.Append(Lang.Get("na"));
             return;
-        }
         
         hoverText.AppendLine(claim.LastKnownOwnerName);
     }

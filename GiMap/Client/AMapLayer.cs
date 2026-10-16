@@ -83,7 +83,7 @@ public abstract class AMapLayer : RGBMapLayer
                 if (errorMessage != null)
                     throw new Exception($"Cannot open {lodDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
 
-                _lod = new LodTileSet(_capi, _lodDb, ReadChunkPieces, CombineLodColors);
+                _lod = new LodTileSet(_capi, _lodDb, ReadChunkPieces, CombineLodColors, HasLodTexelConversion ? LodTexelToRgba : null);
             }
 
             api.ChatCommands.GetOrCreate($"{Title}map").BeginSubCommand("purgedb").WithDescription("purge the map db")
@@ -511,6 +511,24 @@ public abstract class AMapLayer : RGBMapLayer
     protected virtual void AppendLodHoverText(int color, StringBuilder hoverText)
         => hoverText.Append(GetLocalizedStringByColor(color));
 
+    /// <summary>
+    /// True when LOD texels are not colors and are converted by <see cref="LodTexelToRgba"/> on upload
+    /// </summary>
+    protected virtual bool HasLodTexelConversion => false;
+
+    protected virtual int LodTexelToRgba(int texel) => texel;
+
+    /// <summary>
+    /// Uploads loaded LOD tiles again after <see cref="LodTexelToRgba"/> started returning other colors
+    /// </summary>
+    protected void RefreshLodTextures()
+        => _lod?.RefreshTextures();
+
+    /// <summary>
+    /// Appended to the map db file names, changed when the format of stored pieces changes
+    /// </summary>
+    protected virtual string DbSuffix => "";
+
     private bool IsLodZoom => LodMode != LodMode.PerChunk && LodState.Level > 0;
 
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
@@ -560,7 +578,7 @@ public abstract class AMapLayer : RGBMapLayer
     {
         string text = Path.Combine(GamePaths.DataPath, "Maps");
         GamePaths.EnsurePathExists(text);
-        return Path.Combine(text, api.World.SavegameIdentifier + $"-{Title}{suffix}.db");
+        return Path.Combine(text, api.World.SavegameIdentifier + $"-{Title}{DbSuffix}{suffix}.db");
     }
 
     private int[]?[] ReadChunkPieces(List<FastVec2i> cords)

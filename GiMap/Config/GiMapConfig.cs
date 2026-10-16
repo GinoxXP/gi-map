@@ -218,7 +218,9 @@ public class GiMapConfig
             {"game:ore-fluorite-.*", "#800080"},
             {"game:ore-phosphorite-.*", "#a9a9a9"},
             {"game:ore-kernite-.*", "#e6e6e6"},
-            {"game:ore-korundum-.*", "#960018"}
+            {"game:ore-korundum-.*", "#960018"},
+            {"game:ore-quartz-.*", "#e6dfd3"},
+            {"game:ore-olivine-.*", "#8a9a3b"}
         };
 
         public Dictionary<string, string> whitelist = new()
@@ -227,16 +229,33 @@ public class GiMapConfig
             {"game:rawclay-blue-.*", "#527aab"},
             {"game:rawclay-red-.*", "#b34b57"},
             {"game:rawclay-fire-.*", "#c99169"},
-            {"game:rock-halite", "#ffc9dd"}
+            {"game:rock-halite", "#ffc9dd"},
+            {"game:rock-whitemarble", "#ece9e2"},
+            {"game:rock-redmarble", "#d49a9a"},
+            {"game:rock-greenmarble", "#5f8f6c"}
         };
-        
+
         public string[] blacklist = new[]
         {
-            "game:ore-quartz-.*",
-            "game:ore-olivine-.*",
             "game:ore-flint"
         };
-        
+
+        // Keys of ores and whitelist entries hidden on the map
+        public string[] hiddenOres = Array.Empty<string>();
+
+        // Switches toggling several ores at once: name (lang key "ore-preset-<name>") -> keys of ores and whitelist entries
+        public Dictionary<string, string[]> presets = new()
+        {
+            {"copper", new[] {"game:ore-.*-nativecopper-.*", "game:ore-.*-malachite-.*"}},
+            {"bronze", new[] {"game:ore-.*-cassiterite-.*", "game:ore-.*-bismuthinite-.*", "game:ore-.*-sphalerite-.*", "game:ore-.*_nativegold-.*", "game:ore-.*_nativesilver-.*"}},
+            {"iron", new[] {"game:ore-.*-limonite-.*", "game:ore-.*-magnetite-.*", "game:ore-.*-hematite-.*", "game:meteorite-iron"}},
+            {"coal", new[] {"game:ore-lignite-.*", "game:ore-bituminouscoal-.*", "game:ore-anthracite-.*"}},
+            {"quartz-olivine", new[] {"game:ore-quartz-.*", "game:ore-olivine-.*"}},
+            {"precious", new[] {"game:ore-.*_nativegold-.*", "game:ore-.*_nativesilver-.*"}},
+            {"clay", new[] {"game:rawclay-blue-.*", "game:rawclay-red-.*", "game:rawclay-fire-.*"}},
+            {"marble", new[] {"game:rock-whitemarble", "game:rock-redmarble", "game:rock-greenmarble"}}
+        };
+
         
         public Ore()
         {

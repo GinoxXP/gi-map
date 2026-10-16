@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.MathTools;
+﻿using System.Globalization;
+using Vintagestory.API.MathTools;
 
 namespace GiMap;
 
@@ -6,14 +7,14 @@ public static class ColorUtilExtensions
 {
     public static int HexToColor(string hex)
     {
-        hex = hex.Replace("#", string.Empty);
-        
-        var r = int.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-        var g = int.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-        var b = int.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-        var a = hex.Length < 8 ?
+        var span = hex.AsSpan().TrimStart('#');
+
+        var r = int.Parse(span.Slice(0, 2), NumberStyles.HexNumber);
+        var g = int.Parse(span.Slice(2, 2), NumberStyles.HexNumber);
+        var b = int.Parse(span.Slice(4, 2), NumberStyles.HexNumber);
+        var a = span.Length < 8 ?
             255 :
-            int.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+            int.Parse(span.Slice(6, 2), NumberStyles.HexNumber);
 
         return ColorUtil.ToRgba(a, b, g, r);
     }

@@ -15,10 +15,37 @@ public class HeightMapLayer : AMapLayer
 
     private readonly string[] _waterBlocks = new[] { "game:water-", "game:saltwater-", "game:boilingwater-"};
 
+    private readonly Vec4i _mountainColor;
+    private readonly Vec4i _plainColor;
+    private readonly Vec4i _lowLandColor;
+    private readonly Vec4i _seaLevelWaterColor;
+    private readonly Vec4i _highWaterColor;
+    private readonly Vec4i _trenchColor;
+
+    private bool[] _isWaterByBlockId = Array.Empty<bool>();
+
     public HeightMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
         _maxHeight = _capi.World.MapSizeY;
         _seaLevel = _capi.World.SeaLevel;
+
+        var config = ConfigManager.ConfigInstance.HeightMode;
+        _mountainColor = config.mountainColor;
+        _plainColor = config.plainColor;
+        _lowLandColor = config.lowLandColor;
+        _seaLevelWaterColor = config.seaLevelWaterColor;
+        _highWaterColor = config.highWaterColor;
+        _trenchColor = config.trenchColor;
+    }
+
+    public override void OnLoaded()
+    {
+        base.OnLoaded();
+
+        var blocks = api.World.Blocks;
+        _isWaterByBlockId = new bool[blocks.Count];
+        for (var i = 0; i < blocks.Count; i++)
+            _isWaterByBlockId[i] = blocks[i] != null && IsWaterBlockType(blocks[i]);
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
@@ -61,19 +88,11 @@ public class HeightMapLayer : AMapLayer
                     block = api.World.Blocks[index];
                 }
                 
-                resultPixelArray[k] = GetColor(
-                    topBlockHeight,
-                    ConfigManager.ConfigInstance.HeightMode.highWaterColor,
-                    ConfigManager.ConfigInstance.HeightMode.seaLevelWaterColor,
-                    ConfigManager.ConfigInstance.HeightMode.trenchColor);
+                resultPixelArray[k] = GetColor(topBlockHeight, _highWaterColor, _seaLevelWaterColor, _trenchColor);
             }
             else
             {
-                resultPixelArray[k] = GetColor(
-                    topBlockHeight,
-                    ConfigManager.ConfigInstance.HeightMode.mountainColor,
-                    ConfigManager.ConfigInstance.HeightMode.plainColor,
-                    ConfigManager.ConfigInstance.HeightMode.lowLandColor);
+                resultPixelArray[k] = GetColor(topBlockHeight, _mountainColor, _plainColor, _lowLandColor);
             }
         }
         
@@ -124,11 +143,16 @@ public class HeightMapLayer : AMapLayer
         => value / rate * rate;
 
     private bool IsWater(Block block)
+        => _isWaterByBlockId[block.Id];
+
+    // Called once per block type in OnLoaded, the result is looked up by block id
+    private bool IsWaterBlockType(Block block)
     {
-        if (block.BlockMaterial == EnumBlockMaterial.Water)
-            return _waterBlocks.Any(b => block.Code.ToString().Contains(b));
-        
-        return false;
+        if (block.BlockMaterial != EnumBlockMaterial.Water)
+            return false;
+
+        var code = block.Code?.ToString();
+        return code != null && _waterBlocks.Any(code.Contains);
     }
     
     private bool IsBlockValid(Block block)

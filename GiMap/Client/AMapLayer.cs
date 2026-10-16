@@ -210,7 +210,10 @@ public abstract class AMapLayer : RGBMapLayer
         if (_genAccum < 0.1) return;
         _genAccum = 0;
 
-        int quantityToGen = _chunksToGen.Count;
+        int quantityToGen;
+        lock (_chunksToGenLock)
+            quantityToGen = _chunksToGen.Count;
+
         while (quantityToGen > 0)
         {
             if (mapSink.IsShuttingDown) break;
@@ -265,7 +268,7 @@ public abstract class AMapLayer : RGBMapLayer
             LoadFromChunkPixels(cord, tintedPixels);
         }
 
-        if (_toSaveList.Count > 100 || _diskSaveAccum > 4f)
+        if (_toSaveList.Count > 100 || (_diskSaveAccum > 4f && _toSaveList.Count > 0))
         {
             _diskSaveAccum = 0;
             _mapdb.SetMapPieces(_toSaveList);

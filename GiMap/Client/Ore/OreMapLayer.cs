@@ -28,7 +28,7 @@ public class OreMapLayer : AMapLayer
     private const int GroupColumns = 3;
     private const int GroupRowHeight = 26;
     private const int GroupColumnWidth = 175;
-    private const int PresetColumns = 4;
+    private const int PresetColumns = 3;
     private const int PresetColumnWidth = GroupColumns * GroupColumnWidth / PresetColumns;
     private const int SectionGap = 10;
 

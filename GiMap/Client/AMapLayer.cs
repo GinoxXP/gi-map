@@ -45,6 +45,9 @@ public abstract class AMapLayer : RGBMapLayer
     private bool _wasLodZoom;
     private Vec3d _mouseWorldPos = new();
     private Vec2f _mouseViewPos = new();
+    // Changed by Reload, pieces generated with older settings are generated again
+    private volatile int _configVersion;
+    private int _toSaveConfigVersion;
 
     protected readonly Dictionary<int, string> LocalizedNameByColor = new();
     
@@ -277,6 +280,14 @@ public abstract class AMapLayer : RGBMapLayer
         _genAccum += dt;
         _diskSaveAccum += dt;
 
+        // Pieces waiting for the disk were generated with the settings before Reload
+        int configVersion = _configVersion;
+        if (_toSaveConfigVersion != configVersion)
+        {
+            _toSaveList.Clear();
+            _toSaveConfigVersion = configVersion;
+        }
+
         bool isShown = Active;
         // Invalidations are written even for hidden layers so cached tiles never go stale
         _lod?.OffThreadTick(isShown && IsLodZoom);
@@ -334,7 +345,7 @@ public abstract class AMapLayer : RGBMapLayer
             }
 
             int[] tintedPixels = GenerateChunkImage(cord, mc);
-            if (tintedPixels == null)
+            if (tintedPixels == null || configVersion != _configVersion)
             {
                 lock (_chunksToGenLock)
                 {
@@ -584,7 +595,47 @@ public abstract class AMapLayer : RGBMapLayer
     private int[]?[] ReadChunkPieces(List<FastVec2i> cords)
         => ChunkPieceReader.Read(_mapdb, _toSaveList, cords);
 
+    /// <summary>
+    /// Reads the layer settings from the config again, called on the main thread from the settings tab
+    /// </summary>
+    protected virtual void ApplyConfig()
+    {
+    }
+
+    /// <summary>
+    /// Applies changed settings that are baked into the pixels: purges the map db and redraws the layer
+    /// </summary>
+    public void Reload()
+    {
+        _configVersion++;
+        LocalizedNameByColor.Clear();
+        ApplyConfig();
+        _mapdb.Purge();
+        Redraw();
+    }
+
+    public static T? Find<T>() where T : AMapLayer
+    {
+        lock (Layers)
+            return Layers.OfType<T>().FirstOrDefault();
+    }
+
+    public static void ApplyOverlayAlphaToAll()
+    {
+        lock (Layers)
+        {
+            foreach (var layer in Layers)
+                layer.OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha;
+        }
+    }
+
     private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
+    {
+        Redraw();
+        return TextCommandResult.Success("Redrawing map...");
+    }
+
+    private void Redraw()
     {
         foreach (var value in _loadedMapData.Values)
         {
@@ -601,8 +652,6 @@ public abstract class AMapLayer : RGBMapLayer
                 _chunksToGen.Enqueue(curVisibleChunk.Copy());
             }
         }
-
-        return TextCommandResult.Success("Redrawing map...");
     }
     
     private void SetChunkPixels(FastVec2i cord, int[] pixels, HashSet<AChunkMapComponent> modified)

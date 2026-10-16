@@ -63,5 +63,22 @@
     "caves-ore": "Ore",
     "caves-lava": "Lava",
     "caves-ice": "Ice",
-    "caves-other": "Structure"
+    "caves-other": "Structure",
+    "gimap-settings-header": "GiMap",
+    "gimap-settings-general": "General",
+    "gimap-settings-overlayalpha": "Layer opacity",
+    "gimap-settings-minzoom": "Minimum map zoom",
+    "gimap-settings-minzoom-hover": "How far the world map can be zoomed out. Vanilla stops at 1/4",
+    "gimap-settings-modes": "Map modes",
+    "gimap-settings-modes-hover": "Enabling or disabling a mode takes effect after rejoining the world",
+    "gimap-settings-topographic": "Topographic",
+    "gimap-settings-showcontours": "Contour lines",
+    "gimap-settings-contourinterval": "Contour interval, blocks",
+    "gimap-settings-majorcontourevery": "Every Nth contour is major",
+    "gimap-settings-showheightlabels": "Height labels",
+    "gimap-settings-contourlabelsminzoom": "Contour labels from zoom",
+    "gimap-settings-peaklabelsminzoom": "Peak labels from zoom",
+    "gimap-settings-fertility": "Fertility",
+    "gimap-settings-hatching": "Hatch forest floor",
+    "gimap-settings-ignoresnow": "Show soil under snow"
 }

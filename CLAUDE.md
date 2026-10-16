@@ -21,8 +21,8 @@ There are no automated tests; verify changes in the game.
 |----------------------------|----------------------------------------------------------------|
 | `GiMap/GiMapModSystem.cs`  | Entry point: loads config, applies Harmony patches, registers map layers |
 | `GiMap/MapTypes.cs`        | String ids of map layers                                       |
-| `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode) and `ConfigManager` (`GiMapConfig.json`) |
-| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiElementDialogTitleBarPatch` adds the toggle to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles) |
+| `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode), `ConfigManager` (`GiMapConfig.json`) and `GiMapSettingsTab` (content of the "GiMap" tab of the in-game settings: mode switches, opacity, min zoom, topographic/fertility options; baked options call `AMapLayer.Reload`, which purges the layer db and redraws) |
+| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiElementDialogTitleBarPatch` adds the toggle to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles; `GuiCompositeSettingsPatch` adds the "GiMap" tab button to the in-game settings) |
 | `GiMap/Client/`            | Map modes and their base classes (`AMapLayer`, `ABlockMapLayer`, `AChunkMapComponent`) |
 | `GiMap/Client/Lod/`        | LOD for zoom below 0.5: `LodTileSet` merges chunk pieces into 128x128 tiles (2^level blocks per texel, level 2+), cached in `Maps/<save>-<layer>-lod.db`; a mode picks `LodMode` (`Tiles`, `Hidden`, `PerChunk`) |
 | `GiMap/assets/game/lang/`  | Localization: `en`, `ru`, `sr`                                 |
@@ -47,9 +47,10 @@ There are no automated tests; verify changes in the game.
 2. Add the id to `MapTypes`.
 3. Add a nested struct to `GiMapConfig` with `isEnabled` and the mode's colors, plus a `<Mode>Mode` field.
 4. Register the layer in `GiMapModSystem.StartClientSide` behind `isEnabled`.
-5. Add the id to `Remove`/`Insert` in `WorldMapManagerPatch`.
-6. Add `maplayer-<id>` and any legend/hover keys to **all** lang files (`en`, `ru`, `sr`).
-7. Update the Modes table above.
+5. Add the id to `Order` in `WorldMapManagerPatch`.
+6. Add the mode switch to `Modes` in `GiMapSettingsTab`.
+7. Add `maplayer-<id>` and any legend/hover keys to **all** lang files (`en`, `ru`, `sr`).
+8. Update the Modes table above.
 
 ## Rules
 - Modes live in `GiMap/Client/<Mode>/`.

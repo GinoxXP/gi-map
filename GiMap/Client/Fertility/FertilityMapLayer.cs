@@ -14,14 +14,14 @@ public class FertilityMapLayer : AMapLayer
     // Every N-th diagonal of a hatched block is drawn with the hatch color
     private const int HatchMask = 3;
 
-    private readonly (Regex[] patterns, int color)[] _fertilityGroups;
-    private readonly Regex[] _hatchedBlocks;
+    private (Regex[] patterns, int color)[] _fertilityGroups = Array.Empty<(Regex[], int)>();
+    private Regex[] _hatchedBlocks = Array.Empty<Regex>();
 
-    private readonly int _waterColor;
-    private readonly int _noFertilityColor;
-    private readonly int _hatchColor;
-    private readonly int _snowHatchColor;
-    private readonly bool _ignoreSnow;
+    private int _waterColor;
+    private int _noFertilityColor;
+    private int _hatchColor;
+    private int _snowHatchColor;
+    private bool _ignoreSnow;
 
     private int[] _colorByBlockId = Array.Empty<int>();
     private bool[] _isHatchedByBlockId = Array.Empty<bool>();
@@ -30,6 +30,11 @@ public class FertilityMapLayer : AMapLayer
     private bool[] _isSnowByBlockId = Array.Empty<bool>();
 
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
+    {
+        ApplyConfig();
+    }
+
+    protected override void ApplyConfig()
     {
         var config = ConfigManager.ConfigInstance.FertilityMode;
         var veryLowColor = ColorUtilExtensions.HexToColor(config.veryLowFertilityColor);
@@ -64,6 +69,10 @@ public class FertilityMapLayer : AMapLayer
             FillDictionary(_hatchColor, Lang.Get("fertility-forestfloor"));
         if (_ignoreSnow && !LocalizedNameByColor.ContainsKey(_snowHatchColor))
             FillDictionary(_snowHatchColor, Lang.Get("fertility-snow"));
+
+        // On reload the block tables depend on the new settings
+        if (_colorByBlockId.Length > 0)
+            BuildBlockTables();
     }
 
     private static Regex[] CompilePatterns(string[] patterns)
@@ -72,30 +81,41 @@ public class FertilityMapLayer : AMapLayer
     public override void OnLoaded()
     {
         base.OnLoaded();
+        BuildBlockTables();
+    }
 
+    // Tables are built aside and swapped in, the generation thread may be reading the old ones
+    private void BuildBlockTables()
+    {
         var blocks = api.World.Blocks;
-        _colorByBlockId = new int[blocks.Count];
-        _isHatchedByBlockId = new bool[blocks.Count];
-        _isValidByBlockId = new bool[blocks.Count];
-        _isFertileByBlockId = new bool[blocks.Count];
-        _isSnowByBlockId = new bool[blocks.Count];
+        var colorByBlockId = new int[blocks.Count];
+        var isHatchedByBlockId = new bool[blocks.Count];
+        var isValidByBlockId = new bool[blocks.Count];
+        var isFertileByBlockId = new bool[blocks.Count];
+        var isSnowByBlockId = new bool[blocks.Count];
         for (var i = 0; i < blocks.Count; i++)
         {
             var block = blocks[i];
             if (block == null)
             {
-                _colorByBlockId[i] = _noFertilityColor;
+                colorByBlockId[i] = _noFertilityColor;
                 continue;
             }
 
             var code = block.Code?.ToString();
             var isFertile = TryGetFertilityColor(code, out var color);
-            _colorByBlockId[i] = isFertile ? color : GetMaterialColor(block);
-            _isFertileByBlockId[i] = isFertile;
-            _isSnowByBlockId[i] = _ignoreSnow && block.BlockMaterial == EnumBlockMaterial.Snow;
-            _isValidByBlockId[i] = isFertile || (IsMaterialValid(block) && !_isSnowByBlockId[i]);
-            _isHatchedByBlockId[i] = code != null && _hatchedBlocks.Any(r => r.IsMatch(code));
+            colorByBlockId[i] = isFertile ? color : GetMaterialColor(block);
+            isFertileByBlockId[i] = isFertile;
+            isSnowByBlockId[i] = _ignoreSnow && block.BlockMaterial == EnumBlockMaterial.Snow;
+            isValidByBlockId[i] = isFertile || (IsMaterialValid(block) && !isSnowByBlockId[i]);
+            isHatchedByBlockId[i] = code != null && _hatchedBlocks.Any(r => r.IsMatch(code));
         }
+
+        _colorByBlockId = colorByBlockId;
+        _isHatchedByBlockId = isHatchedByBlockId;
+        _isValidByBlockId = isValidByBlockId;
+        _isFertileByBlockId = isFertileByBlockId;
+        _isSnowByBlockId = isSnowByBlockId;
     }
 
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)

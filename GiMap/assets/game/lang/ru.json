@@ -63,5 +63,22 @@
     "caves-ore": "Руда",
     "caves-lava": "Лава",
     "caves-ice": "Лёд",
-    "caves-other": "Постройка"
+    "caves-other": "Постройка",
+    "gimap-settings-header": "GiMap",
+    "gimap-settings-general": "Общие",
+    "gimap-settings-overlayalpha": "Непрозрачность слоёв",
+    "gimap-settings-minzoom": "Минимальный масштаб карты",
+    "gimap-settings-minzoom-hover": "Насколько можно отдалить карту мира. В ванилле — до 1/4",
+    "gimap-settings-modes": "Режимы карты",
+    "gimap-settings-modes-hover": "Включение и выключение режимов применяется после перезахода в мир",
+    "gimap-settings-topographic": "Топографическая",
+    "gimap-settings-showcontours": "Горизонтали",
+    "gimap-settings-contourinterval": "Шаг горизонталей, блоков",
+    "gimap-settings-majorcontourevery": "Каждая N-я горизонталь — основная",
+    "gimap-settings-showheightlabels": "Подписи высот",
+    "gimap-settings-contourlabelsminzoom": "Подписи горизонталей с масштаба",
+    "gimap-settings-peaklabelsminzoom": "Подписи вершин с масштаба",
+    "gimap-settings-fertility": "Плодородие",
+    "gimap-settings-hatching": "Штриховка лесной подстилки",
+    "gimap-settings-ignoresnow": "Показывать почву под снегом"
 }

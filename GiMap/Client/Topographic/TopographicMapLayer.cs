@@ -23,34 +23,36 @@ public class TopographicMapLayer : AMapLayer
         "game:woodenpath-",
     };
 
-    private readonly int _gravelColor;
-    private readonly int _iceColor;
-    private readonly int _roadColor;
-    private readonly int _sandColor;
-    private readonly int _snowColor;
-    private readonly int _soilColor;
-    private readonly int _stoneColor;
-    private readonly int _waterColor;
+    private int _gravelColor;
+    private int _iceColor;
+    private int _roadColor;
+    private int _sandColor;
+    private int _snowColor;
+    private int _soilColor;
+    private int _stoneColor;
+    private int _waterColor;
     private readonly int _errorColor;
 
-    private readonly bool _showContours;
-    private readonly int _contourInterval;
-    private readonly int _majorContourEvery;
-    private readonly int _contourColor;
-    private readonly int _majorContourColor;
+    private bool _showContours;
+    private int _contourInterval;
+    private int _majorContourEvery;
+    private int _contourColor;
+    private int _majorContourColor;
 
     // Index contour fragments shorter than this do not get a height label
     private const int MinLabelPixels = 6;
 
-    private readonly bool _showHeightLabels;
+    private bool _showHeightLabels;
     private readonly CairoFont _contourLabelFont;
     private readonly CairoFont _peakLabelFont;
     private readonly double[] _peakColor;
     private readonly double[] _labelOutlineColor;
 
     public bool ShowHeightLabels => _showHeightLabels;
-    public float ContourLabelsMinZoom { get; }
-    public float PeakLabelsMinZoom { get; }
+    // Read from the config on every render, so they change from the settings without redrawing
+
+    public float ContourLabelsMinZoom => ConfigManager.ConfigInstance?.TopographicMode.contourLabelsMinZoom ?? 0;
+    public float PeakLabelsMinZoom => ConfigManager.ConfigInstance?.TopographicMode.peakLabelsMinZoom ?? 0;
 
     // Label textures are created on the main thread while rendering, keyed by height and peak flag
     private readonly Dictionary<(int Height, bool IsPeak), LoadedTexture> _labelTextures = new();
@@ -71,24 +73,7 @@ public class TopographicMapLayer : AMapLayer
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
         var config = ConfigManager.ConfigInstance.TopographicMode;
-        _gravelColor = ColorUtilExtensions.HexToColor(config.gravelColor);
-        _iceColor = ColorUtilExtensions.HexToColor(config.iceColor);
-        _roadColor = ColorUtilExtensions.HexToColor(config.roadColor);
-        _sandColor = ColorUtilExtensions.HexToColor(config.sandColor);
-        _snowColor = ColorUtilExtensions.HexToColor(config.snowColor);
-        _soilColor = ColorUtilExtensions.HexToColor(config.soilColor);
-        _stoneColor = ColorUtilExtensions.HexToColor(config.stoneColor);
-        _waterColor = ColorUtilExtensions.HexToColor(config.waterColor);
         _errorColor = ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor);
-        _showContours = config.showContours;
-        _contourInterval = Math.Max(1, config.contourInterval);
-        _majorContourEvery = Math.Max(1, config.majorContourEvery);
-        _contourColor = ColorUtilExtensions.HexToColor(config.contourColor);
-        _majorContourColor = ColorUtilExtensions.HexToColor(config.majorContourColor);
-
-        _showHeightLabels = config.showHeightLabels;
-        ContourLabelsMinZoom = config.contourLabelsMinZoom;
-        PeakLabelsMinZoom = config.peakLabelsMinZoom;
         _peakColor = ColorUtilExtensions.HexToRgbaDoubles(config.peakColor);
         _labelOutlineColor = ColorUtilExtensions.HexToRgbaDoubles(config.labelOutlineColor);
         _contourLabelFont = CairoFont.WhiteDetailText()
@@ -98,6 +83,27 @@ public class TopographicMapLayer : AMapLayer
             .WithColor(_peakColor)
             .WithStroke(_labelOutlineColor, 2)
             .WithWeight(FontWeight.Bold);
+
+        ApplyConfig();
+    }
+
+    protected override void ApplyConfig()
+    {
+        var config = ConfigManager.ConfigInstance.TopographicMode;
+        _gravelColor = ColorUtilExtensions.HexToColor(config.gravelColor);
+        _iceColor = ColorUtilExtensions.HexToColor(config.iceColor);
+        _roadColor = ColorUtilExtensions.HexToColor(config.roadColor);
+        _sandColor = ColorUtilExtensions.HexToColor(config.sandColor);
+        _snowColor = ColorUtilExtensions.HexToColor(config.snowColor);
+        _soilColor = ColorUtilExtensions.HexToColor(config.soilColor);
+        _stoneColor = ColorUtilExtensions.HexToColor(config.stoneColor);
+        _waterColor = ColorUtilExtensions.HexToColor(config.waterColor);
+        _showContours = config.showContours;
+        _contourInterval = Math.Max(1, config.contourInterval);
+        _majorContourEvery = Math.Max(1, config.majorContourEvery);
+        _contourColor = ColorUtilExtensions.HexToColor(config.contourColor);
+        _majorContourColor = ColorUtilExtensions.HexToColor(config.majorContourColor);
+        _showHeightLabels = config.showHeightLabels;
 
         FillDictionaries();
     }

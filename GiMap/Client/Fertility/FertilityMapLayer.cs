@@ -20,10 +20,14 @@ public class FertilityMapLayer : AMapLayer
     private readonly int _waterColor;
     private readonly int _noFertilityColor;
     private readonly int _hatchColor;
+    private readonly int _snowHatchColor;
+    private readonly bool _ignoreSnow;
 
     private int[] _colorByBlockId = Array.Empty<int>();
     private bool[] _isHatchedByBlockId = Array.Empty<bool>();
     private bool[] _isValidByBlockId = Array.Empty<bool>();
+    private bool[] _isFertileByBlockId = Array.Empty<bool>();
+    private bool[] _isSnowByBlockId = Array.Empty<bool>();
 
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
@@ -36,6 +40,8 @@ public class FertilityMapLayer : AMapLayer
         _waterColor = ColorUtilExtensions.HexToColor(config.waterColor);
         _noFertilityColor = ColorUtilExtensions.HexToColor(config.noFertilityColor);
         _hatchColor = ColorUtilExtensions.HexToColor(config.hatchColor);
+        _snowHatchColor = ColorUtilExtensions.HexToColor(config.snowHatchColor);
+        _ignoreSnow = config.ignoreSnow;
 
         _fertilityGroups = new[]
         {
@@ -56,6 +62,8 @@ public class FertilityMapLayer : AMapLayer
         FillDictionary(_noFertilityColor, Lang.Get("fertility-no"));
         if (config.hatchingEnabled && !LocalizedNameByColor.ContainsKey(_hatchColor))
             FillDictionary(_hatchColor, Lang.Get("fertility-forestfloor"));
+        if (_ignoreSnow && !LocalizedNameByColor.ContainsKey(_snowHatchColor))
+            FillDictionary(_snowHatchColor, Lang.Get("fertility-snow"));
     }
 
     private static Regex[] CompilePatterns(string[] patterns)
@@ -69,6 +77,8 @@ public class FertilityMapLayer : AMapLayer
         _colorByBlockId = new int[blocks.Count];
         _isHatchedByBlockId = new bool[blocks.Count];
         _isValidByBlockId = new bool[blocks.Count];
+        _isFertileByBlockId = new bool[blocks.Count];
+        _isSnowByBlockId = new bool[blocks.Count];
         for (var i = 0; i < blocks.Count; i++)
         {
             var block = blocks[i];
@@ -81,7 +91,9 @@ public class FertilityMapLayer : AMapLayer
             var code = block.Code?.ToString();
             var isFertile = TryGetFertilityColor(code, out var color);
             _colorByBlockId[i] = isFertile ? color : GetMaterialColor(block);
-            _isValidByBlockId[i] = isFertile || IsMaterialValid(block);
+            _isFertileByBlockId[i] = isFertile;
+            _isSnowByBlockId[i] = _ignoreSnow && block.BlockMaterial == EnumBlockMaterial.Snow;
+            _isValidByBlockId[i] = isFertile || (IsMaterialValid(block) && !_isSnowByBlockId[i]);
             _isHatchedByBlockId[i] = code != null && _hatchedBlocks.Any(r => r.IsMatch(code));
         }
     }
@@ -107,17 +119,24 @@ public class FertilityMapLayer : AMapLayer
 
             MapUtil.PosInt2d(k, 32L, vec2i);
             int blockId = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+            var isUnderSnow = false;
 
             while (topBlockHeight > 0 && !_isValidByBlockId[blockId])
             {
+                isUnderSnow |= _isSnowByBlockId[blockId];
                 topBlockHeight--;
                 topChunkIndex = topBlockHeight / 32;
                 blockId = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
             }
 
-            resultPixelArray[k] = _isHatchedByBlockId[blockId] && ((worldX + vec2i.X + worldZ + vec2i.Y) & HatchMask) == 0
-                ? _hatchColor
-                : _colorByBlockId[blockId];
+            var x = worldX + vec2i.X;
+            var z = worldZ + vec2i.Y;
+            if (isUnderSnow && _isFertileByBlockId[blockId] && ((x - z) & HatchMask) == 0)
+                resultPixelArray[k] = _snowHatchColor;
+            else if (_isHatchedByBlockId[blockId] && ((x + z) & HatchMask) == 0)
+                resultPixelArray[k] = _hatchColor;
+            else
+                resultPixelArray[k] = _colorByBlockId[blockId];
         }
 
         ClearChunks();

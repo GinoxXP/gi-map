@@ -31,7 +31,7 @@ There are no automated tests; verify changes in the game.
 |--------------------------|----------------------|----------------------------------------------|
 | Caves                    | `caves`              | Displays cave floors by layers of 32 blocks (layer 1 is the deepest); layer picked by slider or follows player Y |
 | Chunk                    | `chunk-grid`         | Draws chunk grid                             |
-| Fertility                | `fertility`          | Displays soil fertility; block lists in config, forest floor is low fertility drawn hatched |
+| Fertility                | `fertility`          | Displays soil fertility; block lists in config, forest floor is low fertility drawn hatched; snow is skipped, fertile blocks under it are hatched white |
 | GeologyActivity          | `geology-activity`   | Displays geology activity                    |
 | Height                   | `height`             | Displays landscape height and ocean depths   |
 | Light                    | `light`              | Displays light levels                        |

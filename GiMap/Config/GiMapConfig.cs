@@ -93,6 +93,10 @@ public class GiMapConfig
         public string[] hatchedBlocks = { "game:forestfloor-.*" };
         public string hatchColor = "#8b5a2b";
 
+        // Snow is skipped, fertile blocks under it are drawn with hatching of the other diagonal
+        public bool ignoreSnow = true;
+        public string snowHatchColor = "#ffffff";
+
         public Fertility()
         {
         }

@@ -24,7 +24,9 @@ public class GiMapModSystem : ModSystem
     private Harmony harmonyInstance;
 
     public static string Version { get; private set;}
-    
+
+    public static ICoreClientAPI? ClientApi { get; private set; }
+
     public override void StartPre(ICoreAPI api)
     {
         base.StartPre(api);
@@ -45,6 +47,7 @@ public class GiMapModSystem : ModSystem
     
     public override void StartClientSide(ICoreClientAPI api)
     {
+        ClientApi = api;
         var mapManager = api.ModLoader.GetModSystem<WorldMapManager>();
         
         if (ConfigManager.ConfigInstance.TopographicMode.isEnabled)
@@ -84,6 +87,7 @@ public class GiMapModSystem : ModSystem
     public override void Dispose()
     {
         ConfigManager.ConfigInstance = null;
+        ClientApi = null;
         harmonyInstance?.UnpatchAll(patchId);
         base.Dispose();
     }

@@ -63,5 +63,22 @@
     "caves-ore": "Руда",
     "caves-lava": "Лава",
     "caves-ice": "Лед",
-    "caves-other": "Грађевина"
+    "caves-other": "Грађевина",
+    "gimap-settings-header": "GiMap",
+    "gimap-settings-general": "Опште",
+    "gimap-settings-overlayalpha": "Непрозирност слојева",
+    "gimap-settings-minzoom": "Најмање увећање мапе",
+    "gimap-settings-minzoom-hover": "Колико се мапа света може умањити. У основној игри до 1/4",
+    "gimap-settings-modes": "Режими мапе",
+    "gimap-settings-modes-hover": "Укључивање и искључивање режима важи након поновног уласка у свет",
+    "gimap-settings-topographic": "Топографска",
+    "gimap-settings-showcontours": "Изохипсе",
+    "gimap-settings-contourinterval": "Размак изохипси, блокова",
+    "gimap-settings-majorcontourevery": "Свака N-та изохипса је главна",
+    "gimap-settings-showheightlabels": "Ознаке висине",
+    "gimap-settings-contourlabelsminzoom": "Ознаке изохипси од увећања",
+    "gimap-settings-peaklabelsminzoom": "Ознаке врхова од увећања",
+    "gimap-settings-fertility": "Плодност",
+    "gimap-settings-hatching": "Шрафирање шумског тла",
+    "gimap-settings-ignoresnow": "Приказати тло испод снега"
 }

@@ -35,5 +35,19 @@
     "topographic-soil": "Земљиште",
     "topographic-stone": "Камен",
     "topographic-contour": "Изохипса",
-    "topographic-contour-major": "Главна изохипса"
+    "topographic-contour-major": "Главна изохипса",
+    "maplayer-caves": "Пећине",
+    "caves-layer-tooltip": "Слој {0}: Y {1}–{2}",
+    "caves-follow-player": "Прати играча",
+    "caves-floor": "{0}, Y: {1}",
+    "caves-solid": "Чврста стена",
+    "caves-void": "Дубока празнина",
+    "caves-stone": "Камен",
+    "caves-soil": "Земља",
+    "caves-sand": "Песак",
+    "caves-gravel": "Шљунак",
+    "caves-ore": "Руда",
+    "caves-lava": "Лава",
+    "caves-ice": "Лед",
+    "caves-other": "Грађевина"
 }

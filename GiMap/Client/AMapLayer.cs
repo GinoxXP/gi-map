@@ -160,7 +160,7 @@ public abstract class AMapLayer : RGBMapLayer
                 ElementStdBounds.AutosizedMainDialog
                     .WithFixedPosition(
                         (compo.Bounds.renderX + compo.Bounds.OuterWidth) / RuntimeEnv.GUIScale + 10,
-                        (compo.Bounds.renderY + compo.Bounds.OuterHeight) / RuntimeEnv.GUIScale - 95
+                        (compo.Bounds.renderY + compo.Bounds.OuterHeight) / RuntimeEnv.GUIScale - 95 - ExtraDialogHeight
                     )
                     .WithAlignment(EnumDialogArea.None)
             ;
@@ -178,14 +178,39 @@ public abstract class AMapLayer : RGBMapLayer
                 .AddShadedDialogBG(bgBounds, false)
                 .AddDialogTitleBar(Lang.Get("maplayer-"+LayerGroupCode), () => { guiDialogWorldMap.Composers[key].Enabled = false; })
                 .BeginChildElements(bgBounds)
-                .AddSlider((newValue) => { ConfigManager.ConfigInstance.overlayAlpha = newValue / 100.0f; OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha; return true; }, row = row.BelowCopy(0, 5).WithFixedSize(125, 25), "alpha-slider")
+                .AddSlider((newValue) => { ConfigManager.ConfigInstance.overlayAlpha = newValue / 100.0f; OverlayColor.A = ConfigManager.ConfigInstance.overlayAlpha; return true; }, row = row.BelowCopy(0, 5).WithFixedSize(125, 25), "alpha-slider");
+
+        ComposeExtraElements(guiDialogWorldMap.Composers[key], ref row);
+
+        guiDialogWorldMap.Composers[key]
                 .EndChildElements()
                 .Compose()
             ;
 
         guiDialogWorldMap.Composers[key].GetSlider("alpha-slider").SetValues((int)(ConfigManager.ConfigInstance.overlayAlpha * 100), 0, 100, 1);
 
+        OnDialogComposed(guiDialogWorldMap.Composers[key]);
+
         guiDialogWorldMap.Composers[key].Enabled = true;
+    }
+
+    /// <summary>
+    /// Height of the elements added by <see cref="ComposeExtraElements"/>, the dialog is moved up by it
+    /// </summary>
+    protected virtual int ExtraDialogHeight => 0;
+
+    /// <summary>
+    /// Adds layer specific elements to the layer dialog below the alpha slider
+    /// </summary>
+    protected virtual void ComposeExtraElements(GuiComposer compo, ref ElementBounds row)
+    {
+    }
+
+    /// <summary>
+    /// Called after the layer dialog is composed, sets initial values of the extra elements
+    /// </summary>
+    protected virtual void OnDialogComposed(GuiComposer compo)
+    {
     }
     
     public override void OnMapClosedClient()

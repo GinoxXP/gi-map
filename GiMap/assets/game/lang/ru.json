@@ -35,5 +35,19 @@
     "topographic-soil": "Почва",
     "topographic-stone": "Камень",
     "topographic-contour": "Горизонталь",
-    "topographic-contour-major": "Утолщённая горизонталь"
+    "topographic-contour-major": "Утолщённая горизонталь",
+    "maplayer-caves": "Пещеры",
+    "caves-layer-tooltip": "Слой {0}: Y {1}–{2}",
+    "caves-follow-player": "По игроку",
+    "caves-floor": "{0}, Y: {1}",
+    "caves-solid": "Сплошная порода",
+    "caves-void": "Глубокая пустота",
+    "caves-stone": "Камень",
+    "caves-soil": "Почва",
+    "caves-sand": "Песок",
+    "caves-gravel": "Гравий",
+    "caves-ore": "Руда",
+    "caves-lava": "Лава",
+    "caves-ice": "Лёд",
+    "caves-other": "Постройка"
 }

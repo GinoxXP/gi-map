@@ -21,7 +21,8 @@ public class GiMapConfig
     public Light LightMode = new Light();
     public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
-    
+    public Caves CavesMode = new Caves();
+
     public struct Topographic
     {
         public bool isEnabled = true;
@@ -238,7 +239,32 @@ public class GiMapConfig
 
         public TemporalStability()
         {
-            
+
+        }
+    }
+
+    public struct Caves
+    {
+        public bool isEnabled = true;
+
+        // 1 is the deepest layer, every layer is one chunk (32 blocks) high
+        public int selectedLayer = 4;
+        public bool followPlayer = true;
+
+        public string solidColor = "#1e1e1e";
+        public string voidColor = "#000000";
+        public string stoneColor = "#b4b4b4";
+        public string soilColor = "#a0784b";
+        public string sandColor = "#e6dcaa";
+        public string gravelColor = "#8c8c8c";
+        public string oreColor = "#e6be50";
+        public string waterColor = "#3264ff";
+        public string lavaColor = "#ff5000";
+        public string iceColor = "#caedee";
+        public string otherColor = "#c86eb4";
+
+        public Caves()
+        {
         }
     }
 }

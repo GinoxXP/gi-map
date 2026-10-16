@@ -25,6 +25,9 @@ class WorldMapManagerPatch
         
         if (ConfigManager.ConfigInstance.HeightMode.isEnabled)
             result.Remove(MapTypes.Height);
+
+        if (ConfigManager.ConfigInstance.CavesMode.isEnabled)
+            result.Remove(MapTypes.Caves);
         
         if (ConfigManager.ConfigInstance.FertilityMode.isEnabled)
             result.Remove(MapTypes.Fertility);
@@ -58,6 +61,9 @@ class WorldMapManagerPatch
         
         if (ConfigManager.ConfigInstance.HeightMode.isEnabled)
             result.Insert(index++, MapTypes.Height);
+
+        if (ConfigManager.ConfigInstance.CavesMode.isEnabled)
+            result.Insert(index++, MapTypes.Caves);
         
         if (ConfigManager.ConfigInstance.FertilityMode.isEnabled)
             result.Insert(index++, MapTypes.Fertility);

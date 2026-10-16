@@ -29,6 +29,7 @@ There are no automated tests; verify changes in the game.
 ## Modes
 | Folder (`GiMap/Client/`) | Map type id          | Description                                  |
 |--------------------------|----------------------|----------------------------------------------|
+| Caves                    | `caves`              | Displays cave floors by layers of 32 blocks (layer 1 is the deepest); layer picked by slider or follows player Y |
 | Chunk                    | `chunk-grid`         | Draws chunk grid                             |
 | Fertility                | `fertility`          | Displays soil fertility                      |
 | GeologyActivity          | `geology-activity`   | Displays geology activity                    |

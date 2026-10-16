@@ -22,7 +22,7 @@ There are no automated tests; verify changes in the game.
 | `GiMap/GiMapModSystem.cs`  | Entry point: loads config, applies Harmony patches, registers map layers |
 | `GiMap/MapTypes.cs`        | String ids of map layers                                       |
 | `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode) and `ConfigManager` (`GiMapConfig.json`) |
-| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when `bigWorldMap` is set) |
+| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiElementDialogTitleBarPatch` adds the toggle to the map title bar menu; state is kept in client settings `gimapBigWorldMap`) |
 | `GiMap/Client/`            | Map modes and their base classes (`AMapLayer`, `ABlockMapLayer`, `AChunkMapComponent`) |
 | `GiMap/assets/game/lang/`  | Localization: `en`, `ru`, `sr`                                 |
 

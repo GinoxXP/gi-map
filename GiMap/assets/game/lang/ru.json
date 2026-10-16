@@ -1,4 +1,6 @@
 {
+    "worldmap-bigmap-enable": "Развернуть карту",
+    "worldmap-bigmap-disable": "Обычный размер",
     "maplayer-topographic": "Топография",
     "maplayer-height": "Высота",
     "maplayer-fertility": "Плодородность",

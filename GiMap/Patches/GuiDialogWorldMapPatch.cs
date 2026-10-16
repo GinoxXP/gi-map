@@ -1,4 +1,3 @@
-using GiMap.Config;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
@@ -20,7 +19,7 @@ class GuiDialogWorldMapPatch
 
     static void Prefix(EnumDialogType dlgType, ICoreClientAPI ___capi, ref int ___mapWidth, ref int ___mapHeight)
     {
-        if (!ConfigManager.ConfigInstance.bigWorldMap || dlgType != EnumDialogType.Dialog)
+        if (!BigWorldMap.IsEnabled(___capi) ||dlgType != EnumDialogType.Dialog)
             return;
 
         var screenPadding = GuiStyle.DialogToScreenPadding;

@@ -1,4 +1,6 @@
 {
+    "worldmap-bigmap-enable": "Прошири мапу",
+    "worldmap-bigmap-disable": "Подразумевана величина",
     "maplayer-topographic": "Топографија",
     "maplayer-height": "Висина",
     "maplayer-fertility": "Плодност",

@@ -1,4 +1,6 @@
 {
+    "worldmap-bigmap-enable": "Expand map",
+    "worldmap-bigmap-disable": "Default size",
     "maplayer-topographic": "Topographic",
     "maplayer-height": "Height",
     "maplayer-fertility": "Fertility",

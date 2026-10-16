@@ -29,6 +29,7 @@ public abstract class AMapLayer : RGBMapLayer
     private UniqueQueue<FastVec2i> _chunksToGen = new();
     private HashSet<FastVec2i> _curVisibleChunks = new();
     private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
+    private Dictionary<FastVec2i, int[]> _pendingPieces = new();
     private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
     protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
     
@@ -74,24 +75,27 @@ public abstract class AMapLayer : RGBMapLayer
     
     public override void OnTick(float dt)
     {
-        if (!_readyMapPieces.IsEmpty)
+        if (!Active)
         {
-            int q = Math.Min(_readyMapPieces.Count, 200);
-            List<AChunkMapComponent> modified = new();
-            while (q-- > 0)
+            // Hidden layer: keep generated pixels in memory, textures are uploaded once the layer is shown
+            while (_readyMapPieces.TryDequeue(out var mappiece))
+                _pendingPieces[mappiece.Cord] = mappiece.Pixels;
+        }
+        else if (!_readyMapPieces.IsEmpty || _pendingPieces.Count > 0)
+        {
+            int q = 200;
+            HashSet<AChunkMapComponent> modified = new();
+
+            while (q > 0 && _pendingPieces.Count > 0)
             {
-                if (_readyMapPieces.TryDequeue(out var mappiece))
-                {
-                    var mcord = new FastVec2i(mappiece.Cord.X / MultiChunkMapComponent.ChunkLen, mappiece.Cord.Y / MultiChunkMapComponent.ChunkLen);
-                    var baseCord = new FastVec2i(mcord.X * MultiChunkMapComponent.ChunkLen, mcord.Y * MultiChunkMapComponent.ChunkLen);
-                    
-                    if (!_loadedMapData.TryGetValue(mcord, out var mccomp))
-                        _loadedMapData[mcord] = mccomp = CreateComponent(baseCord);
-                    
-                    mccomp.setChunk(mappiece.Cord.X - baseCord.X, mappiece.Cord.Y - baseCord.Y, mappiece.Pixels);
-                    modified.Add(mccomp);
-                }
+                var pending = _pendingPieces.First();
+                _pendingPieces.Remove(pending.Key);
+                SetChunkPixels(pending.Key, pending.Value, modified);
+                q--;
             }
+
+            while (q-- > 0 && _readyMapPieces.TryDequeue(out var mappiece))
+                SetChunkPixels(mappiece.Cord, mappiece.Pixels, modified);
 
             foreach (var mccomp in modified) mccomp.FinishSetChunks();
         }
@@ -180,6 +184,7 @@ public abstract class AMapLayer : RGBMapLayer
             _chunksToGen.Clear();
         
         _curVisibleChunks.Clear();
+        _pendingPieces.Clear();
         ConfigManager.SaveModConfig(api);
     }
     
@@ -316,6 +321,8 @@ public abstract class AMapLayer : RGBMapLayer
                     if (mcomp.IsChunkSet(dx, dz)) continue;
                 }
 
+                if (_pendingPieces.ContainsKey(cord)) continue;
+
                 _chunksToGen.Enqueue(cord.Copy());
             }
         }
@@ -323,6 +330,8 @@ public abstract class AMapLayer : RGBMapLayer
         foreach (FastVec2i cord in nowHidden)
         {
             if (cord.X < 0 || cord.Y < 0) continue;
+
+            _pendingPieces.Remove(cord);
 
             FastVec2i mcord = new FastVec2i(cord.X / MultiChunkMapComponent.ChunkLen, cord.Y / MultiChunkMapComponent.ChunkLen);
 
@@ -403,6 +412,7 @@ public abstract class AMapLayer : RGBMapLayer
         }
 
         _loadedMapData.Clear();
+        _pendingPieces.Clear();
         lock (_chunksToGenLock)
         {
             foreach (FastVec2i curVisibleChunk in _curVisibleChunks)
@@ -414,6 +424,18 @@ public abstract class AMapLayer : RGBMapLayer
         return TextCommandResult.Success("Redrawing map...");
     }
     
+    private void SetChunkPixels(FastVec2i cord, int[] pixels, HashSet<AChunkMapComponent> modified)
+    {
+        var mcord = new FastVec2i(cord.X / MultiChunkMapComponent.ChunkLen, cord.Y / MultiChunkMapComponent.ChunkLen);
+        var baseCord = new FastVec2i(mcord.X * MultiChunkMapComponent.ChunkLen, mcord.Y * MultiChunkMapComponent.ChunkLen);
+
+        if (!_loadedMapData.TryGetValue(mcord, out var mccomp))
+            _loadedMapData[mcord] = mccomp = CreateComponent(baseCord);
+
+        mccomp.setChunk(cord.X - baseCord.X, cord.Y - baseCord.Y, pixels);
+        modified.Add(mccomp);
+    }
+
     private void LoadFromChunkPixels(FastVec2i cord, int[] pixels)
     {
         _readyMapPieces.Enqueue(new ReadyMapPiece

@@ -33,5 +33,7 @@
     "topographic-sand": "Песак",
     "topographic-snow": "Снег",
     "topographic-soil": "Земљиште",
-    "topographic-stone": "Камен"
+    "topographic-stone": "Камен",
+    "topographic-contour": "Изохипса",
+    "topographic-contour-major": "Главна изохипса"
 }

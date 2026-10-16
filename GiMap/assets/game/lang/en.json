@@ -33,5 +33,7 @@
     "topographic-sand": "Sand",
     "topographic-snow": "Snow",
     "topographic-soil": "Soil",
-    "topographic-stone": "Stone"
+    "topographic-stone": "Stone",
+    "topographic-contour": "Contour line",
+    "topographic-contour-major": "Index contour line"
 }

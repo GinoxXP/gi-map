@@ -47,8 +47,11 @@ public class OreChunkMapComponent : AChunkMapComponent
             isAnySet = true;
         }
 
-        if (isAnySet)
-            FinishSetChunks();
+        if (!isAnySet)
+            return;
+
+        ResetTexture();
+        FinishSetChunks();
     }
 
     public override void OnMouseMove(MouseEvent args, GuiElementMap mapElem, StringBuilder hoverText)

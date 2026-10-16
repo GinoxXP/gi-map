@@ -50,6 +50,13 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
         _pixelsToSet[dz * 3 + dx] = pixels;
     }
     
+    /// <summary>
+    /// Drops the texture, the next <see cref="MultiChunkMapComponent.FinishSetChunks"/> creates an empty one.
+    /// Pixels are copied into the texture with an alpha test, so transparent pixels do not erase old ones without it.
+    /// </summary>
+    protected void ResetTexture()
+        => Texture?.Dispose();
+
     public override void Dispose()
     {
         base.Dispose();

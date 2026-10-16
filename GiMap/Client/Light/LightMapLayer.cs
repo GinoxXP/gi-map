@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.Common;
@@ -24,6 +25,11 @@ public class LightMapLayer : ABlockMapLayer
 
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new LightChunkMapComponent(_capi, baseCord, this);
+
+    // Same as the chunk component: no hover text
+    protected override void AppendLodHoverText(int color, StringBuilder hoverText)
+    {
+    }
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

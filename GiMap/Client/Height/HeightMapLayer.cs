@@ -1,4 +1,5 @@
-﻿using GiMap.Config;
+﻿using System.Text;
+using GiMap.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -50,6 +51,11 @@ public class HeightMapLayer : AMapLayer
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new HeightMultiChunkMapComponent(_capi, baseCord, this);
+
+    // Same as the chunk component: no hover text
+    protected override void AppendLodHoverText(int color, StringBuilder hoverText)
+    {
+    }
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
     {

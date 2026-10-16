@@ -38,7 +38,7 @@ There are no automated tests; verify changes in the game.
 | Precipitation            | `precipitation`      | Displays world precipitation on surface      |
 | Temperature              | `temperature`        | Displays world temperature on surface        |
 | TemporalStability        | `temporal-stability` | Displays temporal stability on surface       |
-| Topographic              | `topographic`        | Displays type of surface: roads, soil, rock, etc. |
+| Topographic              | `topographic`        | Displays type of surface: roads, soil, rock, etc., contour lines with height labels and peaks |
 
 ## Adding a new mode
 1. Create `GiMap/Client/<Mode>/` with a `<Mode>MapLayer` and a map component.

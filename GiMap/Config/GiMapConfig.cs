@@ -35,6 +35,18 @@ public class GiMapConfig
         public string snowColor = "#e6e6ff";
         public string roadColor = "#323232";
 
+        public bool showContours = true;
+        public int contourInterval = 5;
+        public int majorContourEvery = 5;
+        public string contourColor = "#a0784b";
+        public string majorContourColor = "#5a3c1e";
+
+        public bool showHeightLabels = true;
+        public string peakColor = "#000000";
+        public string labelOutlineColor = "#ffffffc8";
+        public float contourLabelsMinZoom = 1.5f;
+        public float peakLabelsMinZoom = 0.75f;
+
         public Topographic()
         {
         }

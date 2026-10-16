@@ -35,7 +35,10 @@ public abstract class AChunkMapComponent : MultiChunkMapComponent
             _mapLayer.OverlayColor);
     }
     
-    public new void setChunk(int dx, int dz, int[] pixels)
+    public new virtual void unsetChunk(int dx, int dz)
+        => base.unsetChunk(dx, dz);
+
+    public new virtual void setChunk(int dx, int dz, int[] pixels)
     {
         base.setChunk(dx, dz, pixels);
 

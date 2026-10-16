@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
@@ -17,10 +18,26 @@ class GuiDialogWorldMapPatch
     // Leaves room for labels around the map
     private const double SizeFactor = 0.9;
 
-    static void Prefix(EnumDialogType dlgType, ICoreClientAPI ___capi, ref int ___mapWidth, ref int ___mapHeight)
+    // Size the dialog had before the big map overwrote it, restored when the big map is turned off
+    private static readonly ConditionalWeakTable<GuiDialogWorldMap, Tuple<int, int>> OriginalSizes = new();
+
+    static void Prefix(GuiDialogWorldMap __instance, EnumDialogType dlgType, ICoreClientAPI ___capi, ref int ___mapWidth, ref int ___mapHeight)
     {
-        if (!BigWorldMap.IsEnabled(___capi) ||dlgType != EnumDialogType.Dialog)
+        if (dlgType != EnumDialogType.Dialog)
             return;
+
+        if (!BigWorldMap.IsEnabled(___capi))
+        {
+            if (OriginalSizes.TryGetValue(__instance, out var originalSize))
+            {
+                (___mapWidth, ___mapHeight) = originalSize;
+                OriginalSizes.Remove(__instance);
+            }
+            return;
+        }
+
+        if (!OriginalSizes.TryGetValue(__instance, out _))
+            OriginalSizes.Add(__instance, Tuple.Create(___mapWidth, ___mapHeight));
 
         var screenPadding = GuiStyle.DialogToScreenPadding;
         var frameWidth = ___capi.Render.FrameWidth / RuntimeEnv.GUIScale;

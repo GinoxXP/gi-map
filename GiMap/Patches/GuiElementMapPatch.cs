@@ -1,6 +1,8 @@
 using System.Reflection.Emit;
+using GiMap.Client.Lod;
 using GiMap.Config;
 using HarmonyLib;
+using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 
 namespace GiMap.Patches;
@@ -41,4 +43,13 @@ class GuiElementMapPatch
         var minZoom = ConfigManager.ConfigInstance?.minZoom ?? VanillaMinZoom;
         return Math.Clamp(minZoom, AbsoluteMinZoom, VanillaMinZoom);
     }
+}
+
+// Remembers the opened map so layers know the zoom when picking a LOD level
+[HarmonyPatch(typeof(GuiElementMap), MethodType.Constructor,
+    typeof(List<MapLayer>), typeof(ICoreClientAPI), typeof(GuiDialogWorldMap), typeof(ElementBounds), typeof(bool))]
+class GuiElementMapConstructorPatch
+{
+    static void Postfix(GuiElementMap __instance)
+        => LodState.Map = __instance;
 }

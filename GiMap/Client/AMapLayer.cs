@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
+using GiMap.Client.Lod;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -39,7 +40,12 @@ public abstract class AMapLayer : RGBMapLayer
     private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
     private volatile int _retryCount;
     protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
-    
+    private MapDB? _lodDb;
+    private LodTileSet? _lod;
+    private bool _wasLodZoom;
+    private Vec3d _mouseWorldPos = new();
+    private Vec2f _mouseViewPos = new();
+
     protected readonly Dictionary<int, string> LocalizedNameByColor = new();
     
     public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
@@ -69,10 +75,22 @@ public abstract class AMapLayer : RGBMapLayer
             if (errorMessage != null)
                 throw new Exception($"Cannot open {mapDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
 
+            if (LodMode == LodMode.Tiles)
+            {
+                _lodDb = new MapDB(api.World.Logger);
+                string lodDbFilePath = GetMapDbFilePath("-lod");
+                _lodDb.OpenOrCreate(lodDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
+                if (errorMessage != null)
+                    throw new Exception($"Cannot open {lodDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
+
+                _lod = new LodTileSet(_capi, _lodDb, ReadChunkPieces, CombineLodColors);
+            }
+
             api.ChatCommands.GetOrCreate($"{Title}map").BeginSubCommand("purgedb").WithDescription("purge the map db")
                 .HandleWith(delegate
                 {
                     _mapdb.Purge();
+                    _lod?.RequestPurge();
                     return TextCommandResult.Success("Ok, db purged");
                 })
                 .EndSubCommand()
@@ -110,16 +128,20 @@ public abstract class AMapLayer : RGBMapLayer
             foreach (var mccomp in modified) mccomp.FinishSetChunks();
         }
 
+        _lod?.MainThreadTick(dt);
+
         _mtThread1secAccum += dt;
         if (_mtThread1secAccum > 1)
         {
             List<FastVec2i> toRemove = new List<FastVec2i>();
+            // Per-chunk textures are not drawn on LOD zoom, so they are let go like hidden ones
+            bool isLodZoom = IsLodZoom;
 
             foreach (var val in _loadedMapData)
             {
                 MultiChunkMapComponent mcmp = val.Value;
 
-                if (!mcmp.AnyChunkSet || !mcmp.IsVisible(_curVisibleChunks))
+                if (isLodZoom || !mcmp.AnyChunkSet || !mcmp.IsVisible(_curVisibleChunks))
                 {
                     mcmp.TTL -= 1;
 
@@ -220,6 +242,7 @@ public abstract class AMapLayer : RGBMapLayer
         
         _curVisibleChunks.Clear();
         _pendingPieces.Clear();
+        _lod?.CancelRequests();
         ConfigManager.SaveModConfig(api);
     }
     
@@ -233,6 +256,8 @@ public abstract class AMapLayer : RGBMapLayer
             }
         }
 
+        _lod?.Dispose();
+
         lock (Layers)
             Layers.Remove(this);
 
@@ -244,14 +269,18 @@ public abstract class AMapLayer : RGBMapLayer
     {
         MultiChunkMapComponent.tmpTexture?.Dispose();
         _mapdb?.Dispose();
+        _lodDb?.Dispose();
     }
-    
+
     public override void OnOffThreadTick(float dt)
     {
         _genAccum += dt;
         _diskSaveAccum += dt;
 
         bool isShown = Active;
+        // Invalidations are written even for hidden layers so cached tiles never go stale
+        _lod?.OffThreadTick(isShown && IsLodZoom);
+
         if (!isShown && (_genAccum < 0.1 || IsShownLayerBusy()))
         {
             SaveMapPieces();
@@ -317,6 +346,7 @@ public abstract class AMapLayer : RGBMapLayer
             }
 
             _toSaveList[cord.Copy()] = new MapPieceDB() { Pixels = tintedPixels };
+            _lod?.Invalidate(cord);
 
             LoadFromChunkPixels(cord, tintedPixels);
         }
@@ -365,12 +395,22 @@ public abstract class AMapLayer : RGBMapLayer
             return;
         }
 
+        if (IsLodZoom)
+        {
+            if (_lod != null)
+            {
+                _lod.UpdateView(mapElem.CurrentBlockViewBounds, LodState.LevelForZoom(mapElem.ZoomLevel));
+                _lod.Render(mapElem, OverlayColor);
+            }
+            return;
+        }
+
         foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
         {
             loadedMapDatum.Value.Render(mapElem, dt);
         }
     }
-    
+
     public override void OnViewChangedClient(List<FastVec2i> nowVisible, List<FastVec2i> nowHidden)
     {
         foreach (var val in nowVisible)
@@ -383,10 +423,19 @@ public abstract class AMapLayer : RGBMapLayer
             _curVisibleChunks.Remove(val);
         }
 
+        bool isLodZoom = IsLodZoom;
+        // The view change only reports chunks that were not visible before, the ones skipped on LOD zoom are queued here
+        IEnumerable<FastVec2i> toLoad = _wasLodZoom && !isLodZoom ? _curVisibleChunks : nowVisible;
+        _wasLodZoom = isLodZoom;
+
         lock (_chunksToGenLock)
         {
-            foreach (FastVec2i cord in nowVisible)
+            foreach (FastVec2i cord in toLoad)
             {
+                // On LOD zoom only chunks loaded around the player are generated, LOD tiles are rebuilt from them
+                if (isLodZoom && (LodMode == LodMode.Hidden || api.World.BlockAccessor.GetMapChunk(cord.X, cord.Y) == null))
+                    continue;
+
                 FastVec2i tmpMccoord = new FastVec2i(cord.X / MultiChunkMapComponent.ChunkLen, cord.Y / MultiChunkMapComponent.ChunkLen);
 
                 int dx = cord.X % MultiChunkMapComponent.ChunkLen;
@@ -424,13 +473,46 @@ public abstract class AMapLayer : RGBMapLayer
         if (!Active)
             return;
 
+        if (IsLodZoom)
+        {
+            if (_lod == null)
+                return;
+
+            _mouseViewPos.X = args.X - (float)mapElem.Bounds.renderX;
+            _mouseViewPos.Y = args.Y - (float)mapElem.Bounds.renderY;
+            mapElem.TranslateViewPosToWorldPos(_mouseViewPos, ref _mouseWorldPos);
+
+            if (_lod.TryGetColorAt(_mouseWorldPos, out var color))
+                AppendLodHoverText(color, hoverText);
+            return;
+        }
+
         foreach (KeyValuePair<FastVec2i, AChunkMapComponent> loadedMapDatum in _loadedMapData)
             loadedMapDatum.Value.OnMouseMove(args, mapElem, hoverText);
     }
-    
+
     public virtual string GetLocalizedStringByColor(int color)
         => LocalizedNameByColor.TryGetValue(color, out var name) ? name : Lang.Get("na");
-    
+
+    /// <summary>
+    /// How the layer is drawn on LOD zoom
+    /// </summary>
+    protected virtual LodMode LodMode => LodMode.Tiles;
+
+    /// <summary>
+    /// Merges 2x2 pixels into one LOD texel
+    /// </summary>
+    protected virtual int CombineLodColors(int a, int b, int c, int d)
+        => LodColors.Dominant(a, b, c, d);
+
+    /// <summary>
+    /// Hover text for a LOD texel, the counterpart of <see cref="AChunkMapComponent.OnMouseMove"/>
+    /// </summary>
+    protected virtual void AppendLodHoverText(int color, StringBuilder hoverText)
+        => hoverText.Append(GetLocalizedStringByColor(color));
+
+    private bool IsLodZoom => LodMode != LodMode.PerChunk && LodState.Level > 0;
+
     protected abstract int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc);
 
     protected abstract AChunkMapComponent CreateComponent(FastVec2i baseCord);
@@ -474,13 +556,16 @@ public abstract class AMapLayer : RGBMapLayer
         }
     }
     
-    private string GetMapDbFilePath()
+    private string GetMapDbFilePath(string suffix = "")
     {
         string text = Path.Combine(GamePaths.DataPath, "Maps");
         GamePaths.EnsurePathExists(text);
-        return Path.Combine(text, api.World.SavegameIdentifier + $"-{Title}.db");
+        return Path.Combine(text, api.World.SavegameIdentifier + $"-{Title}{suffix}.db");
     }
-    
+
+    private int[]?[] ReadChunkPieces(List<FastVec2i> cords)
+        => ChunkPieceReader.Read(_mapdb, _toSaveList, cords);
+
     private TextCommandResult OnMapCmdRedraw(TextCommandCallingArgs args)
     {
         foreach (var value in _loadedMapData.Values)
@@ -488,6 +573,7 @@ public abstract class AMapLayer : RGBMapLayer
             value.ActuallyDispose();
         }
 
+        _lod?.RequestPurge();
         _loadedMapData.Clear();
         _pendingPieces.Clear();
         lock (_chunksToGenLock)

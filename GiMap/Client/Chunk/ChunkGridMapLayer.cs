@@ -1,4 +1,5 @@
-﻿using GiMap.Config;
+﻿using GiMap.Client.Lod;
+using GiMap.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -8,6 +9,9 @@ namespace GiMap.Client.Chunk;
 public class ChunkGridMapLayer : ABlockMapLayer
 {
     public override string Title => MapTypes.ChunkGrid;
+
+    // Chunk lines merge into noise on far zoom
+    protected override LodMode LodMode => LodMode.Hidden;
 
     private readonly int _borderColor;
     private readonly int _smallBorderColor;

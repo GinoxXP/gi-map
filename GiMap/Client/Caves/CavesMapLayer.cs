@@ -1,3 +1,4 @@
+using GiMap.Client.Lod;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -43,6 +44,9 @@ public class CavesMapLayer : AMapLayer
     private const string FollowSwitchKey = "caves-follow-switch";
 
     public override string Title => MapTypes.Caves;
+
+    // Pieces hold floors of all layers, a LOD tile would be bound to one of them
+    protected override LodMode LodMode => LodMode.PerChunk;
 
     public int LayerCount { get; }
     public int CurrentLayer { get; private set; }

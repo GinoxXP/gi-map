@@ -240,6 +240,15 @@ public class GiMapConfig
         // Keys of ores and whitelist entries hidden on the map
         public string[] hiddenOres = Array.Empty<string>();
 
+        // Switches toggling several ores at once: name (lang key "ore-preset-<name>") -> keys of ores and whitelist entries
+        public Dictionary<string, string[]> presets = new()
+        {
+            {"copper", new[] {"game:ore-.*-nativecopper-.*", "game:ore-.*-malachite-.*"}},
+            {"bronze", new[] {"game:ore-.*-cassiterite-.*", "game:ore-.*-bismuthinite-.*", "game:ore-.*-sphalerite-.*", "game:ore-.*_nativegold-.*", "game:ore-.*_nativesilver-.*"}},
+            {"iron", new[] {"game:ore-.*-limonite-.*", "game:ore-.*-magnetite-.*", "game:ore-.*-hematite-.*", "game:meteorite-iron"}},
+            {"coal", new[] {"game:ore-lignite-.*", "game:ore-bituminouscoal-.*", "game:ore-anthracite-.*"}}
+        };
+
         
         public Ore()
         {

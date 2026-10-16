@@ -24,9 +24,13 @@ public class OreMapLayer : AMapLayer
     private const string SelectAllButtonKey = "ore-select-all";
     private const string ClearAllButtonKey = "ore-clear-all";
     private const string GroupSwitchKey = "ore-group-";
+    private const string PresetSwitchKey = "ore-preset-";
     private const int GroupColumns = 3;
     private const int GroupRowHeight = 26;
     private const int GroupColumnWidth = 175;
+    private const int PresetColumns = 4;
+    private const int PresetColumnWidth = GroupColumns * GroupColumnWidth / PresetColumns;
+    private const int SectionGap = 10;
 
     public override string Title => MapTypes.Ore;
 
@@ -39,6 +43,7 @@ public class OreMapLayer : AMapLayer
     private readonly List<OreGroup?> _groups = new() { null };
     private bool[] _isGroupShown = Array.Empty<bool>();
     private byte[] _groupByBlockId = Array.Empty<byte>();
+    private readonly List<OrePreset> _presets = new();
     private readonly List<int> _blockIdsTmp = new();
     private bool[] _hasOreTmp;
 
@@ -85,6 +90,29 @@ public class OreMapLayer : AMapLayer
         _isGroupShown = new bool[_groups.Count];
         for (var i = 1; i < _groups.Count; i++)
             _isGroupShown[i] = _groups[i] is { } group && !hidden.Contains(group.Key);
+
+        LoadPresets();
+    }
+
+    // Presets keep only groups found among blocks, a preset without them is not shown
+    private void LoadPresets()
+    {
+        var presets = ConfigManager.ConfigInstance.OreMode.presets;
+        if (presets == null)
+            return;
+
+        foreach (var (name, keys) in presets)
+        {
+            var groups = new List<int>();
+            for (var i = 1; i < _groups.Count; i++)
+            {
+                if (_groups[i] is { } group && keys != null && keys.Contains(group.Key))
+                    groups.Add(i);
+            }
+
+            if (groups.Count > 0)
+                _presets.Add(new OrePreset(Lang.GetIfExists("ore-preset-" + name) ?? name, groups.ToArray()));
+        }
     }
 
     protected override int[] GenerateChunkImage(FastVec2i chunkPos, IMapChunk mc)
@@ -198,6 +226,29 @@ public class OreMapLayer : AMapLayer
         OnFilterChanged();
     }
 
+    public void SetPresetShown(int preset, bool isShown)
+    {
+        if (preset < 0 || preset >= _presets.Count)
+            return;
+
+        foreach (var group in _presets[preset].Groups)
+            _isGroupShown[group] = isShown;
+
+        OnFilterChanged();
+    }
+
+    // A preset is on while all its ores are shown
+    private bool IsPresetShown(OrePreset preset)
+    {
+        foreach (var group in preset.Groups)
+        {
+            if (!_isGroupShown[group])
+                return false;
+        }
+
+        return true;
+    }
+
     public void SetAllShown(bool isShown)
     {
         for (var i = 1; i < _isGroupShown.Length; i++)
@@ -223,9 +274,13 @@ public class OreMapLayer : AMapLayer
         UpdateDialog();
     }
 
-    protected override int ExtraDialogHeight => 35 + GroupRowCount * GroupRowHeight;
+    protected override int ExtraDialogHeight => 35 + PresetSectionHeight + GroupRowCount * GroupRowHeight;
 
     private int GroupRowCount => (CountGroups() + GroupColumns - 1) / GroupColumns;
+
+    private int PresetRowCount => (_presets.Count + PresetColumns - 1) / PresetColumns;
+
+    private int PresetSectionHeight => PresetRowCount == 0 ? 0 : PresetRowCount * GroupRowHeight + SectionGap;
 
     protected override void ComposeExtraElements(GuiComposer compo, ref ElementBounds row)
     {
@@ -235,6 +290,18 @@ public class OreMapLayer : AMapLayer
 
         double left = row.fixedX;
         double top = row.fixedY + row.fixedHeight + 10;
+
+        for (var i = 0; i < _presets.Count; i++)
+        {
+            double x = left + i % PresetColumns * PresetColumnWidth;
+            double y = top + i / PresetColumns * GroupRowHeight;
+
+            int index = i;
+            compo.AddSwitch(isOn => OnPresetToggled(index, isOn), ElementBounds.Fixed(x, y, 20, 20), PresetSwitchKey + i, 20);
+            compo.AddStaticText(_presets[i].Name, CairoFont.WhiteSmallText(), ElementBounds.Fixed(x + 26, y + 1, PresetColumnWidth - 30, 20));
+        }
+
+        top += PresetSectionHeight;
         var position = 0;
         for (var i = 1; i < _groups.Count; i++)
         {
@@ -283,7 +350,17 @@ public class OreMapLayer : AMapLayer
             if (_groups[i] != null)
                 _dialogComposer.GetSwitch(GroupSwitchKey + i)?.SetValue(_isGroupShown[i]);
         }
+        for (var i = 0; i < _presets.Count; i++)
+            _dialogComposer.GetSwitch(PresetSwitchKey + i)?.SetValue(IsPresetShown(_presets[i]));
         _isUpdatingDialog = false;
+    }
+
+    private void OnPresetToggled(int preset, bool isOn)
+    {
+        if (_isUpdatingDialog)
+            return;
+
+        SetPresetShown(preset, isOn);
     }
 
     private bool OnSelectAll(bool isShown)
@@ -458,6 +535,8 @@ public class OreMapLayer : AMapLayer
 
         return block.GetHeldItemName(new ItemStack(block));
     }
+
+    private sealed record OrePreset(string Name, int[] Groups);
 
     private sealed class OreGroup
     {

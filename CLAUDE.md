@@ -36,7 +36,7 @@ There are no automated tests; verify changes in the game.
 | GeologyActivity          | `geology-activity`   | Displays geology activity                    |
 | Height                   | `height`             | Displays landscape height and ocean depths   |
 | Light                    | `light`              | Displays light levels                        |
-| Ore                      | `ore`                | Displays ore deposits (disabled by default); pixels store up to 4 ore groups of the column, shown ores are picked in the layer dialog (`hiddenOres`) without regenerating |
+| Ore                      | `ore`                | Displays ore deposits (disabled by default); pixels store up to 4 ore groups of the column, shown ores are picked in the layer dialog (`hiddenOres`) without regenerating; `presets` toggle several ores at once |
 | Precipitation            | `precipitation`      | Displays world precipitation on surface      |
 | Temperature              | `temperature`        | Displays world temperature on surface        |
 | TemporalStability        | `temporal-stability` | Displays temporal stability on surface       |

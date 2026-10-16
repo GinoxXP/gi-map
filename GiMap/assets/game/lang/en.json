@@ -35,5 +35,19 @@
     "topographic-soil": "Soil",
     "topographic-stone": "Stone",
     "topographic-contour": "Contour line",
-    "topographic-contour-major": "Index contour line"
+    "topographic-contour-major": "Index contour line",
+    "maplayer-caves": "Caves",
+    "caves-layer-tooltip": "Layer {0}: Y {1}–{2}",
+    "caves-follow-player": "Follow player",
+    "caves-floor": "{0}, Y: {1}",
+    "caves-solid": "Solid rock",
+    "caves-void": "Deep void",
+    "caves-stone": "Stone",
+    "caves-soil": "Soil",
+    "caves-sand": "Sand",
+    "caves-gravel": "Gravel",
+    "caves-ore": "Ore",
+    "caves-lava": "Lava",
+    "caves-ice": "Ice",
+    "caves-other": "Structure"
 }

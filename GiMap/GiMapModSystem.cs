@@ -1,4 +1,5 @@
 ﻿using GiMap.Client;
+using GiMap.Client.Caves;
 using GiMap.Client.Chunk;
 using GiMap.Client.Fertility;
 using GiMap.Client.GeologyActivity;
@@ -75,6 +76,9 @@ public class GiMapModSystem : ModSystem
         
         if (ConfigManager.ConfigInstance.TemporalStabilityMode.isEnabled)
             mapManager.RegisterMapLayer<TemporalStabilityMapLayer>(MapTypes.TemporalStability, 10);
+
+        if (ConfigManager.ConfigInstance.CavesMode.isEnabled)
+            mapManager.RegisterMapLayer<CavesMapLayer>(MapTypes.Caves, 11);
     }
 
     public override void Dispose()

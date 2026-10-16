@@ -6,7 +6,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client.GeologyActivity;
 
-public class GeologyActivityMapLayer : ABlockMapLayer
+public class GeologyActivityMapLayer : AClimateMapLayer
 {
     public override string Title => MapTypes.GeologyActivity;
 
@@ -39,11 +39,18 @@ public class GeologyActivityMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new GeologyChunkMapComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos, Block block)
-    {
-        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos, EnumGetClimateMode.WorldGenValues);
-        var geologicalActivity = climateCondition.GeologicActivity;
+    protected override float GetValue(ClimateCondition climate)
+        => climate.GeologicActivity;
 
+    protected override void GetValueRange(ClimateRange range, int minY, int maxY, out float min, out float max)
+    {
+        // Geologic activity does not depend on height
+        min = (float)range.MinGeologicActivity / 255f;
+        max = (float)range.MaxGeologicActivity / 255f;
+    }
+
+    protected override int GetColor(float geologicalActivity)
+    {
         if (geologicalActivity < 0.2f)
             return _lowColor;
         if (geologicalActivity < 0.4f)

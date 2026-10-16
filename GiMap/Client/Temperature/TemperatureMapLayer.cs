@@ -6,7 +6,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client.Temperature;
 
-public class TemperatureMapLayer : ABlockMapLayer
+public class TemperatureMapLayer : AClimateMapLayer
 {
     public override string Title => MapTypes.Temperature;
 
@@ -50,11 +50,19 @@ public class TemperatureMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new TemperatureChunkMapComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos, Block block)
-    {
-        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos, EnumGetClimateMode.WorldGenValues);
-        var temperature = climateCondition.WorldGenTemperature;
+    protected override float GetValue(ClimateCondition climate)
+        => climate.WorldGenTemperature;
 
+    protected override void GetValueRange(ClimateRange range, int minY, int maxY, out float min, out float max)
+    {
+        // Temperature grows with the climate byte and drops with height
+        int seaLevel = api.World.SeaLevel;
+        min = Climate.GetScaledAdjustedTemperatureFloatClient(range.MinTemperature, maxY - seaLevel);
+        max = Climate.GetScaledAdjustedTemperatureFloatClient(range.MaxTemperature, minY - seaLevel);
+    }
+
+    protected override int GetColor(float temperature)
+    {
         for (var i = 0; i < Thresholds.Length; i++)
         {
             if (temperature < Thresholds[i])

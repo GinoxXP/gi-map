@@ -6,7 +6,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client.Precipitation;
 
-public class PrecipitationMapLayer : ABlockMapLayer
+public class PrecipitationMapLayer : AClimateMapLayer
 {
     public override string Title => MapTypes.Precipitation;
 
@@ -39,14 +39,25 @@ public class PrecipitationMapLayer : ABlockMapLayer
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new PrecipitationMultiChunkMapComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos, Block block)
+    protected override float GetValue(ClimateCondition climate)
+        => climate.WorldgenRainfall;
+
+    protected override void GetValueRange(ClimateRange range, int minY, int maxY, out float min, out float max)
     {
-        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos, EnumGetClimateMode.WorldGenValues);
-        var rainfall = climateCondition.WorldgenRainfall;
-        return GetColor(rainfall);
+        // Rainfall grows with the climate byte but is not monotonic in height, so check every Y
+        int minRainfall = int.MaxValue;
+        int maxRainfall = int.MinValue;
+        for (int y = minY; y <= maxY; y++)
+        {
+            minRainfall = Math.Min(minRainfall, Climate.GetRainFall(range.MinRainfall, y));
+            maxRainfall = Math.Max(maxRainfall, Climate.GetRainFall(range.MaxRainfall, y));
+        }
+
+        min = (float)minRainfall / 255f;
+        max = (float)maxRainfall / 255f;
     }
 
-    private int GetColor(float precipitation)
+    protected override int GetColor(float precipitation)
     {
         if (precipitation < 0.15f) return _veryLowColor;
         if (precipitation < 0.45f) return _lowColor;

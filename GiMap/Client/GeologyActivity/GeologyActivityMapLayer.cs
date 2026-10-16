@@ -6,41 +6,60 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client.GeologyActivity;
 
-public class GeologyActivityMapLayer : ABlockMapLayer
+public class GeologyActivityMapLayer : AClimateMapLayer
 {
     public override string Title => MapTypes.GeologyActivity;
 
+    private readonly int _lowColor;
+    private readonly int _moderateColor;
+    private readonly int _significantColor;
+    private readonly int _highColor;
+    private readonly int _extremeColor;
+
     public GeologyActivityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        var config = ConfigManager.ConfigInstance.GeologyActivityMode;
+        _lowColor = ColorUtilExtensions.HexToColor(config.lowActivity);
+        _moderateColor = ColorUtilExtensions.HexToColor(config.moderateActivity);
+        _significantColor = ColorUtilExtensions.HexToColor(config.significantActivity);
+        _highColor = ColorUtilExtensions.HexToColor(config.highActivity);
+        _extremeColor = ColorUtilExtensions.HexToColor(config.extremeActivity);
         FillDictionaries();
     }
 
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity), Lang.Get("very-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity), Lang.Get("low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity), Lang.Get("medium"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.highActivity), Lang.Get("high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity), Lang.Get("very-high"));
+        FillDictionary(_lowColor, Lang.Get("very-low"));
+        FillDictionary(_moderateColor, Lang.Get("low"));
+        FillDictionary(_significantColor, Lang.Get("medium"));
+        FillDictionary(_highColor, Lang.Get("high"));
+        FillDictionary(_extremeColor, Lang.Get("very-high"));
     }
-    
+
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new GeologyChunkMapComponent(_capi, baseCord, this);
 
-    protected override int GetColor(BlockPos pos, Block block)
+    protected override float GetValue(ClimateCondition climate)
+        => climate.GeologicActivity;
+
+    protected override void GetValueRange(ClimateRange range, int minY, int maxY, out float min, out float max)
     {
-        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
-        var geologicalActivity = climateCondition.GeologicActivity;
+        // Geologic activity does not depend on height
+        min = (float)range.MinGeologicActivity / 255f;
+        max = (float)range.MaxGeologicActivity / 255f;
+    }
 
+    protected override int GetColor(float geologicalActivity)
+    {
         if (geologicalActivity < 0.2f)
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.lowActivity);
+            return _lowColor;
         if (geologicalActivity < 0.4f)
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.moderateActivity);
+            return _moderateColor;
         if (geologicalActivity < 0.6f)
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.significantActivity);
+            return _significantColor;
         if (geologicalActivity < 0.8f)
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.highActivity);
+            return _highColor;
 
-        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.GeologyActivityMode.extremeActivity);
+        return _extremeColor;
     }
 }

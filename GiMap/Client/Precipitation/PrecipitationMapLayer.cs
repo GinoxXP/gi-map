@@ -6,41 +6,64 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Client.Precipitation;
 
-public class PrecipitationMapLayer : ABlockMapLayer
+public class PrecipitationMapLayer : AClimateMapLayer
 {
     public override string Title => MapTypes.Precipitation;
-    
+
+    private readonly int _veryLowColor;
+    private readonly int _lowColor;
+    private readonly int _mediumColor;
+    private readonly int _highColor;
+    private readonly int _veryHighColor;
+
     public PrecipitationMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        var config = ConfigManager.ConfigInstance.PrecipitationMode;
+        _veryLowColor = ColorUtilExtensions.HexToColor(config.veryLowPrecipitation);
+        _lowColor = ColorUtilExtensions.HexToColor(config.lowPrecipitation);
+        _mediumColor = ColorUtilExtensions.HexToColor(config.mediumPrecipitation);
+        _highColor = ColorUtilExtensions.HexToColor(config.highPrecipitation);
+        _veryHighColor = ColorUtilExtensions.HexToColor(config.veryHighPrecipitation);
         FillDictionaries();
     }
-    
+
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryLowPrecipitation), Lang.Get("very-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.lowPrecipitation), Lang.Get("low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.mediumPrecipitation), Lang.Get("medium"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.highPrecipitation), Lang.Get("high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryHighPrecipitation), Lang.Get("very-high"));
+        FillDictionary(_veryLowColor, Lang.Get("very-low"));
+        FillDictionary(_lowColor, Lang.Get("low"));
+        FillDictionary(_mediumColor, Lang.Get("medium"));
+        FillDictionary(_highColor, Lang.Get("high"));
+        FillDictionary(_veryHighColor, Lang.Get("very-high"));
     }
-    
+
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
         => new PrecipitationMultiChunkMapComponent(_capi, baseCord, this);
-    
-    protected override int GetColor(BlockPos pos, Block block)
-    {
-        var climateCondition = api.World.BlockAccessor.GetClimateAt(pos);
-        var rainfall = climateCondition.WorldgenRainfall;
-        return GetColor(rainfall);
-    }
-    
-    private int GetColor(float precipitation)
-    {
-        if (precipitation < 0.15f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryLowPrecipitation); 
-        if (precipitation < 0.45f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.lowPrecipitation); 
-        if (precipitation < 0.70f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.mediumPrecipitation); 
-        if (precipitation < 0.90f) return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.highPrecipitation);
 
-        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.PrecipitationMode.veryHighPrecipitation); 
+    protected override float GetValue(ClimateCondition climate)
+        => climate.WorldgenRainfall;
+
+    protected override void GetValueRange(ClimateRange range, int minY, int maxY, out float min, out float max)
+    {
+        // Rainfall grows with the climate byte but is not monotonic in height, so check every Y
+        int minRainfall = int.MaxValue;
+        int maxRainfall = int.MinValue;
+        for (int y = minY; y <= maxY; y++)
+        {
+            minRainfall = Math.Min(minRainfall, Climate.GetRainFall(range.MinRainfall, y));
+            maxRainfall = Math.Max(maxRainfall, Climate.GetRainFall(range.MaxRainfall, y));
+        }
+
+        min = (float)minRainfall / 255f;
+        max = (float)maxRainfall / 255f;
+    }
+
+    protected override int GetColor(float precipitation)
+    {
+        if (precipitation < 0.15f) return _veryLowColor;
+        if (precipitation < 0.45f) return _lowColor;
+        if (precipitation < 0.70f) return _mediumColor;
+        if (precipitation < 0.90f) return _highColor;
+
+        return _veryHighColor;
     }
 }

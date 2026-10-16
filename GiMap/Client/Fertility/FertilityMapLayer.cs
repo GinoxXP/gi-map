@@ -16,20 +16,48 @@ public class FertilityMapLayer : AMapLayer
     private readonly string[] _highFertilityBlocks = {"game:soil-compost-", "game:farmland-dry-compost", "game:farmland-moist-compost" };
     private readonly string[] _extreameFertilityBlocks = {"game:soil-high-", "game:farmland-dry-high", "game:farmland-moist-high" };
     
+    private readonly int _veryLowColor;
+    private readonly int _lowColor;
+    private readonly int _mediumColor;
+    private readonly int _highColor;
+    private readonly int _extreameColor;
+    private readonly int _waterColor;
+    private readonly int _noFertilityColor;
+
+    private int[] _colorByBlockId = Array.Empty<int>();
+
     public FertilityMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        var config = ConfigManager.ConfigInstance.FertilityMode;
+        _veryLowColor = ColorUtilExtensions.HexToColor(config.veryLowFertilityColor);
+        _lowColor = ColorUtilExtensions.HexToColor(config.lowFertilityColor);
+        _mediumColor = ColorUtilExtensions.HexToColor(config.mediumFertilityColor);
+        _highColor = ColorUtilExtensions.HexToColor(config.highFertilityColor);
+        _extreameColor = ColorUtilExtensions.HexToColor(config.extreameFertilityColor);
+        _waterColor = ColorUtilExtensions.HexToColor(config.waterColor);
+        _noFertilityColor = ColorUtilExtensions.HexToColor(config.noFertilityColor);
         FillDictionaries();
     }
 
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor), Lang.Get("very-low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor), Lang.Get("low"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor), Lang.Get("medium"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor), Lang.Get("high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor), Lang.Get("very-high"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor), Lang.Get("water"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor), Lang.Get("fertility-no"));
+        FillDictionary(_veryLowColor, Lang.Get("very-low"));
+        FillDictionary(_lowColor, Lang.Get("low"));
+        FillDictionary(_mediumColor, Lang.Get("medium"));
+        FillDictionary(_highColor, Lang.Get("high"));
+        FillDictionary(_extreameColor, Lang.Get("very-high"));
+        FillDictionary(_waterColor, Lang.Get("water"));
+        FillDictionary(_noFertilityColor, Lang.Get("fertility-no"));
+    }
+
+    public override void OnLoaded()
+    {
+        base.OnLoaded();
+
+        var blocks = api.World.Blocks;
+        _colorByBlockId = new int[blocks.Count];
+        for (var i = 0; i < blocks.Count; i++)
+            _colorByBlockId[i] = blocks[i] == null ? _noFertilityColor : GetMaterialColor(blocks[i]);
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
@@ -61,7 +89,7 @@ public class FertilityMapLayer : AMapLayer
                 block = api.World.Blocks[index];
             }
 
-            resultPixelArray[k] = GetMaterialColor(block);
+            resultPixelArray[k] = _colorByBlockId[block.Id];
         }
 
         ClearChunks();
@@ -79,29 +107,34 @@ public class FertilityMapLayer : AMapLayer
                || block.BlockMaterial == EnumBlockMaterial.Water;
     }
     
+    // Called once per block type in OnLoaded, the result is looked up by block id
     private int GetMaterialColor(Block block)
     {
-        if (IsFertilityGroup(block, _veryLowFertilityBlocks))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.veryLowFertilityColor);
-        
-        if (IsFertilityGroup(block, _lowFertilityBlocks))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.lowFertilityColor);
-        
-        if (IsFertilityGroup(block, _mediumFertilityBlocks))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.mediumFertilityColor);
-        
-        if (IsFertilityGroup(block, _highFertilityBlocks))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.highFertilityColor);
-        
-        if (IsFertilityGroup(block, _extreameFertilityBlocks))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.extreameFertilityColor);
-        
+        var code = block.Code?.ToString();
+        if (code != null)
+        {
+            if (IsFertilityGroup(code, _veryLowFertilityBlocks))
+                return _veryLowColor;
+
+            if (IsFertilityGroup(code, _lowFertilityBlocks))
+                return _lowColor;
+
+            if (IsFertilityGroup(code, _mediumFertilityBlocks))
+                return _mediumColor;
+
+            if (IsFertilityGroup(code, _highFertilityBlocks))
+                return _highColor;
+
+            if (IsFertilityGroup(code, _extreameFertilityBlocks))
+                return _extreameColor;
+        }
+
         if (block.BlockMaterial == EnumBlockMaterial.Water)
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.waterColor);
-        
-        return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.FertilityMode.noFertilityColor);
+            return _waterColor;
+
+        return _noFertilityColor;
     }
-    
-    private bool IsFertilityGroup(Block block, string[] fertilityGroup)
-        => fertilityGroup.Any(b => block.Code.ToString().Contains(b));
+
+    private bool IsFertilityGroup(string code, string[] fertilityGroup)
+        => fertilityGroup.Any(code.Contains);
 }

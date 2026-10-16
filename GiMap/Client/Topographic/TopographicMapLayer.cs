@@ -18,21 +18,53 @@ public class TopographicMapLayer : AMapLayer
         "game:woodenpath-",
     };
 
+    private readonly int _gravelColor;
+    private readonly int _iceColor;
+    private readonly int _roadColor;
+    private readonly int _sandColor;
+    private readonly int _snowColor;
+    private readonly int _soilColor;
+    private readonly int _stoneColor;
+    private readonly int _waterColor;
+    private readonly int _errorColor;
+
+    private int[] _colorByBlockId = Array.Empty<int>();
+
     public TopographicMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
+        var config = ConfigManager.ConfigInstance.TopographicMode;
+        _gravelColor = ColorUtilExtensions.HexToColor(config.gravelColor);
+        _iceColor = ColorUtilExtensions.HexToColor(config.iceColor);
+        _roadColor = ColorUtilExtensions.HexToColor(config.roadColor);
+        _sandColor = ColorUtilExtensions.HexToColor(config.sandColor);
+        _snowColor = ColorUtilExtensions.HexToColor(config.snowColor);
+        _soilColor = ColorUtilExtensions.HexToColor(config.soilColor);
+        _stoneColor = ColorUtilExtensions.HexToColor(config.stoneColor);
+        _waterColor = ColorUtilExtensions.HexToColor(config.waterColor);
+        _errorColor = ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor);
         FillDictionaries();
     }
-    
+
     private void FillDictionaries()
     {
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.gravelColor), Lang.Get("topographic-gravel"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.iceColor), Lang.Get("topographic-ice"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.roadColor), Lang.Get("topographic-road"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.sandColor), Lang.Get("topographic-sand"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.snowColor), Lang.Get("topographic-snow"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.soilColor), Lang.Get("topographic-soil"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.stoneColor), Lang.Get("topographic-stone"));
-        FillDictionary(ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor), Lang.Get("water"));
+        FillDictionary(_gravelColor, Lang.Get("topographic-gravel"));
+        FillDictionary(_iceColor, Lang.Get("topographic-ice"));
+        FillDictionary(_roadColor, Lang.Get("topographic-road"));
+        FillDictionary(_sandColor, Lang.Get("topographic-sand"));
+        FillDictionary(_snowColor, Lang.Get("topographic-snow"));
+        FillDictionary(_soilColor, Lang.Get("topographic-soil"));
+        FillDictionary(_stoneColor, Lang.Get("topographic-stone"));
+        FillDictionary(_waterColor, Lang.Get("water"));
+    }
+
+    public override void OnLoaded()
+    {
+        base.OnLoaded();
+
+        var blocks = api.World.Blocks;
+        _colorByBlockId = new int[blocks.Count];
+        for (var i = 0; i < blocks.Count; i++)
+            _colorByBlockId[i] = blocks[i] == null ? _errorColor : GetMaterialColor(blocks[i]);
     }
     
     protected override AChunkMapComponent CreateComponent(FastVec2i baseCord)
@@ -64,7 +96,7 @@ public class TopographicMapLayer : AMapLayer
                 block = api.World.Blocks[index];
             }
 
-            resultPixelArray[k] = GetMaterialColor(block);
+            resultPixelArray[k] = _colorByBlockId[block.Id];
         }
 
         ClearChunks();
@@ -82,23 +114,27 @@ public class TopographicMapLayer : AMapLayer
             || block.BlockMaterial == EnumBlockMaterial.Water;
     }
 
+    // Called once per block type in OnLoaded, the result is looked up by block id
     private int GetMaterialColor(Block block) {
         if (IsRoad(block))
-            return ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.roadColor);
-        
+            return _roadColor;
+
         return block.BlockMaterial switch
         {
-            EnumBlockMaterial.Gravel => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.gravelColor),
-            EnumBlockMaterial.Sand => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.sandColor),
-            EnumBlockMaterial.Soil => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.soilColor),
-            EnumBlockMaterial.Stone => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.stoneColor),
-            EnumBlockMaterial.Ice => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.iceColor),
-            EnumBlockMaterial.Snow => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.snowColor),
-            EnumBlockMaterial.Water => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.TopographicMode.waterColor),
-            _ => ColorUtilExtensions.HexToColor(ConfigManager.ConfigInstance.errorColor),
+            EnumBlockMaterial.Gravel => _gravelColor,
+            EnumBlockMaterial.Sand => _sandColor,
+            EnumBlockMaterial.Soil => _soilColor,
+            EnumBlockMaterial.Stone => _stoneColor,
+            EnumBlockMaterial.Ice => _iceColor,
+            EnumBlockMaterial.Snow => _snowColor,
+            EnumBlockMaterial.Water => _waterColor,
+            _ => _errorColor,
         };
     }
 
     private bool IsRoad(Block block)
-        => _roadBlocks.Any(b => block.Code.ToString().Contains(b));
+    {
+        var code = block.Code?.ToString();
+        return code != null && _roadBlocks.Any(code.Contains);
+    }
 }

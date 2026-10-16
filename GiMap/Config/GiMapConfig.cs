@@ -81,6 +81,22 @@ public class GiMapConfig
         public string waterColor = "#3232ff";
         public string noFertilityColor = "#646464";
 
+        // Block code regexes, checked from very low to extreme, the first match wins
+        public string[] veryLowFertilityBlocks = { "game:soil-verylow-.*", "game:farmland-.*-verylow" };
+        public string[] lowFertilityBlocks = { "game:soil-low-.*", "game:farmland-.*-low", "game:forestfloor-.*" };
+        public string[] mediumFertilityBlocks = { "game:soil-medium-.*", "game:farmland-.*-medium" };
+        public string[] highFertilityBlocks = { "game:soil-compost-.*", "game:farmland-.*-compost" };
+        public string[] extreameFertilityBlocks = { "game:soil-high-.*", "game:farmland-.*-high" };
+
+        // Blocks drawn with diagonal hatching over their fertility color
+        public bool hatchingEnabled = true;
+        public string[] hatchedBlocks = { "game:forestfloor-.*" };
+        public string hatchColor = "#8b5a2b";
+
+        // Snow is skipped, fertile blocks under it are drawn with hatching of the other diagonal
+        public bool ignoreSnow = true;
+        public string snowHatchColor = "#ffffff";
+
         public Fertility()
         {
         }

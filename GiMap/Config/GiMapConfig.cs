@@ -41,6 +41,12 @@ public class GiMapConfig
         public string contourColor = "#a0784b";
         public string majorContourColor = "#5a3c1e";
 
+        public bool showHeightLabels = true;
+        public string peakColor = "#000000";
+        public string labelOutlineColor = "#ffffffc8";
+        public float contourLabelsMinZoom = 1.5f;
+        public float peakLabelsMinZoom = 0.75f;
+
         public Topographic()
         {
         }

@@ -9,6 +9,8 @@ public class GiMapConfig
     
     public float overlayAlpha = 1;
     public string errorColor = "#ff00ff";
+    // Smallest map zoom; vanilla stops at 0.25
+    public float minZoom = 0.0625f;
 
     public Topographic TopographicMode = new Topographic();
     public Height HeightMode = new Height();

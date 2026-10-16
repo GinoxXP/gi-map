@@ -9,6 +9,7 @@ public class GiMapConfig
     
     public float overlayAlpha = 1;
     public string errorColor = "#ff00ff";
+    public bool bigWorldMap = false;
 
     public Topographic TopographicMode = new Topographic();
     public Height HeightMode = new Height();

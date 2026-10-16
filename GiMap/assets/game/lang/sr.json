@@ -43,6 +43,8 @@
     "maplayer-caves": "Пећине",
     "caves-layer-tooltip": "Слој {0}: Y {1}–{2}",
     "caves-follow-player": "Прати играча",
+    "ore-select-all": "Изабери све",
+    "ore-clear-all": "Поништи све",
     "caves-floor": "{0}, Y: {1}",
     "caves-solid": "Чврста стена",
     "caves-void": "Дубока празнина",

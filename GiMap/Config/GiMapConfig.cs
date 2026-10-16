@@ -236,7 +236,10 @@ public class GiMapConfig
             "game:ore-olivine-.*",
             "game:ore-flint"
         };
-        
+
+        // Keys of ores and whitelist entries hidden on the map
+        public string[] hiddenOres = Array.Empty<string>();
+
         
         public Ore()
         {

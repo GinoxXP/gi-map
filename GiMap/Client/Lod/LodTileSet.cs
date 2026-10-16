@@ -33,6 +33,7 @@ public sealed class LodTileSet
     private readonly MapDB _db;
     private readonly Func<List<FastVec2i>, int[]?[]> _readChunkPieces;
     private readonly Func<int, int, int, int, int> _combine;
+    private readonly Func<int, int>? _toRgba;
 
     private readonly ConcurrentDictionary<TileKey, Tile> _tiles = new();
     private readonly object _requestLock = new();
@@ -51,13 +52,16 @@ public sealed class LodTileSet
     private float _ttlAccum;
     private Vec3d _tmpWorldPos = new();
     private Vec2f _tmpViewPos = new();
+    private int[]? _rgbaTmp;
 
-    public LodTileSet(ICoreClientAPI capi, MapDB db, Func<List<FastVec2i>, int[]?[]> readChunkPieces, Func<int, int, int, int, int> combine)
+    /// <param name="toRgba">Converts a stored texel to a texture color on upload, tiles store colors as they are when null</param>
+    public LodTileSet(ICoreClientAPI capi, MapDB db, Func<List<FastVec2i>, int[]?[]> readChunkPieces, Func<int, int, int, int, int> combine, Func<int, int>? toRgba = null)
     {
         _capi = capi;
         _db = db;
         _readChunkPieces = readChunkPieces;
         _combine = combine;
+        _toRgba = toRgba;
     }
 
     /// <summary>
@@ -131,7 +135,7 @@ public sealed class LodTileSet
                 continue;
 
             tile.Texture ??= new LoadedTexture(_capi, 0, TileSize, TileSize);
-            _capi.Render.LoadOrUpdateTextureFromRgba(tile.Pixels, false, 0, ref tile.Texture);
+            _capi.Render.LoadOrUpdateTextureFromRgba(ToRgba(tile.Pixels), false, 0, ref tile.Texture);
         }
 
         _ttlAccum += dt;
@@ -204,7 +208,19 @@ public sealed class LodTileSet
     }
 
     /// <summary>
-    /// Color of the visible tile under the world position. Main thread.
+    /// Uploads textures of all loaded tiles again, used when the conversion of stored texels to colors changed. Main thread.
+    /// </summary>
+    public void RefreshTextures()
+    {
+        foreach (var (key, tile) in _tiles)
+        {
+            if (tile.Pixels != null)
+                _ready.Enqueue(key);
+        }
+    }
+
+    /// <summary>
+    /// Stored texel of the visible tile under the world position. Main thread.
     /// </summary>
     public bool TryGetColorAt(Vec3d worldPos, out int color)
     {
@@ -230,6 +246,19 @@ public sealed class LodTileSet
             tile.Texture?.Dispose();
 
         _tiles.Clear();
+    }
+
+    // The texture is uploaded right away, so one buffer is reused for all tiles
+    private int[] ToRgba(int[] pixels)
+    {
+        if (_toRgba == null)
+            return pixels;
+
+        _rgbaTmp ??= new int[PixelCount];
+        for (int i = 0; i < pixels.Length; i++)
+            _rgbaTmp[i] = _toRgba(pixels[i]);
+
+        return _rgbaTmp;
     }
 
     private bool TryRenderTile(GuiElementMap map, TileKey key, Vec4f? color)

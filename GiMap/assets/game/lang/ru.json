@@ -43,6 +43,8 @@
     "maplayer-caves": "Пещеры",
     "caves-layer-tooltip": "Слой {0}: Y {1}–{2}",
     "caves-follow-player": "По игроку",
+    "ore-select-all": "Выбрать все",
+    "ore-clear-all": "Снять все",
     "caves-floor": "{0}, Y: {1}",
     "caves-solid": "Сплошная порода",
     "caves-void": "Глубокая пустота",

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Text;
 using GiMap.Config;
 using Vintagestory.API.Client;
@@ -12,6 +13,11 @@ namespace GiMap.Client;
 
 public abstract class AMapLayer : RGBMapLayer
 {
+    // All map layers are generated on one shared thread, so hidden layers yield to the shown one
+    private const double HiddenLayerBudgetMs = 4;
+    private static readonly List<AMapLayer> Layers = new();
+
+
     public override string LayerGroupCode => Title;
     public override EnumMapAppSide DataSide => EnumMapAppSide.Client;
     public override MapLegendItem[] LegendItems => null;
@@ -31,6 +37,7 @@ public abstract class AMapLayer : RGBMapLayer
     private ConcurrentQueue<ReadyMapPiece> _readyMapPieces = new();
     private Dictionary<FastVec2i, int[]> _pendingPieces = new();
     private Dictionary<FastVec2i, MapPieceDB> _toSaveList = new();
+    private volatile int _retryCount;
     protected ConcurrentDictionary<FastVec2i, AChunkMapComponent> _loadedMapData = new();
     
     protected readonly Dictionary<int, string> LocalizedNameByColor = new();
@@ -48,6 +55,9 @@ public abstract class AMapLayer : RGBMapLayer
         Active = false;
         
         _capi = api as ICoreClientAPI;
+
+        lock (Layers)
+            Layers.Add(this);
 
         if (api.Side == EnumAppSide.Client)
         {
@@ -198,6 +208,9 @@ public abstract class AMapLayer : RGBMapLayer
             }
         }
 
+        lock (Layers)
+            Layers.Remove(this);
+
         MultiChunkMapComponent.DisposeStatic();
         base.Dispose();
     }
@@ -212,9 +225,17 @@ public abstract class AMapLayer : RGBMapLayer
     {
         _genAccum += dt;
         _diskSaveAccum += dt;
-        if (_genAccum < 0.1) return;
+
+        bool isShown = Active;
+        if (!isShown && (_genAccum < 0.1 || IsShownLayerBusy()))
+        {
+            SaveMapPieces();
+            return;
+        }
         _genAccum = 0;
 
+        var stopwatch = isShown ? null : Stopwatch.StartNew();
+        int retryCount = 0;
         int quantityToGen;
         lock (_chunksToGenLock)
             quantityToGen = _chunksToGen.Count;
@@ -222,6 +243,7 @@ public abstract class AMapLayer : RGBMapLayer
         while (quantityToGen > 0)
         {
             if (mapSink.IsShuttingDown) break;
+            if (stopwatch != null && stopwatch.Elapsed.TotalMilliseconds > HiddenLayerBudgetMs) break;
 
             quantityToGen--;
             FastVec2i cord;
@@ -265,6 +287,7 @@ public abstract class AMapLayer : RGBMapLayer
                     _chunksToGen.Enqueue(cord);
                 }
 
+                retryCount++;
                 continue;
             }
 
@@ -273,6 +296,35 @@ public abstract class AMapLayer : RGBMapLayer
             LoadFromChunkPixels(cord, tintedPixels);
         }
 
+        _retryCount = retryCount;
+        SaveMapPieces();
+    }
+
+    /// <summary>
+    /// True while a shown layer has chunks to generate, not counting chunks waiting for data from the server.
+    /// </summary>
+    private static bool IsShownLayerBusy()
+    {
+        lock (Layers)
+        {
+            foreach (var layer in Layers)
+            {
+                if (!layer.Active)
+                    continue;
+
+                lock (layer._chunksToGenLock)
+                {
+                    if (layer._chunksToGen.Count > layer._retryCount)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void SaveMapPieces()
+    {
         if (_toSaveList.Count > 100 || (_diskSaveAccum > 4f && _toSaveList.Count > 0))
         {
             _diskSaveAccum = 0;

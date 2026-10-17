@@ -24,6 +24,7 @@ public class GiMapConfig
     public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
     public Caves CavesMode = new Caves();
+    public Notes NotesMode = new Notes();
 
     public struct Topographic
     {
@@ -330,6 +331,16 @@ public class GiMapConfig
         public string otherColor = "#c86eb4";
 
         public Caves()
+        {
+        }
+    }
+
+    // Notes are stored in vanilla waypoints, their colors come from the waypoints
+    public struct Notes
+    {
+        public bool isEnabled = true;
+
+        public Notes()
         {
         }
     }

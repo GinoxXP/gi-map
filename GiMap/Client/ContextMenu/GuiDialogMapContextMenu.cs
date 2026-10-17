@@ -1,3 +1,5 @@
+using GiMap.Client.Notes;
+using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
@@ -7,7 +9,7 @@ using Vintagestory.GameContent;
 namespace GiMap.Client.ContextMenu;
 
 /// <summary>
-/// Context menu opened by a right click on the world map at the cursor: adding a waypoint and teleporting to the point
+/// Context menu opened by a right click on the world map at the cursor: adding a waypoint or a note and teleporting to the point
 /// </summary>
 public class GuiDialogMapContextMenu : GuiDialog
 {
@@ -24,22 +26,45 @@ public class GuiDialogMapContextMenu : GuiDialog
     // Above the full-screen world map, below its other dialogs
     public override double DrawOrder => 0.2;
 
-    private GuiDialogMapContextMenu(ICoreClientAPI capi, int mouseX, int mouseY, Vec3d worldPos,
-        GuiDialogAddWayPoint addWaypointDialog) : base(capi)
+    private GuiDialogMapContextMenu(ICoreClientAPI capi, int mouseX, int mouseY,
+        IEnumerable<(string Name, Action OnClick)> items) : base(capi)
     {
-        _items.Add((Lang.Get("worldmap-contextmenu-addwaypoint"), () => addWaypointDialog.TryOpen()));
-
-        if (capi.World.Player.HasPrivilege(Privilege.tp))
-            _items.Add((Lang.Get("worldmap-contextmenu-teleport"), () => MapTeleport.Teleport(capi, worldPos)));
-
+        _items.AddRange(items);
         Compose(mouseX, mouseY);
     }
 
     public static void Open(ICoreClientAPI capi, int mouseX, int mouseY, Vec3d worldPos,
         GuiDialogAddWayPoint addWaypointDialog)
     {
+        var items = new List<(string Name, Action OnClick)>
+        {
+            (Lang.Get("worldmap-contextmenu-addwaypoint"), () => addWaypointDialog.TryOpen()),
+        };
+
+        if (ConfigManager.ConfigInstance.NotesMode.isEnabled)
+            items.Add((Lang.Get("worldmap-contextmenu-addnote"), () => OpenNoteTypes(capi, mouseX, mouseY, worldPos)));
+
+        if (capi.World.Player.HasPrivilege(Privilege.tp))
+            items.Add((Lang.Get("worldmap-contextmenu-teleport"), () => MapTeleport.Teleport(capi, worldPos)));
+
+        Show(capi, mouseX, mouseY, items);
+    }
+
+    // Second page of the menu: the type of the new note
+    private static void OpenNoteTypes(ICoreClientAPI capi, int mouseX, int mouseY, Vec3d worldPos)
+    {
+        var items = Enum.GetValues<MapNoteType>()
+            .Select(type => (Lang.Get("gimap-note-type-" + type.ToString().ToLowerInvariant()),
+                (Action)(() => GuiDialogMapNote.StartNew(capi, type, worldPos))));
+
+        // Opened after this menu has closed
+        capi.Event.EnqueueMainThreadTask(() => Show(capi, mouseX, mouseY, items), "gimap-contextmenu");
+    }
+
+    private static void Show(ICoreClientAPI capi, int mouseX, int mouseY, IEnumerable<(string Name, Action OnClick)> items)
+    {
         _instance?.TryClose();
-        _instance = new GuiDialogMapContextMenu(capi, mouseX, mouseY, worldPos, addWaypointDialog);
+        _instance = new GuiDialogMapContextMenu(capi, mouseX, mouseY, items);
         _instance.TryOpen();
     }
 

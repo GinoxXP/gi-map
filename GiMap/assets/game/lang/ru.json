@@ -95,6 +95,8 @@
     "gimap-settings-reset": "Сбросить настройки",
     "gimap-settings-reset-confirm": "Все настройки GiMap будут сброшены на значения по умолчанию, файл конфига будет удалён. Это действие необратимо.\n\nВключение и выключение режимов применится после перезахода в мир.",
     "worldmap-mapproperties": "Свойства карт",
+    "worldmap-contextmenu-addwaypoint": "Добавить метку",
+    "worldmap-contextmenu-teleport": "Телепортироваться",
     "gimap-mapproperties-total": "Карты этого мира: {0}",
     "gimap-mapproperties-empty": "Сохранённых карт нет",
     "gimap-mapproperties-terrain": "Местность (ванильная)",

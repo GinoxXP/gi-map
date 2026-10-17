@@ -6,6 +6,7 @@ using GiMap.Client.Fertility;
 using GiMap.Client.GeologyActivity;
 using GiMap.Client.Height;
 using GiMap.Client.Light;
+using GiMap.Client.Notes;
 using GiMap.Client.Precipitation;
 using GiMap.Client.Temperature;
 using GiMap.Client.TemporalStability;
@@ -86,6 +87,9 @@ public class GiMapModSystem : ModSystem
 
         if (ConfigManager.ConfigInstance.BathymetricMode.isEnabled)
             mapManager.RegisterMapLayer<BathymetricMapLayer>(MapTypes.Bathymetric, 12);
+
+        if (ConfigManager.ConfigInstance.NotesMode.isEnabled)
+            mapManager.RegisterMapLayer<NotesMapLayer>(MapTypes.Notes, 13);
     }
 
     public override void Dispose()

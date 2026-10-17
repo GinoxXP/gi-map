@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using GiMap.Client;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
@@ -58,6 +59,7 @@ class GuiDialogWorldMapPatch
 
         var tabNames = ___capi.ModLoader.GetModSystem<WorldMapManager>().MapLayers
             .Select(layer => layer.LayerGroupCode)
+            .Where(code => code != MapTypes.Notes)
             .Distinct()
             .Select(code => Lang.Get("maplayer-" + code));
         var tabsWidth = GetTabsWidth(tabNames);

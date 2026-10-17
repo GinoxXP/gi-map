@@ -32,6 +32,9 @@ class WorldMapManagerPatch
         // Only registered layers are moved: isEnabled may be changed in the settings until the world is rejoined
         var registered = Order.Where(__result.Remove).ToList();
 
+        // Notes have no tab: they are always shown, and a layer without a tab is never deactivated
+        __result.Remove(MapTypes.Notes);
+
         __result.InsertRange(Math.Min(terrainLayerIndex + 1, __result.Count), registered);
     }
 }

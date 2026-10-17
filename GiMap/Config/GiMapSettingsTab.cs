@@ -59,6 +59,7 @@ public static class GiMapSettingsTab
         new(MapTypes.ChunkGrid, c => c.ChunkGridMode.isEnabled, (c, v) => c.ChunkGridMode.isEnabled = v),
         new(MapTypes.Ore, c => c.OreMode.isEnabled, (c, v) => c.OreMode.isEnabled = v),
         new(MapTypes.TemporalStability, c => c.TemporalStabilityMode.isEnabled, (c, v) => c.TemporalStabilityMode.isEnabled = v),
+        new(MapTypes.Notes, c => c.NotesMode.isEnabled, (c, v) => c.NotesMode.isEnabled = v),
     ];
 
     private static bool _reloadTopographic;

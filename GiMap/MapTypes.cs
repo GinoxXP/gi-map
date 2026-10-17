@@ -14,5 +14,7 @@ public static class MapTypes
     public static readonly string TemporalStability = "temporal-stability";
     public static readonly string Caves = "caves";
     public static readonly string Bathymetric = "bathymetric";
+    // Notes layer, has no map tab
+    public static readonly string Notes = "gimap-notes";
 
 }

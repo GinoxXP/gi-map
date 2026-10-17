@@ -60,10 +60,12 @@ public class GiMapConfig
         public bool isEnabled = true;
 
         public string landColor = "#e8e2d0";
+        // Gradient by depth in blocks: shallowColor at 0, mediumColor at mediumDepth, deepColor from deepDepth
         public string shallowColor = "#c6ecf7";
+        public string mediumColor = "#3f86c6";
         public string deepColor = "#0b2e6b";
-        // Depth in blocks at which the gradient reaches deepColor
-        public int gradientMaxDepth = 40;
+        public int mediumDepth = 30;
+        public int deepDepth = 90;
 
         public bool showContours = true;
         public int contourInterval = 2;

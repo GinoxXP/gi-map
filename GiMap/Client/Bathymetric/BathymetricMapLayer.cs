@@ -54,17 +54,21 @@ public class BathymetricMapLayer : AContourMapLayer
     private void FillDepthColors(GiMapConfig.Bathymetric config)
     {
         int shallowColor = ColorUtilExtensions.HexToColor(config.shallowColor);
+        int mediumColor = ColorUtilExtensions.HexToColor(config.mediumColor);
         int deepColor = ColorUtilExtensions.HexToColor(config.deepColor);
-        int maxDepth = Math.Max(1, config.gradientMaxDepth);
+        int mediumDepth = Math.Max(1, config.mediumDepth);
+        int deepDepth = Math.Max(mediumDepth + 1, config.deepDepth);
 
-        int stepCount = (maxDepth + _contourInterval - 1) / _contourInterval + 1;
+        int stepCount = (deepDepth + _contourInterval - 1) / _contourInterval + 1;
         _depthColors = new int[stepCount];
         for (var step = 0; step < stepCount; step++)
         {
             int fromDepth = Math.Max(1, step * _contourInterval);
             int toDepth = (step + 1) * _contourInterval - 1;
-            float t = Math.Min(1f, step * _contourInterval / (float)maxDepth);
-            _depthColors[step] = ColorUtilExtensions.Lerp(shallowColor, deepColor, t);
+            int depth = step * _contourInterval;
+            _depthColors[step] = depth <= mediumDepth
+                ? ColorUtilExtensions.Lerp(shallowColor, mediumColor, depth / (float)mediumDepth)
+                : ColorUtilExtensions.Lerp(mediumColor, deepColor, Math.Min(1f, (depth - mediumDepth) / (float)(deepDepth - mediumDepth)));
 
             string name = step == stepCount - 1
                 ? Lang.Get("bathymetric-depth-deeper", fromDepth)

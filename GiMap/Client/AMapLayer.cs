@@ -565,7 +565,8 @@ public abstract class AMapLayer : RGBMapLayer
 
     protected void FillDictionary(int color, string localizedName)
     {
-        LocalizedNameByColor.Add(color, localizedName);
+        // Colors may repeat, e.g. steps of a gradient; the first name wins
+        LocalizedNameByColor.TryAdd(color, localizedName);
     }
     
     private void OnChunkDirty(Vec3i chunkCoord, IWorldChunk chunk, EnumChunkDirtyReason reason)

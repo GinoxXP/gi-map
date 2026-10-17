@@ -2,11 +2,11 @@
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client.Topographic;
+namespace GiMap.Client.Contours;
 
-public class TopographicMultiChunkMapComponent : AChunkMapComponent
+public class ContourLabelsMapComponent : AChunkMapComponent
 {
-    // In blocks: index contour labels of the same height closer than this are dropped
+    // In blocks: index contour labels of the same value closer than this are dropped
     private const int SameHeightLabelDistance = 40;
     // In blocks: no label is placed closer than this to another label
     private const int AnyLabelDistance = 8;
@@ -19,7 +19,7 @@ public class TopographicMultiChunkMapComponent : AChunkMapComponent
     private readonly Vec3d _labelWorldPos = new();
     private Vec2f _labelViewPos = new();
 
-    public TopographicMultiChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, TopographicMapLayer mapLayer): base(capi, baseChunkCord, mapLayer)
+    public ContourLabelsMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, AContourMapLayer mapLayer): base(capi, baseChunkCord, mapLayer)
     {
     }
 
@@ -46,7 +46,7 @@ public class TopographicMultiChunkMapComponent : AChunkMapComponent
     {
         base.Render(map, dt);
 
-        if (_mapLayer is not TopographicMapLayer layer || !layer.ShowHeightLabels)
+        if (_mapLayer is not AContourMapLayer layer || !layer.ShowLabels)
             return;
 
         bool showContourLabels = map.ZoomLevel >= layer.ContourLabelsMinZoom;
@@ -70,10 +70,10 @@ public class TopographicMultiChunkMapComponent : AChunkMapComponent
             float x = (float)(map.Bounds.renderX + _labelViewPos.X);
             float y = (float)(map.Bounds.renderY + _labelViewPos.Y);
 
-            var text = layer.GetLabelTexture(label.Height, label.IsPeak);
+            var text = layer.LabelTextures.GetLabelTexture(label.Height, label.IsPeak);
             if (label.IsPeak)
             {
-                var dot = layer.GetPeakDotTexture();
+                var dot = layer.LabelTextures.GetPeakDotTexture();
                 capi.Render.Render2DTexturePremultipliedAlpha(dot.TextureId, x - dot.Width / 2f, y - dot.Height / 2f, dot.Width, dot.Height, z, color);
                 capi.Render.Render2DTexturePremultipliedAlpha(text.TextureId, x + dot.Width / 2f, y - text.Height / 2f, text.Width, text.Height, z, color);
             }

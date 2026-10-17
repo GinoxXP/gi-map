@@ -13,6 +13,7 @@ class WorldMapManagerPatch
     [
         MapTypes.Topographic,
         MapTypes.Height,
+        MapTypes.Bathymetric,
         MapTypes.Caves,
         MapTypes.Fertility,
         MapTypes.Precipitation,

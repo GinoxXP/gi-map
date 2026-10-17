@@ -20,6 +20,22 @@ public static class ColorUtilExtensions
         return new[] { r / 255.0, g / 255.0, b / 255.0, a / 255.0 };
     }
 
+    /// <summary>
+    /// Mixes two colors channel by channel, t = 0 gives a, t = 1 gives b
+    /// </summary>
+    public static int Lerp(int a, int b, float t)
+    {
+        var result = 0;
+        for (var shift = 0; shift < 32; shift += 8)
+        {
+            int channelA = (a >> shift) & 0xff;
+            int channelB = (b >> shift) & 0xff;
+            result |= (int)Math.Round(channelA + (channelB - channelA) * t) << shift;
+        }
+
+        return result;
+    }
+
     private static (int R, int G, int B, int A) ParseHex(string hex)
     {
         var span = hex.AsSpan().TrimStart('#');

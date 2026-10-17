@@ -1,5 +1,6 @@
 using Cairo;
 using GiMap.Client;
+using GiMap.Client.Bathymetric;
 using GiMap.Client.Fertility;
 using GiMap.Client.Topographic;
 using GiMap.Patches;
@@ -47,6 +48,7 @@ public static class GiMapSettingsTab
     [
         new(MapTypes.Topographic, c => c.TopographicMode.isEnabled, (c, v) => c.TopographicMode.isEnabled = v),
         new(MapTypes.Height, c => c.HeightMode.isEnabled, (c, v) => c.HeightMode.isEnabled = v),
+        new(MapTypes.Bathymetric, c => c.BathymetricMode.isEnabled, (c, v) => c.BathymetricMode.isEnabled = v),
         new(MapTypes.Caves, c => c.CavesMode.isEnabled, (c, v) => c.CavesMode.isEnabled = v),
         new(MapTypes.Fertility, c => c.FertilityMode.isEnabled, (c, v) => c.FertilityMode.isEnabled = v),
         new(MapTypes.Precipitation, c => c.PrecipitationMode.isEnabled, (c, v) => c.PrecipitationMode.isEnabled = v),
@@ -60,6 +62,7 @@ public static class GiMapSettingsTab
 
     private static bool _reloadTopographic;
     private static bool _reloadFertility;
+    private static bool _reloadBathymetric;
     private static long _reloadCallbackId;
 
     private static GiMapConfig Config => ConfigManager.ConfigInstance;
@@ -84,6 +87,13 @@ public static class GiMapSettingsTab
         right.Switch(composer, "gimap-settings-showheightlabels", "showHeightLabels", OnShowHeightLabelsChanged);
         right.Slider(composer, "gimap-settings-contourlabelsminzoom", "contourLabelsMinZoom", OnContourLabelsMinZoomChanged);
         right.Slider(composer, "gimap-settings-peaklabelsminzoom", "peakLabelsMinZoom", OnPeakLabelsMinZoomChanged);
+        right.Header(composer, "gimap-settings-bathymetric");
+        right.Switch(composer, "gimap-settings-showisobaths", "bathyShowContours", OnBathyShowContoursChanged);
+        right.Slider(composer, "gimap-settings-contourinterval", "bathyContourInterval", OnBathyContourIntervalChanged);
+        right.Slider(composer, "gimap-settings-majorcontourevery", "bathyMajorContourEvery", OnBathyMajorContourEveryChanged);
+        right.Switch(composer, "gimap-settings-showdepthlabels", "bathyShowDepthLabels", OnBathyShowDepthLabelsChanged);
+        right.Slider(composer, "gimap-settings-contourlabelsminzoom", "bathyContourLabelsMinZoom", OnBathyContourLabelsMinZoomChanged);
+        right.Slider(composer, "gimap-settings-deepestlabelsminzoom", "bathyDeepestLabelsMinZoom", OnBathyDeepestLabelsMinZoomChanged);
         right.Header(composer, "gimap-settings-fertility");
         right.Switch(composer, "gimap-settings-hatching", "hatching", OnHatchingChanged);
         right.Switch(composer, "gimap-settings-ignoresnow", "ignoreSnow", OnIgnoreSnowChanged);
@@ -101,6 +111,14 @@ public static class GiMapSettingsTab
         composer.GetSwitch("showHeightLabels").SetValue(topographic.showHeightLabels);
         SetZoomSlider(composer.GetSlider("contourLabelsMinZoom"), topographic.contourLabelsMinZoom);
         SetZoomSlider(composer.GetSlider("peakLabelsMinZoom"), topographic.peakLabelsMinZoom);
+
+        var bathymetric = Config.BathymetricMode;
+        composer.GetSwitch("bathyShowContours").SetValue(bathymetric.showContours);
+        composer.GetSlider("bathyContourInterval").SetValues(Math.Clamp(bathymetric.contourInterval, 1, 10), 1, 10, 1);
+        composer.GetSlider("bathyMajorContourEvery").SetValues(Math.Clamp(bathymetric.majorContourEvery, 2, 10), 2, 10, 1);
+        composer.GetSwitch("bathyShowDepthLabels").SetValue(bathymetric.showDepthLabels);
+        SetZoomSlider(composer.GetSlider("bathyContourLabelsMinZoom"), bathymetric.contourLabelsMinZoom);
+        SetZoomSlider(composer.GetSlider("bathyDeepestLabelsMinZoom"), bathymetric.deepestLabelsMinZoom);
 
         composer.GetSwitch("hatching").SetValue(Config.FertilityMode.hatchingEnabled);
         composer.GetSwitch("ignoreSnow").SetValue(Config.FertilityMode.ignoreSnow);
@@ -200,6 +218,54 @@ public static class GiMapSettingsTab
         return true;
     }
 
+    private static void OnBathyShowContoursChanged(bool on)
+    {
+        Config.BathymetricMode.showContours = on;
+        ReloadBathymetric();
+    }
+
+    private static bool OnBathyContourIntervalChanged(int value)
+    {
+        if (Config.BathymetricMode.contourInterval != value)
+        {
+            Config.BathymetricMode.contourInterval = value;
+            ReloadBathymetric();
+        }
+
+        return true;
+    }
+
+    private static bool OnBathyMajorContourEveryChanged(int value)
+    {
+        if (Config.BathymetricMode.majorContourEvery != value)
+        {
+            Config.BathymetricMode.majorContourEvery = value;
+            ReloadBathymetric();
+        }
+
+        return true;
+    }
+
+    private static void OnBathyShowDepthLabelsChanged(bool on)
+    {
+        Config.BathymetricMode.showDepthLabels = on;
+        ReloadBathymetric();
+    }
+
+    private static bool OnBathyContourLabelsMinZoomChanged(int value)
+    {
+        Config.BathymetricMode.contourLabelsMinZoom = value / 4f;
+        Save();
+        return true;
+    }
+
+    private static bool OnBathyDeepestLabelsMinZoomChanged(int value)
+    {
+        Config.BathymetricMode.deepestLabelsMinZoom = value / 4f;
+        Save();
+        return true;
+    }
+
     private static void OnHatchingChanged(bool on)
     {
         Config.FertilityMode.hatchingEnabled = on;
@@ -215,6 +281,13 @@ public static class GiMapSettingsTab
     private static void ReloadTopographic()
     {
         _reloadTopographic = true;
+        Save();
+        ScheduleReload();
+    }
+
+    private static void ReloadBathymetric()
+    {
+        _reloadBathymetric = true;
         Save();
         ScheduleReload();
     }
@@ -252,10 +325,14 @@ public static class GiMapSettingsTab
         if (_reloadTopographic)
             AMapLayer.Find<TopographicMapLayer>()?.Reload();
 
+        if (_reloadBathymetric)
+            AMapLayer.Find<BathymetricMapLayer>()?.Reload();
+
         if (_reloadFertility)
             AMapLayer.Find<FertilityMapLayer>()?.Reload();
 
         _reloadTopographic = false;
+        _reloadBathymetric = false;
         _reloadFertility = false;
     }
 

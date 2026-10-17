@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using GiMap.Client.Lod;
+using GiMap.Client.Storage;
 using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -48,10 +49,17 @@ public abstract class AMapLayer : RGBMapLayer
     // Changed by Reload, pieces generated with older settings are generated again
     private volatile int _configVersion;
     private int _toSaveConfigVersion;
+    private volatile bool _clearRequested;
 
     protected readonly Dictionary<int, string> LocalizedNameByColor = new();
     
     public Vec4f OverlayColor { get; protected set; } = new Vec4f(1, 1, 1, 1);
+
+    /// <summary>
+    /// Map db files opened by the layer, null when it has none
+    /// </summary>
+    public string? MapDbFilePath { get; private set; }
+    public string? LodDbFilePath { get; private set; }
 
     protected AMapLayer(ICoreAPI api, IWorldMapManager mapSink) : base(api, mapSink)
     {
@@ -73,7 +81,7 @@ public abstract class AMapLayer : RGBMapLayer
             api.World.Logger.Notification("Loading world map cache db...");
             _mapdb = new MapDB(api.World.Logger);
             string errorMessage = null;
-            string mapDbFilePath = GetMapDbFilePath();
+            string mapDbFilePath = MapDbFilePath = GetMapDbFilePath();
             _mapdb.OpenOrCreate(mapDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
             if (errorMessage != null)
                 throw new Exception($"Cannot open {mapDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
@@ -81,7 +89,7 @@ public abstract class AMapLayer : RGBMapLayer
             if (LodMode == LodMode.Tiles)
             {
                 _lodDb = new MapDB(api.World.Logger);
-                string lodDbFilePath = GetMapDbFilePath("-lod");
+                string lodDbFilePath = LodDbFilePath = GetMapDbFilePath("-lod");
                 _lodDb.OpenOrCreate(lodDbFilePath, ref errorMessage, requireWriteAccess: true, corruptionProtection: true, doIntegrityCheck: false);
                 if (errorMessage != null)
                     throw new Exception($"Cannot open {lodDbFilePath}, possibly corrupted. Please fix manually or delete this file to continue playing");
@@ -279,6 +287,13 @@ public abstract class AMapLayer : RGBMapLayer
     {
         _genAccum += dt;
         _diskSaveAccum += dt;
+
+        if (_clearRequested)
+        {
+            _clearRequested = false;
+            _toSaveList.Clear();
+            MapDbUtil.Clear(_mapdb, api.Logger);
+        }
 
         // Pieces waiting for the disk were generated with the settings before Reload
         int configVersion = _configVersion;
@@ -615,10 +630,28 @@ public abstract class AMapLayer : RGBMapLayer
         Redraw();
     }
 
+    /// <summary>
+    /// Deletes everything the layer has stored and shrinks its db files, then redraws the layer. Main thread.
+    /// </summary>
+    public void ClearStorage()
+    {
+        // The db is used by the map generation thread, so it is cleared there
+        _configVersion++;
+        _clearRequested = true;
+        Redraw();
+        _lod?.RequestPurge(shrink: true);
+    }
+
     public static T? Find<T>() where T : AMapLayer
     {
         lock (Layers)
             return Layers.OfType<T>().FirstOrDefault();
+    }
+
+    public static AMapLayer? FindByTitle(string title)
+    {
+        lock (Layers)
+            return Layers.FirstOrDefault(layer => layer.Title == title);
     }
 
     public static void ApplyOverlayAlphaToAll()

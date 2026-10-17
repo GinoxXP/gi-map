@@ -91,5 +91,22 @@
     "gimap-settings-deepestlabelsminzoom": "Deepest point labels from zoom",
     "gimap-settings-fertility": "Fertility",
     "gimap-settings-hatching": "Hatch forest floor",
-    "gimap-settings-ignoresnow": "Show soil under snow"
+    "gimap-settings-ignoresnow": "Show soil under snow",
+    "gimap-settings-reset": "Reset settings",
+    "gimap-settings-reset-confirm": "All GiMap settings will be reset to defaults and the config file will be deleted. This cannot be undone.\n\nEnabled or disabled modes take effect after rejoining the world.",
+    "worldmap-mapproperties": "Map properties",
+    "gimap-mapproperties-total": "Maps of this world: {0}",
+    "gimap-mapproperties-empty": "No saved maps",
+    "gimap-mapproperties-terrain": "Terrain (vanilla)",
+    "gimap-mapproperties-delete": "Delete",
+    "gimap-mapproperties-deleteall": "Delete all",
+    "gimap-mapproperties-close": "Close",
+    "gimap-mapproperties-confirm": "The saved map of the \"{0}\" mode will be deleted. This cannot be undone: areas far from you will be shown again only after you revisit them.",
+    "gimap-mapproperties-confirm-terrain": "The vanilla terrain map will be deleted together with everything you have explored. This cannot be undone: the map will only show areas you visit again.",
+    "gimap-mapproperties-confirm-all": "All saved maps of this world will be deleted, including the vanilla terrain map. This cannot be undone: the maps will only show areas you visit again.",
+    "gimap-mapproperties-error": "Some files could not be deleted, see client-main.log",
+    "gimap-size-b": "{0} B",
+    "gimap-size-kb": "{0} KB",
+    "gimap-size-mb": "{0} MB",
+    "gimap-size-gb": "{0} GB"
 }

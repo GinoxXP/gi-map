@@ -1,3 +1,4 @@
+using GiMap.Client.Storage;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
@@ -5,7 +6,7 @@ using Vintagestory.GameContent;
 
 namespace GiMap.Patches;
 
-// Adds a big map toggle to the title bar menu of the full-screen world map
+// Adds a big map toggle and the "Map properties" dialog to the title bar menu of the full-screen world map
 [HarmonyPatch(typeof(GuiElementDialogTitleBar), MethodType.Constructor,
     [typeof(ICoreClientAPI), typeof(string), typeof(GuiComposer), typeof(Action), typeof(CairoFont), typeof(ElementBounds)])]
 class GuiElementDialogTitleBarPatch
@@ -13,6 +14,7 @@ class GuiElementDialogTitleBarPatch
     // Composer name of GuiDialogWorldMap in EnumDialogType.Dialog mode
     private const string WorldMapDialogName = "worldmapDialog";
     private const string BigMapValue = "gimap-bigmap";
+    private const string MapPropertiesValue = "gimap-mapproperties";
 
     private static readonly AccessTools.FieldRef<GuiElementDialogTitleBar, GuiElementListMenu> ListMenuRef =
         AccessTools.FieldRefAccess<GuiElementDialogTitleBar, GuiElementListMenu>("listMenu");
@@ -28,13 +30,13 @@ class GuiElementDialogTitleBarPatch
         var listMenu = ListMenuRef(__instance);
 
         // Set directly instead of SetList: it composes immediately, but the bounds have no parent yet
-        listMenu.Values = [..listMenu.Values, BigMapValue];
-        listMenu.Names = [..listMenu.Names, Lang.Get(BigWorldMap.IsEnabled(capi) ? "worldmap-bigmap-disable" : "worldmap-bigmap-enable")];
+        listMenu.Values = [..listMenu.Values, BigMapValue, MapPropertiesValue];
+        listMenu.Names = [..listMenu.Names, Lang.Get(BigWorldMap.IsEnabled(capi) ? "worldmap-bigmap-disable" : "worldmap-bigmap-enable"), Lang.Get("worldmap-mapproperties")];
 
         var original = OnSelectionChangedRef(listMenu);
         OnSelectionChangedRef(listMenu) = (value, selected) =>
         {
-            if (value != BigMapValue)
+            if (value != BigMapValue && value != MapPropertiesValue)
             {
                 original?.Invoke(value, selected);
                 return;
@@ -42,6 +44,13 @@ class GuiElementDialogTitleBarPatch
 
             // Keep the fixed/movable item selected
             listMenu.SetSelectedIndex(__instance.Movable ? 1 : 0);
+
+            if (value == MapPropertiesValue)
+            {
+                capi.Event.EnqueueMainThreadTask(() => GuiDialogMapProperties.Open(capi), "gimap-mapproperties");
+                return;
+            }
+
             BigWorldMap.Toggle(capi);
 
             // Called from the old composer's mouse handler, so the dialog is recomposed later

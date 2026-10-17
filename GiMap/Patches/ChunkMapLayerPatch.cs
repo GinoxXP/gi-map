@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using GiMap.Client.Lod;
+using GiMap.Client.Storage;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -52,6 +53,49 @@ static class ChunkMapLayerPatch
     private static State? GetState(ChunkMapLayer layer)
         => States.TryGetValue(layer, out var state) ? state : null;
 
+    private static readonly System.Func<ChunkMapLayer, TextCommandCallingArgs?, TextCommandResult>? RedrawCmd =
+        AccessTools.Method(typeof(ChunkMapLayer), "OnMapCmdRedraw") is { } method
+            ? AccessTools.MethodDelegate<System.Func<ChunkMapLayer, TextCommandCallingArgs?, TextCommandResult>>(method)
+            : null;
+
+    private static ChunkMapLayer? FindLayer(ICoreClientAPI capi)
+        => capi.ModLoader.GetModSystem<WorldMapManager>()?.MapLayers.OfType<ChunkMapLayer>().FirstOrDefault();
+
+    /// <summary>
+    /// Map db files of the terrain layer that are kept open, they can only be cleared by <see cref="ClearStorage"/>
+    /// </summary>
+    public static IEnumerable<string> GetOpenDbFiles(ICoreClientAPI capi)
+    {
+        var layer = FindLayer(capi);
+        if (layer == null)
+            yield break;
+
+        yield return Path.Combine(GamePaths.DataPath, "Maps", capi.World.SavegameIdentifier + ".db");
+        if (GetState(layer) is { } state)
+            yield return state.LodPath;
+    }
+
+    /// <summary>
+    /// Deletes the explored terrain map with its LOD tiles and redraws it. Main thread.
+    /// </summary>
+    /// <returns>False when the terrain layer cannot be cleared on this game version</returns>
+    public static bool ClearStorage(ICoreClientAPI capi)
+    {
+        var layer = FindLayer(capi);
+        if (layer == null)
+            return true;
+
+        var state = GetState(layer);
+        if (state == null || RedrawCmd == null)
+            return false;
+
+        // The vanilla db is used by the map generation thread, so it is cleared there
+        state.ClearRequested = true;
+        RedrawCmd(layer, null);
+        state.Lod.RequestPurge(shrink: true);
+        return true;
+    }
+
     [HarmonyPatch(typeof(ChunkMapLayer), "OnLoaded")]
     static class OnLoadedPatch
     {
@@ -81,7 +125,7 @@ static class ChunkMapLayerPatch
             }
 
             var lod = new LodTileSet(capi, db, cords => ChunkPieceReader.Read(MapDb!(__instance), ToSaveList!(__instance), cords), LodColors.Average);
-            States.AddOrUpdate(__instance, new State(lod, db));
+            States.AddOrUpdate(__instance, new State(lod, db, path));
         }
     }
 
@@ -190,6 +234,17 @@ static class ChunkMapLayerPatch
     [HarmonyPatch(typeof(ChunkMapLayer), "OnOffThreadTick")]
     static class OnOffThreadTickPatch
     {
+        static void Prefix(ChunkMapLayer __instance, ICoreAPI ___api)
+        {
+            var state = GetState(__instance);
+            if (state == null || !state.ClearRequested)
+                return;
+
+            state.ClearRequested = false;
+            ToSaveList!(__instance).Clear();
+            MapDbUtil.Clear(MapDb!(__instance), ___api.Logger);
+        }
+
         static void Postfix(ChunkMapLayer __instance)
             => GetState(__instance)?.Lod.OffThreadTick(__instance.Active && LodState.Level > 0);
     }
@@ -255,11 +310,14 @@ static class ChunkMapLayerPatch
         public readonly MapDB Db;
         public readonly HashSet<FastVec2i> Visible = new();
         public bool WasLodZoom;
+        public readonly string LodPath;
+        public volatile bool ClearRequested;
 
-        public State(LodTileSet lod, MapDB db)
+        public State(LodTileSet lod, MapDB db, string lodPath)
         {
             Lod = lod;
             Db = db;
+            LodPath = lodPath;
         }
     }
 }

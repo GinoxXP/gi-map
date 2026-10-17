@@ -5,6 +5,7 @@ using GiMap.Client.Fertility;
 using GiMap.Client.Topographic;
 using GiMap.Patches;
 using HarmonyLib;
+using Newtonsoft.Json;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
@@ -67,6 +68,11 @@ public static class GiMapSettingsTab
 
     private static GiMapConfig Config => ConfigManager.ConfigInstance;
 
+    /// <summary>
+    /// Map types in the order of the map tabs
+    /// </summary>
+    public static IEnumerable<string> ModeOrder => Modes.Select(mode => mode.MapType);
+
     public static void Open(GuiCompositeSettings settings)
     {
         var composer = ComposerHeader(settings, "gamesettings-gimap", GuiCompositeSettingsPatch.TabCode);
@@ -78,6 +84,7 @@ public static class GiMapSettingsTab
         left.Header(composer, "gimap-settings-modes", "gimap-settings-modes-hover");
         foreach (var mode in Modes)
             left.Switch(composer, "maplayer-" + mode.MapType, "mode-" + mode.MapType, on => OnModeChanged(mode, on));
+        left.Button(composer, "gimap-settings-reset", "resetSettings", () => OnResetClicked(settings));
 
         var right = new Column(RightColumnX);
         right.Header(composer, "gimap-settings-topographic");
@@ -168,6 +175,46 @@ public static class GiMapSettingsTab
         mode.Set(Config, on);
         Save();
     }
+
+    private static bool OnResetClicked(GuiCompositeSettings settings)
+    {
+        var capi = GiMapModSystem.ClientApi;
+        if (capi == null)
+            return true;
+
+        new GuiDialogConfirm(capi, Lang.Get("gimap-settings-reset-confirm"), confirmed =>
+        {
+            if (confirmed)
+                ResetSettings(settings);
+        }).TryOpen();
+
+        return true;
+    }
+
+    private static void ResetSettings(GuiCompositeSettings settings)
+    {
+        var capi = GiMapModSystem.ClientApi;
+        if (capi == null || ConfigManager.ConfigInstance == null)
+            return;
+
+        var old = Config;
+        ConfigManager.ResetModConfig(capi);
+
+        AMapLayer.ApplyOverlayAlphaToAll();
+
+        // Only layers whose baked settings changed are redrawn
+        _reloadTopographic |= !SameSettings(old.TopographicMode, Config.TopographicMode);
+        _reloadBathymetric |= !SameSettings(old.BathymetricMode, Config.BathymetricMode);
+        _reloadFertility |= !SameSettings(old.FertilityMode, Config.FertilityMode);
+        if (_reloadTopographic || _reloadBathymetric || _reloadFertility)
+            ScheduleReload();
+
+        Open(settings);
+    }
+
+    // Sections hold arrays, so they are compared by their json
+    private static bool SameSettings<T>(T a, T b)
+        => JsonConvert.SerializeObject(a) == JsonConvert.SerializeObject(b);
 
     private static void OnShowContoursChanged(bool on)
     {
@@ -374,6 +421,13 @@ public static class GiMapSettingsTab
         {
             Label(composer, langKey);
             composer.AddDropDown(values, names, selectedIndex, onChanged, ElementBounds.Fixed(x + ControlOffset, _y + 2, SliderWidth, 26), key);
+            _y += RowHeight;
+        }
+
+        public void Button(GuiComposer composer, string langKey, string key, Vintagestory.API.Common.ActionConsumable onClick)
+        {
+            _y += 8;
+            composer.AddSmallButton(Lang.Get(langKey), onClick, ElementBounds.Fixed(x, _y, ControlOffset + SliderWidth, 26), EnumButtonStyle.Small, key);
             _y += RowHeight;
         }
 

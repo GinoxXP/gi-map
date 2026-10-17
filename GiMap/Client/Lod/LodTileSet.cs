@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using GiMap.Client.Storage;
 using Vintagestory.API.Client;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
@@ -41,6 +42,7 @@ public sealed class LodTileSet
     private readonly ConcurrentQueue<TileKey> _ready = new();
     private readonly ConcurrentQueue<FastVec2i> _invalidated = new();
     private volatile bool _purgeRequested;
+    private volatile bool _shrinkRequested;
 
     // Off-thread only
     private readonly Stack<TileKey> _buildStack = new();
@@ -189,10 +191,14 @@ public sealed class LodTileSet
         => _invalidated.Enqueue(chunkCord.Copy());
 
     /// <summary>
-    /// Drops all cached tiles, they are rebuilt from chunk pieces. Any thread.
+    /// Drops all cached tiles, they are rebuilt from chunk pieces. With <paramref name="shrink"/> the db file is shrunk too. Any thread.
     /// </summary>
-    public void RequestPurge()
-        => _purgeRequested = true;
+    public void RequestPurge(bool shrink = false)
+    {
+        if (shrink)
+            _shrinkRequested = true;
+        _purgeRequested = true;
+    }
 
     /// <summary>
     /// Forgets requested tiles, used when the map is closed. Main thread.
@@ -286,7 +292,15 @@ public sealed class LodTileSet
     private void Purge()
     {
         _purgeRequested = false;
-        _db.Purge();
+        if (_shrinkRequested)
+        {
+            _shrinkRequested = false;
+            MapDbUtil.Clear(_db, _capi.Logger);
+        }
+        else
+        {
+            _db.Purge();
+        }
         _toSave.Clear();
         _buildStack.Clear();
         _invalidated.Clear();

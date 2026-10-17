@@ -91,5 +91,22 @@
     "gimap-settings-deepestlabelsminzoom": "Подписи глубочайших точек с масштаба",
     "gimap-settings-fertility": "Плодородие",
     "gimap-settings-hatching": "Штриховка лесной подстилки",
-    "gimap-settings-ignoresnow": "Показывать почву под снегом"
+    "gimap-settings-ignoresnow": "Показывать почву под снегом",
+    "gimap-settings-reset": "Сбросить настройки",
+    "gimap-settings-reset-confirm": "Все настройки GiMap будут сброшены на значения по умолчанию, файл конфига будет удалён. Это действие необратимо.\n\nВключение и выключение режимов применится после перезахода в мир.",
+    "worldmap-mapproperties": "Свойства карт",
+    "gimap-mapproperties-total": "Карты этого мира: {0}",
+    "gimap-mapproperties-empty": "Сохранённых карт нет",
+    "gimap-mapproperties-terrain": "Местность (ванильная)",
+    "gimap-mapproperties-delete": "Удалить",
+    "gimap-mapproperties-deleteall": "Удалить все",
+    "gimap-mapproperties-close": "Закрыть",
+    "gimap-mapproperties-confirm": "Сохранённая карта режима «{0}» будет удалена. Это действие необратимо: области вдали от вас появятся снова, только когда вы их снова посетите.",
+    "gimap-mapproperties-confirm-terrain": "Ванильная карта местности будет удалена вместе со всем разведанным. Это действие необратимо: на карте будут только те области, которые вы посетите заново.",
+    "gimap-mapproperties-confirm-all": "Все сохранённые карты этого мира будут удалены, включая ванильную карту местности. Это действие необратимо: на картах будут только те области, которые вы посетите заново.",
+    "gimap-mapproperties-error": "Некоторые файлы не удалось удалить, подробности в client-main.log",
+    "gimap-size-b": "{0} Б",
+    "gimap-size-kb": "{0} КБ",
+    "gimap-size-mb": "{0} МБ",
+    "gimap-size-gb": "{0} ГБ"
 }

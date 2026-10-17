@@ -29,7 +29,7 @@ There are no automated tests; verify changes in the game.
 | `GiMap/Client/ContextMenu/` | Right-click menu of the world map (`GuiDialogMapContextMenu`): "Add waypoint" opens the intercepted vanilla dialog; "Add note" opens a second page with note types (see `Client/Notes/`); "Teleport here" (only with the `tp` privilege) sends `/tp` with absolute coordinates onto the surface, or to sea level when the chunk is not loaded on the client (`MapTeleport`) |
 | `GiMap/Client/Notes/`      | Map notes (text, line, circle, rect, polygon/polyline) stored in titles of vanilla waypoints, so they work on servers without the mod: `{GIMAP_NOTE_<TYPE> key=value key="quoted \"text\""}`, points are block offsets from the waypoint position, color is the waypoint color (`MapNoteCodec`). `NotesMapLayer` has no map tab (removed in `WorldMapManagerPatch`), so it is always active; draws only on the full-screen map through a Cairo texture with a margin (`NotesOverlay`, `NoteRenderer`), right click on a note opens `GuiDialogMapNote`. New notes: context menu → type → points by clicks (`NoteDrawingSession`, panel `GuiDialogNoteDrawing`) → editor; saved with `/waypoint addati/modify/remove` (`MapNoteCommands`, index among own waypoints). `WaypointNotesPatch` hides the vanilla icon, hover and edit dialog of note waypoints |
 | `GiMap/Client/Lod/`        | LOD for zoom below 0.5: `LodTileSet` merges chunk pieces into 128x128 tiles (2^level blocks per texel, level 2+), cached in `Maps/<save>-<layer>-lod.db`; a mode picks `LodMode` (`Tiles`, `Hidden`, `PerChunk`) |
-| `GiMap/assets/game/lang/`  | Localization: `en`, `ru`, `sr`                                 |
+| `GiMap/assets/game/lang/`  | Localization: `en`, `ru`, `sr`, `pl`, `fr`, `de`, `es-es`, `es-419`, `uk`, `tr`, `be`, `cs`, `ar`, `sl` |
 
 ## Modes
 | Folder (`GiMap/Client/`) | Map type id          | Description                                  |
@@ -55,7 +55,7 @@ There are no automated tests; verify changes in the game.
 4. Register the layer in `GiMapModSystem.StartClientSide` behind `isEnabled`.
 5. Add the id to `Order` in `WorldMapManagerPatch`.
 6. Add the mode switch to `Modes` in `GiMapSettingsTab`.
-7. Add `maplayer-<id>` and any legend/hover keys to **all** lang files (`en`, `ru`, `sr`).
+7. Add `maplayer-<id>` and any legend/hover keys to **all** lang files in `GiMap/assets/game/lang/`.
 8. Update the Modes table above.
 
 ## Rules

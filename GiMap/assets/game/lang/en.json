@@ -95,6 +95,8 @@
     "gimap-settings-reset": "Reset settings",
     "gimap-settings-reset-confirm": "All GiMap settings will be reset to defaults and the config file will be deleted. This cannot be undone.\n\nEnabled or disabled modes take effect after rejoining the world.",
     "worldmap-mapproperties": "Map properties",
+    "worldmap-contextmenu-addwaypoint": "Add waypoint",
+    "worldmap-contextmenu-teleport": "Teleport here",
     "gimap-mapproperties-total": "Maps of this world: {0}",
     "gimap-mapproperties-empty": "No saved maps",
     "gimap-mapproperties-terrain": "Terrain (vanilla)",

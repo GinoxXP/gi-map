@@ -1,4 +1,5 @@
 ﻿using GiMap.Client;
+using GiMap.Client.Bathymetric;
 using GiMap.Client.Caves;
 using GiMap.Client.Chunk;
 using GiMap.Client.Fertility;
@@ -82,6 +83,9 @@ public class GiMapModSystem : ModSystem
 
         if (ConfigManager.ConfigInstance.CavesMode.isEnabled)
             mapManager.RegisterMapLayer<CavesMapLayer>(MapTypes.Caves, 11);
+
+        if (ConfigManager.ConfigInstance.BathymetricMode.isEnabled)
+            mapManager.RegisterMapLayer<BathymetricMapLayer>(MapTypes.Bathymetric, 12);
     }
 
     public override void Dispose()

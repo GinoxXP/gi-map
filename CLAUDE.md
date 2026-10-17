@@ -24,12 +24,14 @@ There are no automated tests; verify changes in the game.
 | `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode), `ConfigManager` (`GiMapConfig.json`) and `GiMapSettingsTab` (content of the "GiMap" tab of the in-game settings: mode switches, opacity, min zoom, topographic/fertility options; baked options call `AMapLayer.Reload`, which purges the layer db and redraws) |
 | `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiElementDialogTitleBarPatch` adds the toggle to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles; `GuiCompositeSettingsPatch` adds the "GiMap" tab button to the in-game settings) |
 | `GiMap/Client/`            | Map modes and their base classes (`AMapLayer`, `ABlockMapLayer`, `AChunkMapComponent`) |
+| `GiMap/Client/Contours/`   | Shared contour code: `AContourMapLayer` (colors columns by `SampleColumn`, draws contour lines over a value with neighbor-chunk edges, index contour labels and peaks), `HeightLabel` (labels appended after the 1024 chunk pixels), `ContourLabelsMapComponent` (thins out and renders labels), `ContourLabelTextures`; used by Topographic and Bathymetric |
 | `GiMap/Client/Lod/`        | LOD for zoom below 0.5: `LodTileSet` merges chunk pieces into 128x128 tiles (2^level blocks per texel, level 2+), cached in `Maps/<save>-<layer>-lod.db`; a mode picks `LodMode` (`Tiles`, `Hidden`, `PerChunk`) |
 | `GiMap/assets/game/lang/`  | Localization: `en`, `ru`, `sr`                                 |
 
 ## Modes
 | Folder (`GiMap/Client/`) | Map type id          | Description                                  |
 |--------------------------|----------------------|----------------------------------------------|
+| Bathymetric              | `bathymetric`        | Displays depth of water bodies (from the water surface, ice included) as a shallow → medium → deep gradient (`mediumDepth`, `deepDepth`), land in one color; isobaths, index isobath depth labels and deepest points |
 | Caves                    | `caves`              | Displays cave floors by layers of 32 blocks (layer 1 is the deepest); layer picked by slider or follows player Y |
 | Chunk                    | `chunk-grid`         | Draws chunk grid                             |
 | Fertility                | `fertility`          | Displays soil fertility; block lists in config, forest floor is low fertility drawn hatched; snow is skipped, fertile blocks under it are hatched white |

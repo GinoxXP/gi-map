@@ -1,4 +1,4 @@
-namespace GiMap.Client.Topographic;
+namespace GiMap.Client.Contours;
 
 /// <summary>
 /// Height label of a chunk. Labels are appended to the chunk pixels after <see cref="ChunkPixelCount"/>,

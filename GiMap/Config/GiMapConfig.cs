@@ -14,6 +14,7 @@ public class GiMapConfig
 
     public Topographic TopographicMode = new Topographic();
     public Height HeightMode = new Height();
+    public Bathymetric BathymetricMode = new Bathymetric();
     public Fertility FertilityMode = new Fertility();
     public Precipitation PrecipitationMode = new Precipitation();
     public Temperature TemperatureMode = new Temperature();
@@ -54,6 +55,35 @@ public class GiMapConfig
         }
     }
     
+    public struct Bathymetric
+    {
+        public bool isEnabled = true;
+
+        public string landColor = "#e8e2d0";
+        // Gradient by depth in blocks: shallowColor at 0, mediumColor at mediumDepth, deepColor from deepDepth
+        public string shallowColor = "#c6ecf7";
+        public string mediumColor = "#3f86c6";
+        public string deepColor = "#0b2e6b";
+        public int mediumDepth = 30;
+        public int deepDepth = 90;
+
+        public bool showContours = true;
+        public int contourInterval = 2;
+        public int majorContourEvery = 5;
+        public string contourColor = "#4f86b5";
+        public string majorContourColor = "#173f66";
+
+        public bool showDepthLabels = true;
+        public string deepestColor = "#000000";
+        public string labelOutlineColor = "#ffffffc8";
+        public float contourLabelsMinZoom = 1.5f;
+        public float deepestLabelsMinZoom = 0.75f;
+
+        public Bathymetric()
+        {
+        }
+    }
+
     public struct Height
     {
         public bool isEnabled = true;

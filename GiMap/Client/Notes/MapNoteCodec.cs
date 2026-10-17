@@ -77,11 +77,12 @@ public static class MapNoteCodec
         var result = new MapNote { Type = type.Key };
         result.Vertices.Add(anchor);
         result.Text = values.GetValueOrDefault("text", "");
+        result.FontSize = Math.Clamp(GetInt(values, "size", MapNote.DefaultFontSize(result.Type)), MapNote.MinFontSize, MapNote.MaxFontSize);
+        result.LineWidth = Math.Clamp(GetInt(values, "w", MapNote.DefaultLineWidth), MapNote.MinLineWidth, MapNote.MaxLineWidth);
 
         switch (result.Type)
         {
             case MapNoteType.Text:
-                result.FontSize = Math.Clamp(GetInt(values, "size", MapNote.DefaultFontSize), MapNote.MinFontSize, MapNote.MaxFontSize);
                 result.Bold = GetBool(values, "bold");
                 break;
             case MapNoteType.Line:
@@ -126,8 +127,6 @@ public static class MapNoteCodec
         switch (note.Type)
         {
             case MapNoteType.Text:
-                if (note.FontSize != MapNote.DefaultFontSize)
-                    Append(sb, "size", note.FontSize.ToString(CultureInfo.InvariantCulture));
                 AppendBool(sb, "bold", note.Bold);
                 break;
             case MapNoteType.Line:
@@ -157,6 +156,10 @@ public static class MapNoteCodec
                 break;
         }
 
+        if (note.FontSize != MapNote.DefaultFontSize(note.Type))
+            Append(sb, "size", note.FontSize.ToString(CultureInfo.InvariantCulture));
+        if (note.Type != MapNoteType.Text && note.LineWidth != MapNote.DefaultLineWidth)
+            Append(sb, "w", note.LineWidth.ToString(CultureInfo.InvariantCulture));
         if (!string.IsNullOrEmpty(note.Text))
             Append(sb, "text", note.Text);
 

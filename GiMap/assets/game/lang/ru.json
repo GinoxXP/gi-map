@@ -127,6 +127,7 @@
     "gimap-note-edit-title": "Заметка: {0}",
     "gimap-note-text": "Текст",
     "gimap-note-fontsize": "Размер шрифта",
+    "gimap-note-linewidth": "Толщина линий",
     "gimap-note-bold": "Жирный",
     "gimap-note-linelength": "Длина",
     "gimap-note-angle": "Угол (0° восток, 90° юг)",

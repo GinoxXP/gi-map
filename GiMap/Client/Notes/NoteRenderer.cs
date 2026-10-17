@@ -13,7 +13,6 @@ namespace GiMap.Client.Notes;
 public static class NoteRenderer
 {
     private const double FillAlpha = 0.25;
-    private const int LabelFontSize = 14;
 
     public delegate (double X, double Y) ToPx(double worldX, double worldZ);
 
@@ -24,7 +23,11 @@ public static class NoteRenderer
 
     private static double Ui(double value) => value * RuntimeEnv.GUIScale;
 
-    private static double LineWidth => Math.Max(1, Ui(2));
+    private static double LineWidthOf(MapNote note) => Math.Max(1, Ui(note.LineWidth));
+
+    // Waves and teeth grow with thick lines
+    private static double WaveAmplitude(double width) => Math.Max(Ui(4), width * 2);
+    private static double WavePeriod(double width) => Math.Max(Ui(14), width * 7);
 
     public static void Draw(Context ctx, MapNote note, ToPx toPx, double scale, List<LabelRect>? labels)
     {
@@ -83,7 +86,7 @@ public static class NoteRenderer
     {
         var a = Center(note.Anchor, toPx);
         var b = Center(note.End, toPx);
-        StrokeStyledSegment(ctx, a, b, note.Style, rgba);
+        StrokeStyledSegment(ctx, a, b, note.Style, LineWidthOf(note), rgba);
 
         var angle = Math.Atan2(b.Y - a.Y, b.X - a.X);
         // Text is never upside down
@@ -92,12 +95,12 @@ public static class NoteRenderer
 
         var midX = (a.X + b.X) / 2;
         var midY = (a.Y + b.Y) / 2;
-        var offset = StyleHalfWidth(note.Style) + Ui(3);
+        var offset = StyleHalfWidth(note.Style, LineWidthOf(note)) + Ui(3);
         if (!string.IsNullOrEmpty(note.Text))
-            DrawLabelsAt(ctx, note, [note.Text], midX, midY, angle, -offset, LabelFontSize, false, rgba, labels, alignBottom: true);
+            DrawLabelsAt(ctx, note, [note.Text], midX, midY, angle, -offset, note.FontSize, false, rgba, labels, alignBottom: true);
         if (note.ShowLength)
             DrawLabelsAt(ctx, note, [Lang.Get("gimap-note-length", FormatNumber(note.Length))], midX, midY, angle, offset,
-                LabelFontSize, false, rgba, labels, alignBottom: false);
+                note.FontSize, false, rgba, labels, alignBottom: false);
     }
 
     private static void DrawCircle(Context ctx, MapNote note, ToPx toPx, double scale, double[] rgba, List<LabelRect>? labels)
@@ -116,7 +119,7 @@ public static class NoteRenderer
             lines.Add(Lang.Get("gimap-note-radius", FormatNumber(note.Radius)));
         if (note.ShowArea)
             lines.Add(Lang.Get("gimap-note-area", FormatNumber(note.Area)));
-        DrawLabels(ctx, note, lines, x, y, 0, LabelFontSize, false, rgba, labels);
+        DrawLabels(ctx, note, lines, x, y, 0, note.FontSize, false, rgba, labels);
     }
 
     private static void DrawRect(Context ctx, MapNote note, ToPx toPx, double[] rgba, List<LabelRect>? labels)
@@ -135,14 +138,14 @@ public static class NoteRenderer
             lines.Add(note.Text);
         if (note.ShowArea)
             lines.Add(Lang.Get("gimap-note-area", FormatNumber(note.Area)));
-        DrawLabels(ctx, note, lines, (x1 + x2) / 2, (y1 + y2) / 2, 0, LabelFontSize, false, rgba, labels);
+        DrawLabels(ctx, note, lines, (x1 + x2) / 2, (y1 + y2) / 2, 0, note.FontSize, false, rgba, labels);
 
         if (note.ShowDims)
         {
             var offset = Ui(3);
-            DrawLabelsAt(ctx, note, [FormatNumber(note.RectWidth)], (x1 + x2) / 2, y1, 0, -offset, LabelFontSize, false, rgba,
+            DrawLabelsAt(ctx, note, [FormatNumber(note.RectWidth)], (x1 + x2) / 2, y1, 0, -offset, note.FontSize, false, rgba,
                 labels, alignBottom: true);
-            DrawLabelsAt(ctx, note, [FormatNumber(note.RectHeight)], x2, (y1 + y2) / 2, -Math.PI / 2, offset, LabelFontSize,
+            DrawLabelsAt(ctx, note, [FormatNumber(note.RectHeight)], x2, (y1 + y2) / 2, -Math.PI / 2, offset, note.FontSize,
                 false, rgba, labels, alignBottom: false);
         }
     }
@@ -165,7 +168,7 @@ public static class NoteRenderer
         }
         else
         {
-            StrokeOutlined(ctx, rgba, LineWidth);
+            StrokeOutlined(ctx, rgba, LineWidthOf(note));
         }
 
         var lines = new List<string>();
@@ -177,7 +180,7 @@ public static class NoteRenderer
             lines.Add(Lang.Get("gimap-note-area", FormatNumber(note.Area)));
 
         var (labelX, labelY) = note.IsClosedPoly ? Centroid(points) : MiddleOfPath(points);
-        DrawLabels(ctx, note, lines, labelX, labelY, 0, LabelFontSize, false, rgba, labels);
+        DrawLabels(ctx, note, lines, labelX, labelY, 0, note.FontSize, false, rgba, labels);
     }
 
     private static void FillAndStroke(Context ctx, MapNote note, double[] rgba)
@@ -187,7 +190,7 @@ public static class NoteRenderer
             ctx.SetSourceRGBA(rgba[0], rgba[1], rgba[2], FillAlpha);
             ctx.FillPreserve();
         }
-        StrokeOutlined(ctx, rgba, LineWidth);
+        StrokeOutlined(ctx, rgba, LineWidthOf(note));
     }
 
     // A dark halo under the line keeps it visible on any map mode
@@ -201,15 +204,15 @@ public static class NoteRenderer
         ctx.Stroke();
     }
 
-    private static double StyleHalfWidth(NoteLineStyle style) => style switch
+    private static double StyleHalfWidth(NoteLineStyle style, double width) => style switch
     {
-        NoteLineStyle.Double => LineWidth * 2,
-        NoteLineStyle.Triple => LineWidth * 3,
-        NoteLineStyle.Wavy or NoteLineStyle.Saw => Ui(4) + LineWidth / 2,
-        _ => LineWidth / 2,
+        NoteLineStyle.Double => width * 2,
+        NoteLineStyle.Triple => width * 3,
+        NoteLineStyle.Wavy or NoteLineStyle.Saw => WaveAmplitude(width) + width / 2,
+        _ => width / 2,
     };
 
-    private static void StrokeStyledSegment(Context ctx, (double X, double Y) a, (double X, double Y) b, NoteLineStyle style,
+    private static void StrokeStyledSegment(Context ctx, (double X, double Y) a, (double X, double Y) b, NoteLineStyle style, double width,
         double[] rgba)
     {
         var dx = b.X - a.X;
@@ -223,7 +226,7 @@ public static class NoteRenderer
         var uy = dy / length;
         var nx = -uy;
         var ny = ux;
-        var w = LineWidth;
+        var w = width;
 
         switch (style)
         {
@@ -269,8 +272,8 @@ public static class NoteRenderer
     private static void StrokePeriodic(Context ctx, (double X, double Y) a, double ux, double uy, double nx, double ny,
         double length, bool wavy, double[] rgba, double width)
     {
-        var amplitude = Ui(4);
-        var period = Ui(14);
+        var amplitude = WaveAmplitude(width);
+        var period = WavePeriod(width);
         var step = wavy ? period / 16 : period / 2;
 
         var (from, to) = VisibleRange(ctx, a, ux, uy, length, amplitude);
@@ -432,7 +435,7 @@ public static class NoteRenderer
         // Outline in the contrasting color
         var luminance = 0.299 * rgba[0] + 0.587 * rgba[1] + 0.114 * rgba[2];
         var outline = luminance > 0.5 ? 0.0 : 1.0;
-        ctx.LineWidth = Ui(3);
+        ctx.LineWidth = Math.Max(Ui(3), ctx.FontExtents.Height * 0.12);
         ctx.SetSourceRGBA(outline, outline, outline, 0.75);
         ctx.StrokePreserve();
         ctx.SetSourceRGBA(rgba[0], rgba[1], rgba[2], 1);

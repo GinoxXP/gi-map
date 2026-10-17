@@ -127,6 +127,7 @@
     "gimap-note-edit-title": "Белешка: {0}",
     "gimap-note-text": "Текст",
     "gimap-note-fontsize": "Величина фонта",
+    "gimap-note-linewidth": "Дебљина линија",
     "gimap-note-bold": "Подебљано",
     "gimap-note-linelength": "Дужина",
     "gimap-note-angle": "Угао (0° исток, 90° југ)",

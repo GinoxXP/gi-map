@@ -29,10 +29,16 @@ public enum NoteLineStyle
 /// </summary>
 public class MapNote
 {
-    public const int DefaultFontSize = 16;
     public const int MinFontSize = 8;
     public const int MaxFontSize = 48;
+    // In GUI pixels, constant on the screen at any zoom
+    public const int DefaultLineWidth = 2;
+    public const int MinLineWidth = 1;
+    public const int MaxLineWidth = 12;
     public const int MaxVertices = 100;
+
+    // Text notes are bigger than the labels of shapes
+    public static int DefaultFontSize(MapNoteType type) => type == MapNoteType.Text ? 16 : 14;
 
     public MapNoteType Type;
     // Vertices in world block coordinates (x, z): Text and Circle use the anchor only,
@@ -42,8 +48,10 @@ public class MapNote
     public int Radius;
 
     public string Text = "";
-    public int FontSize = DefaultFontSize;
+    public int FontSize = DefaultFontSize(MapNoteType.Text);
     public bool Bold;
+    // Lines and outlines of shapes
+    public int LineWidth = DefaultLineWidth;
     public NoteLineStyle Style;
 
     public bool ShowLength;

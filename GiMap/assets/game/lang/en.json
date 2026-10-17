@@ -127,6 +127,7 @@
     "gimap-note-edit-title": "Note: {0}",
     "gimap-note-text": "Text",
     "gimap-note-fontsize": "Font size",
+    "gimap-note-linewidth": "Line width",
     "gimap-note-bold": "Bold",
     "gimap-note-linelength": "Length",
     "gimap-note-angle": "Angle (0° east, 90° south)",

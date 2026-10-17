@@ -237,7 +237,9 @@ public class NotesMapLayer : MapLayer
 
         for (var i = _notes.Count - 1; i >= 0; i--)
         {
-            if (HitsShape(mapElem, _notes[i], mouseX, mouseY, hitDistance))
+            // Thick lines are easier to hit
+            var noteHitDistance = Math.Max(hitDistance, (_notes[i].LineWidth / 2.0 + 3) * RuntimeEnv.GUIScale);
+            if (HitsShape(mapElem, _notes[i], mouseX, mouseY, noteHitDistance))
                 return _notes[i];
         }
 

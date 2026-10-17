@@ -65,6 +65,7 @@ public class GuiDialogMapNote : GuiDialogGeneric
             ShowDims = true,
             ShowPerimeter = true,
             ShowArea = true,
+            FontSize = MapNote.DefaultFontSize(type),
         };
 
         if (type == MapNoteType.Text)
@@ -148,12 +149,20 @@ public class GuiDialogMapNote : GuiDialogGeneric
         var swatchesPerRow = Math.Max(1, (int)(ControlWidth / 27));
         y += (int)Math.Ceiling(_colors.Length / (double)swatchesPerRow) * 27 + RowGap;
 
+        AddLabel(composer, "gimap-note-fontsize", y);
+        composer.AddSlider(_ => true, Control(y), "fontSize");
+        y += RowHeight + RowGap;
+
+        if (_note.Type != MapNoteType.Text)
+        {
+            AddLabel(composer, "gimap-note-linewidth", y);
+            composer.AddSlider(_ => true, Control(y), "lineWidth");
+            y += RowHeight + RowGap;
+        }
+
         switch (_note.Type)
         {
             case MapNoteType.Text:
-                AddLabel(composer, "gimap-note-fontsize", y);
-                composer.AddSlider(_ => true, Control(y), "fontSize");
-                y += RowHeight + RowGap;
                 y = AddSwitchRow(composer, "gimap-note-bold", "bold", y);
                 break;
             case MapNoteType.Line:
@@ -241,11 +250,13 @@ public class GuiDialogMapNote : GuiDialogGeneric
     {
         var c = SingleComposer;
         c.GetTextInput("text").SetValue(_note.Text);
+        c.GetSlider("fontSize").SetValues(_note.FontSize, MapNote.MinFontSize, MapNote.MaxFontSize, 1);
+        if (_note.Type != MapNoteType.Text)
+            c.GetSlider("lineWidth").SetValues(_note.LineWidth, MapNote.MinLineWidth, MapNote.MaxLineWidth, 1);
 
         switch (_note.Type)
         {
             case MapNoteType.Text:
-                c.GetSlider("fontSize").SetValues(_note.FontSize, MapNote.MinFontSize, MapNote.MaxFontSize, 1);
                 c.GetSwitch("bold").SetValue(_note.Bold);
                 break;
             case MapNoteType.Line:
@@ -296,11 +307,14 @@ public class GuiDialogMapNote : GuiDialogGeneric
         if (_colorIndex >= 0 && _colorIndex < _colors.Length)
             _note.Color = _colors[_colorIndex];
 
+        _note.FontSize = Math.Clamp(c.GetSlider("fontSize").GetValue(), MapNote.MinFontSize, MapNote.MaxFontSize);
+        if (_note.Type != MapNoteType.Text)
+            _note.LineWidth = Math.Clamp(c.GetSlider("lineWidth").GetValue(), MapNote.MinLineWidth, MapNote.MaxLineWidth);
+
         var anchor = _note.Anchor;
         switch (_note.Type)
         {
             case MapNoteType.Text:
-                _note.FontSize = Math.Clamp(c.GetSlider("fontSize").GetValue(), MapNote.MinFontSize, MapNote.MaxFontSize);
                 _note.Bold = c.GetSwitch("bold").On;
                 break;
             case MapNoteType.Line:

@@ -1,4 +1,5 @@
 ﻿using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 
 namespace GiMap.Config;
 
@@ -32,6 +33,27 @@ public static class ConfigManager
 
     public static void SaveModConfig(ICoreAPI api)
     {
+        api.StoreModConfig(ConfigInstance, configPath);
+    }
+
+    /// <summary>
+    /// Deletes the config file and writes the default settings in its place
+    /// </summary>
+    public static void ResetModConfig(ICoreAPI api)
+    {
+        var path = Path.Combine(GamePaths.ModConfig, configPath);
+        try
+        {
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+        catch (Exception e)
+        {
+            api.Logger.Error("[GiMap] - Could not delete config {0}", path);
+            api.Logger.Error(e);
+        }
+
+        ConfigInstance = new GiMapConfig();
         api.StoreModConfig(ConfigInstance, configPath);
     }
 

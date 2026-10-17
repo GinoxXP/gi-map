@@ -91,5 +91,22 @@
     "gimap-settings-deepestlabelsminzoom": "Ознаке најдубљих тачака од увећања",
     "gimap-settings-fertility": "Плодност",
     "gimap-settings-hatching": "Шрафирање шумског тла",
-    "gimap-settings-ignoresnow": "Приказати тло испод снега"
+    "gimap-settings-ignoresnow": "Приказати тло испод снега",
+    "gimap-settings-reset": "Ресетуј подешавања",
+    "gimap-settings-reset-confirm": "Сва GiMap подешавања биће враћена на подразумеване вредности, а конфигурациони фајл биће обрисан. Ова радња се не може поништити.\n\nУкључивање и искључивање режима примениће се након поновног уласка у свет.",
+    "worldmap-mapproperties": "Својства мапа",
+    "gimap-mapproperties-total": "Мапе овог света: {0}",
+    "gimap-mapproperties-empty": "Нема сачуваних мапа",
+    "gimap-mapproperties-terrain": "Терен (ванила)",
+    "gimap-mapproperties-delete": "Обриши",
+    "gimap-mapproperties-deleteall": "Обриши све",
+    "gimap-mapproperties-close": "Затвори",
+    "gimap-mapproperties-confirm": "Сачувана мапа режима „{0}” биће обрисана. Ова радња се не може поништити: удаљене области поново ће се појавити тек када их поново посетите.",
+    "gimap-mapproperties-confirm-terrain": "Ванила мапа терена биће обрисана заједно са свиме што сте истражили. Ова радња се не може поништити: на мапи ће бити само области које поново посетите.",
+    "gimap-mapproperties-confirm-all": "Све сачуване мапе овог света биће обрисане, укључујући ванила мапу терена. Ова радња се не може поништити: на мапама ће бити само области које поново посетите.",
+    "gimap-mapproperties-error": "Неки фајлови нису могли бити обрисани, погледајте client-main.log",
+    "gimap-size-b": "{0} B",
+    "gimap-size-kb": "{0} KB",
+    "gimap-size-mb": "{0} MB",
+    "gimap-size-gb": "{0} GB"
 }

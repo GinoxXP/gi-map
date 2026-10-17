@@ -20,7 +20,15 @@ public static class MapTeleport
             ? blockAccessor.GetRainMapHeightAt(x, z) + 1
             : capi.World.SeaLevel;
 
+        TeleportTo(capi, new Vec3d(x + 0.5, y, z + 0.5));
+    }
+
+    /// <summary>
+    /// Teleports the player exactly to <paramref name="pos"/> with the /tp command
+    /// </summary>
+    public static void TeleportTo(ICoreClientAPI capi, Vec3d pos)
+    {
         // "=" marks absolute coordinates, otherwise x and z are relative to the world spawn
-        capi.SendChatMessage(string.Format(CultureInfo.InvariantCulture, "/tp ={0} ={1} ={2}", x + 0.5, y, z + 0.5));
+        capi.SendChatMessage(string.Format(CultureInfo.InvariantCulture, "/tp ={0} ={1} ={2}", pos.X, pos.Y, pos.Z));
     }
 }

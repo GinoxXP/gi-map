@@ -114,12 +114,18 @@ public class NotesMapLayer : MapLayer
             if (session.IsOverPanel(args.X, args.Y))
                 return;
 
+            // A left click is not marked handled: the map dialog then skips GuiElementMap.OnMouseUp,
+            // the map stays in the drag state and follows the cursor
             if (args.Button == EnumMouseButton.Left && !wasDrag)
+            {
                 session.AddPoint(ToBlock(mapElem, args, session));
+            }
             else if (args.Button == EnumMouseButton.Right)
+            {
+                // Handled, so the map does not open the "Add waypoint" dialog
                 session.Finish();
-
-            args.Handled = true;
+                args.Handled = true;
+            }
             return;
         }
 

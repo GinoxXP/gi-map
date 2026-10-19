@@ -343,8 +343,8 @@ public class GiMapConfig
         // Variant code of the shown butterfly, e.g. "monarch" for "butterfly-monarch"
         public string selectedButterfly = "monarch";
 
-        public string spawnColor = "#ff9900";
-        public string noSpawnColor = "#404040";
+        public string spawnColor = "#30b030";
+        public string noSpawnColor = "#c02020";
 
         // Hash of the spawn condition groups the map db was generated with, the db is purged when they change
         public string groupsHash = "";

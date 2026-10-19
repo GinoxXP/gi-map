@@ -20,6 +20,8 @@ public class ButterfliesMapLayer : AMapLayer
     private const int MaxGroups = 31;
     private const string SpeciesDropDownKey = "butterflies-species";
     private const string SearchInputKey = "butterflies-search";
+    private const string AnyCode = "*";
+    private const int MaxHoverNames = 8;
 
     public override string Title => MapTypes.Butterflies;
 
@@ -32,6 +34,9 @@ public class ButterfliesMapLayer : AMapLayer
     private volatile bool _isLoaded;
     private ButterflySpecies? _selected;
     private GuiComposer? _dialogComposer;
+    // "Any" first, then the butterflies
+    private List<ButterflySpecies> _choices = new();
+    private ButterflySpecies? _any;
     private int _allGroupsMask;
     private readonly int _spawnColor;
     private readonly int _noSpawnColor;
@@ -56,7 +61,9 @@ public class ButterfliesMapLayer : AMapLayer
 
         ref var config = ref ConfigManager.ConfigInstance.ButterfliesMode;
         string selectedCode = config.selectedButterfly;
-        _selected = _species.Species.FirstOrDefault(s => s.Code == selectedCode) ?? _species.Species.FirstOrDefault();
+        _any = new ButterflySpecies(AnyCode, Lang.Get("butterflies-any"), -1);
+        _choices = _species.Species.Count == 0 ? new List<ButterflySpecies>() : _species.Species.Prepend(_any).ToList();
+        _selected = _choices.FirstOrDefault(s => s.Code == selectedCode) ?? _choices.FirstOrDefault();
 
         string hash = HashGroups();
         if (config.groupsHash != hash)
@@ -146,7 +153,18 @@ public class ButterfliesMapLayer : AMapLayer
         if ((mask & GeneratedBit) == 0 || _selected == null)
             return null;
 
-        return Lang.Get(CanSpawn(mask) ? "butterflies-can-spawn" : "butterflies-cannot-spawn", _selected.Name);
+        if (_selected != _any)
+            return Lang.Get(CanSpawn(mask) ? "butterflies-can-spawn" : "butterflies-cannot-spawn", _selected.Name);
+
+        var names = _species.Species.Where(s => (mask & (1 << s.Group)) != 0).Select(s => s.Name).ToList();
+        if (names.Count == 0)
+            return Lang.Get("butterflies-any-cannot-spawn");
+
+        var text = string.Join(", ", names.Take(MaxHoverNames));
+        if (names.Count > MaxHoverNames)
+            text += ", …";
+
+        return Lang.Get("butterflies-any-can-spawn", names.Count, text);
     }
 
     private int GetPixel(int mask)
@@ -158,11 +176,11 @@ public class ButterfliesMapLayer : AMapLayer
     }
 
     private bool CanSpawn(int mask)
-        => _selected != null && (mask & (1 << _selected.Group)) != 0;
+        => _selected != null && (mask & (_selected == _any ? _allGroupsMask : 1 << _selected.Group)) != 0;
 
     private void SetSelected(string code)
     {
-        var species = _species.Species.FirstOrDefault(s => s.Code == code);
+        var species = _choices.FirstOrDefault(s => s.Code == code);
         if (species == null || species == _selected)
             return;
 
@@ -187,8 +205,8 @@ public class ButterfliesMapLayer : AMapLayer
         row = row.BelowCopy(0, 2).WithFixedSize(250, 28);
         compo.AddTextInput(row, OnSearchChanged, CairoFont.TextInput(), SearchInputKey);
 
-        var values = _species.Species.Select(s => s.Code).ToArray();
-        var names = _species.Species.Select(s => s.Name).ToArray();
+        var values = _choices.Select(s => s.Code).ToArray();
+        var names = _choices.Select(s => s.Name).ToArray();
         int selectedIndex = Math.Max(0, Array.IndexOf(values, _selected?.Code));
 
         row = row.BelowCopy(0, 8).WithFixedSize(250, 26);
@@ -204,12 +222,12 @@ public class ButterfliesMapLayer : AMapLayer
         base.OnMapClosedClient();
     }
 
-    // Leaves in the list only butterflies whose name or code contains the text; the first one is picked
-    // when the shown butterfly is filtered out, so the map follows the search
+    // Leaves in the list "Any" and the butterflies whose name or code contains the text; the first found one is picked
+    // when the shown butterfly is filtered out or "Any" is shown, so the map follows the search
     private void OnSearchChanged(string text)
     {
         var dropDown = _dialogComposer?.GetDropDown(SpeciesDropDownKey);
-        if (dropDown == null)
+        if (dropDown == null || _any == null)
             return;
 
         text = text?.Trim() ?? "";
@@ -221,9 +239,10 @@ public class ButterfliesMapLayer : AMapLayer
         if (found.Count == 0)
             return;
 
-        dropDown.SetList(found.Select(s => s.Code).ToArray(), found.Select(s => s.Name).ToArray());
+        var shown = found.Prepend(_any).ToList();
+        dropDown.SetList(shown.Select(s => s.Code).ToArray(), shown.Select(s => s.Name).ToArray());
 
-        var selected = _selected != null && found.Contains(_selected) ? _selected : found[0];
+        var selected = _selected != null && (found.Contains(_selected) || text.Length == 0) ? _selected : found[0];
         dropDown.SetSelectedValue(selected.Code);
         SetSelected(selected.Code);
     }

@@ -17,6 +17,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using OreMapLayer = GiMap.Client.Ore.OreMapLayer;
+using ButterfliesMapLayer = GiMap.Client.Butterflies.ButterfliesMapLayer;
 
 namespace GiMap;
 
@@ -88,8 +89,11 @@ public class GiMapModSystem : ModSystem
         if (ConfigManager.ConfigInstance.BathymetricMode.isEnabled)
             mapManager.RegisterMapLayer<BathymetricMapLayer>(MapTypes.Bathymetric, 12);
 
+        if (ConfigManager.ConfigInstance.ButterfliesMode.isEnabled)
+            mapManager.RegisterMapLayer<ButterfliesMapLayer>(MapTypes.Butterflies, 13);
+
         if (ConfigManager.ConfigInstance.NotesMode.isEnabled)
-            mapManager.RegisterMapLayer<NotesMapLayer>(MapTypes.Notes, 13);
+            mapManager.RegisterMapLayer<NotesMapLayer>(MapTypes.Notes, 14);
     }
 
     public override void Dispose()

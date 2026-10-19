@@ -24,6 +24,7 @@ public class GiMapConfig
     public Ore OreMode = new Ore();
     public TemporalStability TemporalStabilityMode = new TemporalStability();
     public Caves CavesMode = new Caves();
+    public Butterflies ButterfliesMode = new Butterflies();
     public Notes NotesMode = new Notes();
 
     public struct Topographic
@@ -331,6 +332,24 @@ public class GiMapConfig
         public string otherColor = "#c86eb4";
 
         public Caves()
+        {
+        }
+    }
+
+    public struct Butterflies
+    {
+        public bool isEnabled = true;
+
+        // Variant code of the shown butterfly, e.g. "monarch" for "butterfly-monarch"
+        public string selectedButterfly = "monarch";
+
+        public string spawnColor = "#ff9900";
+        public string noSpawnColor = "#404040";
+
+        // Hash of the spawn condition groups the map db was generated with, the db is purged when they change
+        public string groupsHash = "";
+
+        public Butterflies()
         {
         }
     }

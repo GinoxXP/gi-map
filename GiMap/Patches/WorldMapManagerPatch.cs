@@ -23,6 +23,7 @@ class WorldMapManagerPatch
         MapTypes.ChunkGrid,
         MapTypes.Ore,
         MapTypes.TemporalStability,
+        MapTypes.Butterflies,
     ];
 
     static void Postfix(ref List<string> __result)

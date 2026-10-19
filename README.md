@@ -89,6 +89,12 @@ Build your house so that your friend's room is in the unstable zone.
 
 ![temporal-stability](.promo/temporal-stability.png)
 
+### Butterflies
+
+Pick a butterfly in the layer dialog, and the map highlights the chunks where it may spawn:
+the climate (temperature, rainfall, forest cover) and height of at least one place in the chunk match its spawn conditions.
+Switching the butterfly does not regenerate the map.
+
 ## Mix modes
 
 Why? Yes.

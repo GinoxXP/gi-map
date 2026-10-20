@@ -62,5 +62,15 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-    
+
+    <!-- The "Client" launch profile also loads the add-on, so building the core builds it too.
+         GiMapBuildingAddon stops the loop: the add-on references the core -->
+    <Target Name="BuildAddons" AfterTargets="Build" Condition="'$(GiMapBuildingAddon)' != 'true'">
+        <!-- Restore runs with its own properties, so the build below is evaluated again with the restored assets -->
+        <MSBuild Projects="..\GiMap.Underground\GiMap.Underground.csproj" Targets="Restore"
+                 Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+        <MSBuild Projects="..\GiMap.Underground\GiMap.Underground.csproj"
+                 Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;BuildProjectReferences=false" />
+    </Target>
+
 </Project>

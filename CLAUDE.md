@@ -1,6 +1,11 @@
 ﻿# GiMap
 Client-side mod for Vintage Story that adds new world map modes (map layers).
 
+The repository holds two mods: the core `GiMap/` (mod id `gimap`) and the add-on `GiMap.Underground/`
+(mod id `gimapunderground`, depends on `gimap`) with the Caves and Ore modes. They are split so servers
+can forbid the "x-ray" modes by mod id and keep the core allowed. Keep both `modinfo.json` versions
+(and the add-on's `gimap` dependency) in sync.
+
 ## Stack
 - C# / .NET 10 (`global.json`), Vintage Story API, Harmony
 - Game DLLs are referenced via the `VINTAGE_STORY` environment variable (path to the game install)
@@ -8,21 +13,23 @@ Client-side mod for Vintage Story that adds new world map modes (map layers).
 
 ## Build
 ```bash
-dotnet build GiMap/GiMap.csproj
+dotnet build GiMap.sln
 ```
-Release zip (validates JSON, builds, packages into `Releases/`):
+Release zips of both mods (validates JSON, builds, packages into `Releases/`, list of projects in `BuildContext.ProjectNames`):
 ```bash
 dotnet run --project ZZCakeBuild
 ```
-There are no automated tests; verify changes in the game.
+There are no automated tests; verify changes in the game. The `Client` launch profile of `GiMap` (`Properties/launchSettings.json`) loads both mods; building `GiMap.csproj` also builds the add-on (target `BuildAddons`).
 
 ## Structure
 | Path                       | Purpose                                                        |
 |----------------------------|----------------------------------------------------------------|
-| `GiMap/GiMapModSystem.cs`  | Entry point: loads config, applies Harmony patches, registers map layers |
-| `GiMap/MapTypes.cs`        | String ids of map layers                                       |
+| `GiMap/GiMapModSystem.cs`  | Entry point: loads config, applies Harmony patches, registers core modes in `GiMapModes` and their map layers |
+| `GiMap/GiMapModes.cs`      | Public registry of modes (id, tab order, enabled getter/setter, save) used by the settings switches, `WorldMapManagerPatch` tab order and `MapStorage`; add-ons register in `StartPre` and add reset handlers (`OnReset`) |
+| `GiMap/MapTypes.cs`        | String ids of core map layers                                  |
+| `GiMap.Underground/`       | Add-on mod: `UndergroundModSystem` (runs after the core, registers caves (order 40) and ore (110) in `GiMapModes` and their layers), `Config/` (`GiMapUndergroundConfig.json` with `CavesMode`, `OreMode`), `Caves/`, `Ore/`, own lang files with the caves/ore keys. References `GiMap.csproj` with `Private=false` |
 | `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode), `ConfigManager` (`GiMapConfig.json`) and `GiMapSettingsTab` (content of the "GiMap" tab of the in-game settings: mode switches, opacity, min zoom, topographic/fertility options, "Reset settings" button that deletes the config after `GuiDialogConfirm`; baked options call `AMapLayer.Reload`, which purges the layer db and redraws) |
-| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain"; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiComposerHelpersPatch` widens its mode tabs to the longest name (vanilla cuts inactive names longer than 200); `GuiElementDialogTitleBarPatch` adds the toggle and "Map properties" to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles; `GuiCompositeSettingsPatch` adds the "GiMap" tab button to the in-game settings; `MapContextMenuPatch` intercepts the vanilla "Add waypoint" dialog of a right click on the map and opens the context menu instead; `GuiDialogEditWayPointPatch` adds "Teleport here" (to the exact waypoint position, only with the `tp` privilege) under the buttons of the vanilla "Modify waypoint" dialog, injected in `GuiComposer.EndChildElements` of its composer; `WaypointNotesPatch` skips vanilla rendering and mouse handling of waypoints that store notes) |
+| `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain" by `GiMapModes`; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiComposerHelpersPatch` widens its mode tabs to the longest name (vanilla cuts inactive names longer than 200); `GuiElementDialogTitleBarPatch` adds the toggle and "Map properties" to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles; `GuiCompositeSettingsPatch` adds the "GiMap" tab button to the in-game settings; `MapContextMenuPatch` intercepts the vanilla "Add waypoint" dialog of a right click on the map and opens the context menu instead; `GuiDialogEditWayPointPatch` adds "Teleport here" (to the exact waypoint position, only with the `tp` privilege) under the buttons of the vanilla "Modify waypoint" dialog, injected in `GuiComposer.EndChildElements` of its composer; `WaypointNotesPatch` skips vanilla rendering and mouse handling of waypoints that store notes) |
 | `GiMap/Client/`            | Map modes and their base classes (`AMapLayer`, `ABlockMapLayer`, `AChunkMapComponent`) |
 | `GiMap/Client/Contours/`   | Shared contour code: `AContourMapLayer` (colors columns by `SampleColumn`, draws contour lines over a value with neighbor-chunk edges, index contour labels and peaks), `HeightLabel` (labels appended after the 1024 chunk pixels), `ContourLabelsMapComponent` (thins out and renders labels), `ContourLabelTextures`; used by Topographic and Bathymetric |
 | `GiMap/Client/Storage/`    | "Map properties" dialog (`GuiDialogMapProperties`): sizes of the world map files per mode (`MapStorage` groups `Maps/<save>-<id>*.db`, vanilla `<save>.db` and `-terrain-lod.db` as terrain) and deleting them; open dbs are cleared on the map thread (`AMapLayer.ClearStorage`, `ChunkMapLayerPatch.ClearStorage`, `MapDbUtil.Clear`: purge + vacuum + WAL checkpoint), other files are deleted |
@@ -36,13 +43,13 @@ There are no automated tests; verify changes in the game.
 |--------------------------|----------------------|----------------------------------------------|
 | Bathymetric              | `bathymetric`        | Displays depth of water bodies (from the water surface, ice included) as a shallow → medium → deep gradient (`mediumDepth`, `deepDepth`), land in one color; isobaths, index isobath depth labels and deepest points |
 | Butterflies              | `butterflies`        | Highlights whole chunks where the butterfly picked in the layer dialog (search field filters the list; "Any" = any butterfly, hover lists them) may spawn (game spawn conditions: climate, forest, Y; plants are not checked). Variants with equal conditions share a group; pixels store the mask of groups matched in the chunk, so switching does not regenerate; LOD merges by OR |
-| Caves                    | `caves`              | Displays cave floors by layers of 32 blocks (layer 1 is the deepest); layer picked by slider or follows player Y |
+| Caves (`GiMap.Underground/Caves`) | `caves`              | Displays cave floors by layers of 32 blocks (layer 1 is the deepest); layer picked by slider or follows player Y |
 | Chunk                    | `chunk-grid`         | Draws chunk grid                             |
 | Fertility                | `fertility`          | Displays soil fertility; block lists in config, forest floor is low fertility drawn hatched; snow is skipped, fertile blocks under it are hatched white |
 | GeologyActivity          | `geology-activity`   | Displays geology activity                    |
 | Height                   | `height`             | Displays landscape height and ocean depths   |
 | Light                    | `light`              | Displays light levels                        |
-| Ore                      | `ore`                | Displays ore deposits (disabled by default); pixels store up to 4 ore groups of the column, shown ores are picked in the layer dialog (`hiddenOres`) without regenerating; `presets` toggle several ores at once |
+| Ore (`GiMap.Underground/Ore`) | `ore`                | Displays ore deposits (disabled by default); pixels store up to 4 ore groups of the column, shown ores are picked in the layer dialog (`hiddenOres`) without regenerating; `presets` toggle several ores at once |
 | Precipitation            | `precipitation`      | Displays world precipitation on surface      |
 | Temperature              | `temperature`        | Displays world temperature on surface        |
 | TemporalStability        | `temporal-stability` | Displays temporal stability on surface       |
@@ -54,13 +61,14 @@ There are no automated tests; verify changes in the game.
 2. Add the id to `MapTypes`.
 3. Add a nested struct to `GiMapConfig` with `isEnabled` and the mode's colors, plus a `<Mode>Mode` field.
 4. Register the layer in `GiMapModSystem.StartClientSide` behind `isEnabled`.
-5. Add the id to `Order` in `WorldMapManagerPatch`.
-6. Add the mode switch to `Modes` in `GiMapSettingsTab`.
-7. Add `maplayer-<id>` and any legend/hover keys to **all** lang files in `GiMap/assets/game/lang/`.
-8. Update the Modes table above.
+5. Register the mode in `GiMapModes` (`GiMapModSystem.RegisterModes`) with a tab order; this adds the tab order and the settings switch.
+6. Add `maplayer-<id>` and any legend/hover keys to **all** lang files in `GiMap/assets/game/lang/`.
+7. Update the Modes table above.
+
+A mode that reveals what is under the ground goes to `GiMap.Underground/` instead: its own config (`UndergroundConfig`), `UndergroundMapTypes`, registration in `UndergroundModSystem`, lang keys in `GiMap.Underground/assets/game/lang/`.
 
 ## Rules
-- Modes live in `GiMap/Client/<Mode>/`.
+- Modes live in `GiMap/Client/<Mode>/` (add-on modes in `GiMap.Underground/<Mode>/`).
 - Each mode has its own config struct in `GiMapConfig` with an `isEnabled` flag.
 - Colors in config are hex strings (`#rrggbb` or `#rrggbbaa`).
 - Every new localization key must be added to all lang files.

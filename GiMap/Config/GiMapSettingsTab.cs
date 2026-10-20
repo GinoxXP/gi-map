@@ -42,26 +42,8 @@ public static class GiMapSettingsTab
     private static readonly AccessTools.FieldRef<GuiCompositeSettings, GuiComposer> ComposerRef =
         AccessTools.FieldRefAccess<GuiCompositeSettings, GuiComposer>("composer");
 
-    private record ModeSwitch(string MapType, Func<GiMapConfig, bool> Get, Action<GiMapConfig, bool> Set);
-
-    // Same order as the map tabs
-    private static readonly ModeSwitch[] Modes =
-    [
-        new(MapTypes.Topographic, c => c.TopographicMode.isEnabled, (c, v) => c.TopographicMode.isEnabled = v),
-        new(MapTypes.Height, c => c.HeightMode.isEnabled, (c, v) => c.HeightMode.isEnabled = v),
-        new(MapTypes.Bathymetric, c => c.BathymetricMode.isEnabled, (c, v) => c.BathymetricMode.isEnabled = v),
-        new(MapTypes.Caves, c => c.CavesMode.isEnabled, (c, v) => c.CavesMode.isEnabled = v),
-        new(MapTypes.Fertility, c => c.FertilityMode.isEnabled, (c, v) => c.FertilityMode.isEnabled = v),
-        new(MapTypes.Precipitation, c => c.PrecipitationMode.isEnabled, (c, v) => c.PrecipitationMode.isEnabled = v),
-        new(MapTypes.Temperature, c => c.TemperatureMode.isEnabled, (c, v) => c.TemperatureMode.isEnabled = v),
-        new(MapTypes.GeologyActivity, c => c.GeologyActivityMode.isEnabled, (c, v) => c.GeologyActivityMode.isEnabled = v),
-        new(MapTypes.Light, c => c.LightMode.isEnabled, (c, v) => c.LightMode.isEnabled = v),
-        new(MapTypes.ChunkGrid, c => c.ChunkGridMode.isEnabled, (c, v) => c.ChunkGridMode.isEnabled = v),
-        new(MapTypes.Ore, c => c.OreMode.isEnabled, (c, v) => c.OreMode.isEnabled = v),
-        new(MapTypes.TemporalStability, c => c.TemporalStabilityMode.isEnabled, (c, v) => c.TemporalStabilityMode.isEnabled = v),
-        new(MapTypes.Butterflies, c => c.ButterfliesMode.isEnabled, (c, v) => c.ButterfliesMode.isEnabled = v),
-        new(MapTypes.Notes, c => c.NotesMode.isEnabled, (c, v) => c.NotesMode.isEnabled = v),
-    ];
+    // Modes of the core and add-ons, same order as the map tabs
+    private static IReadOnlyList<GiMapModes.Mode> Modes => GiMapModes.All;
 
     private static bool _reloadTopographic;
     private static bool _reloadFertility;
@@ -111,7 +93,7 @@ public static class GiMapSettingsTab
 
         composer.GetSlider("overlayAlpha").SetValues((int)Math.Round(Config.overlayAlpha * 100), 0, 100, 1, "%");
         foreach (var mode in Modes)
-            composer.GetSwitch("mode-" + mode.MapType).SetValue(mode.Get(Config));
+            composer.GetSwitch("mode-" + mode.MapType).SetValue(mode.IsEnabled());
 
         var topographic = Config.TopographicMode;
         composer.GetSwitch("showContours").SetValue(topographic.showContours);
@@ -172,10 +154,10 @@ public static class GiMapSettingsTab
     }
 
     // Layers are registered on world load, so the switch applies after rejoining
-    private static void OnModeChanged(ModeSwitch mode, bool on)
+    private static void OnModeChanged(GiMapModes.Mode mode, bool on)
     {
-        mode.Set(Config, on);
-        Save();
+        mode.SetEnabled(on);
+        mode.Save();
     }
 
     private static bool OnResetClicked(GuiCompositeSettings settings)
@@ -201,6 +183,7 @@ public static class GiMapSettingsTab
 
         var old = Config;
         ConfigManager.ResetModConfig(capi);
+        GiMapModes.Reset();
 
         AMapLayer.ApplyOverlayAlphaToAll();
 

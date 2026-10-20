@@ -22,22 +22,32 @@ namespace CakeBuild
         }
     }
 
+    /// <summary>
+    /// One mod of the repository: its project folder and modinfo
+    /// </summary>
+    public record ModProject(string ProjectName, string Name, string Version);
+
     public class BuildContext : FrostingContext
     {
-        public const string ProjectName = "GiMap";
+        // The core mod and its add-ons, every one is packaged into its own zip
+        public static readonly string[] ProjectNames = ["GiMap", "GiMap.Underground"];
+
         public string BuildConfiguration { get; }
-        public string Version { get; }
-        public string Name { get; }
         public bool SkipJsonValidation { get; }
+        public IReadOnlyList<ModProject> Projects { get; }
 
         public BuildContext(ICakeContext context)
             : base(context)
         {
             BuildConfiguration = context.Argument("configuration", "Release");
             SkipJsonValidation = context.Argument("skipJsonValidation", false);
-            var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../{ProjectName}/modinfo.json");
-            Version = modInfo.Version;
-            Name = modInfo.ModID;
+            Projects = ProjectNames
+                .Select(projectName =>
+                {
+                    var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../{projectName}/modinfo.json");
+                    return new ModProject(projectName, modInfo.ModID, modInfo.Version);
+                })
+                .ToList();
         }
     }
 
@@ -50,17 +60,20 @@ namespace CakeBuild
             {
                 return;
             }
-            var jsonFiles = context.GetFiles($"../{BuildContext.ProjectName}/assets/**/*.json");
-            foreach (var file in jsonFiles)
+            foreach (var project in context.Projects)
             {
-                try
+                var jsonFiles = context.GetFiles($"../{project.ProjectName}/assets/**/*.json");
+                foreach (var file in jsonFiles)
                 {
-                    var json = File.ReadAllText(file.FullPath);
-                    JToken.Parse(json);
-                }
-                catch (JsonException ex)
-                {
-                    throw new Exception($"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}", ex);
+                    try
+                    {
+                        var json = File.ReadAllText(file.FullPath);
+                        JToken.Parse(json);
+                    }
+                    catch (JsonException ex)
+                    {
+                        throw new Exception($"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}", ex);
+                    }
                 }
             }
         }
@@ -72,18 +85,21 @@ namespace CakeBuild
     {
         public override void Run(BuildContext context)
         {
-            context.DotNetClean($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
-                new DotNetCleanSettings
-                {
-                    Configuration = context.BuildConfiguration
-                });
+            foreach (var project in context.Projects)
+            {
+                context.DotNetClean($"../{project.ProjectName}/{project.ProjectName}.csproj",
+                    new DotNetCleanSettings
+                    {
+                        Configuration = context.BuildConfiguration
+                    });
 
 
-            context.DotNetPublish($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
-                new DotNetPublishSettings
-                {
-                    Configuration = context.BuildConfiguration
-                });
+                context.DotNetPublish($"../{project.ProjectName}/{project.ProjectName}.csproj",
+                    new DotNetPublishSettings
+                    {
+                        Configuration = context.BuildConfiguration
+                    });
+            }
         }
     }
 
@@ -95,18 +111,23 @@ namespace CakeBuild
         {
             context.EnsureDirectoryExists("../Releases");
             context.CleanDirectory("../Releases");
-            context.EnsureDirectoryExists($"../Releases/{context.Name}");
-            context.CopyFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", $"../Releases/{context.Name}");
-            if (context.DirectoryExists($"../{BuildContext.ProjectName}/assets"))
+            foreach (var project in context.Projects)
             {
-                context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../Releases/{context.Name}/assets");
+                var source = $"../{project.ProjectName}";
+                var target = $"../Releases/{project.Name}";
+                context.EnsureDirectoryExists(target);
+                context.CopyFiles($"{source}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", target);
+                if (context.DirectoryExists($"{source}/assets"))
+                {
+                    context.CopyDirectory($"{source}/assets", $"{target}/assets");
+                }
+                context.CopyFile($"{source}/modinfo.json", $"{target}/modinfo.json");
+                if (context.FileExists($"{source}/modicon.png"))
+                {
+                    context.CopyFile($"{source}/modicon.png", $"{target}/modicon.png");
+                }
+                context.Zip(target, $"../Releases/{project.Name}_{project.Version}.zip");
             }
-            context.CopyFile($"../{BuildContext.ProjectName}/modinfo.json", $"../Releases/{context.Name}/modinfo.json");
-            if (context.FileExists($"../{BuildContext.ProjectName}/modicon.png"))
-            {
-                context.CopyFile($"../{BuildContext.ProjectName}/modicon.png", $"../Releases/{context.Name}/modicon.png");
-            }
-            context.Zip($"../Releases/{context.Name}", $"../Releases/{context.Name}_{context.Version}.zip");
         }
     }
 

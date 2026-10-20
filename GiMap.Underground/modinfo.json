@@ -1,0 +1,15 @@
+{
+  "type": "Code",
+  "modid": "gimapcavesnores",
+  "name": "GiMap: Caves & Ores",
+  "side": "Client",
+  "authors": [
+    "Ginox"
+  ],
+  "description": "Caves and ore modes for GiMap. Separate mod so servers can forbid it and keep GiMap allowed",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "1.22.0",
+    "gimap": "3.0.0"
+  }
+}

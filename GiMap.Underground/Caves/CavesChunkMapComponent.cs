@@ -1,28 +1,29 @@
 using System.Text;
+using GiMap.Client;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client.Ore;
+namespace GiMap.Underground.Caves;
 
-public class OreChunkMapComponent : AChunkMapComponent
+public class CavesChunkMapComponent : AChunkMapComponent
 {
     private const int SideLength = 96;
 
-    // Packed ore groups of the columns, pixels of the shown ores are built from them
+    // Packed floors of all layers, pixels of the current layer are built from them
     private readonly int[]?[] _data = new int[9][];
-    private readonly OreMapLayer _oreLayer;
+    private readonly CavesMapLayer _cavesLayer;
     private Vec3d _mouseWorldPos = new();
 
-    public OreChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, OreMapLayer mapLayer) : base(capi, baseChunkCord, mapLayer)
+    public CavesChunkMapComponent(ICoreClientAPI capi, FastVec2i baseChunkCord, CavesMapLayer mapLayer) : base(capi, baseChunkCord, mapLayer)
     {
-        _oreLayer = mapLayer;
+        _cavesLayer = mapLayer;
     }
 
     public override void setChunk(int dx, int dz, int[] data)
     {
         _data[dz * 3 + dx] = data;
-        base.setChunk(dx, dz, _oreLayer.BuildPixels(data));
+        base.setChunk(dx, dz, _cavesLayer.BuildPixels(data));
     }
 
     public override void unsetChunk(int dx, int dz)
@@ -32,9 +33,9 @@ public class OreChunkMapComponent : AChunkMapComponent
     }
 
     /// <summary>
-    /// Rebuilds the texture for the shown ores of <see cref="OreMapLayer"/>
+    /// Rebuilds the texture for the current layer of <see cref="CavesMapLayer"/>
     /// </summary>
-    public void RefreshFilter()
+    public void RefreshLayer()
     {
         var isAnySet = false;
         for (var i = 0; i < _data.Length; i++)
@@ -43,7 +44,7 @@ public class OreChunkMapComponent : AChunkMapComponent
             if (data == null)
                 continue;
 
-            base.setChunk(i % 3, i / 3, _oreLayer.BuildPixels(data));
+            base.setChunk(i % 3, i / 3, _cavesLayer.BuildPixels(data));
             isAnySet = true;
         }
 
@@ -68,11 +69,10 @@ public class OreChunkMapComponent : AChunkMapComponent
 
         var posInChunk = _mouseWorldPos - _chunkWorldPos;
         var data = _data[posInChunk.XInt / 32 + posInChunk.ZInt / 32 * 3];
-        int k = posInChunk.XInt % 32 + posInChunk.ZInt % 32 * 32;
-        if (data == null || k >= data.Length)
+        if (data == null)
             return;
 
-        var text = _oreLayer.GetHoverText(data[k]);
+        var text = _cavesLayer.GetHoverText(data, posInChunk.XInt % 32 + posInChunk.ZInt % 32 * 32);
         if (text != null)
             hoverText.Append(text);
     }

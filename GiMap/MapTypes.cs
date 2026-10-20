@@ -10,9 +10,7 @@ public static class MapTypes
     public static readonly string GeologyActivity = "geology-activity";
     public static readonly string Light = "light";
     public static readonly string ChunkGrid = "chunk-grid";
-    public static readonly string Ore = "ore";
     public static readonly string TemporalStability = "temporal-stability";
-    public static readonly string Caves = "caves";
     public static readonly string Bathymetric = "bathymetric";
     public static readonly string Butterflies = "butterflies";
     // Notes layer, has no map tab

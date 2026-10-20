@@ -4,7 +4,7 @@ Ultimative map for your Vintage Story
 
 ## Modes
 
-At the moment the mod has 12 map modes, plus map notes
+At the moment the mod has 11 map modes, plus map notes, and 2 more in the GiMap: Underground add-on
 
 ![overview](.promo/world-map.png)
 
@@ -29,6 +29,8 @@ Land is drawn in a single color. Isobaths, depth labels on index isobaths and th
 ![bathymetric](.promo/bathymetric.png)
 
 ### Caves
+
+_Part of the GiMap: Underground add-on, see [below](#gimap-underground)_
 
 Displays cave floors in layers of 32 blocks (layer 1 is the deepest).
 Pick a layer with the slider, or turn on "Follow player" and the layer will follow your height.
@@ -76,7 +78,7 @@ Brutal chunk grid. x32, x16 and x8.
 
 ### Ore
 
-_Since 1.6.0 ore map is disabled by default. To use it, enable it in the settings_
+_Part of the GiMap: Underground add-on, see [below](#gimap-underground). Disabled by default, enable it in the settings_
 
 Displays ore deposits. Each column remembers up to 4 ore groups, so you can choose which ores to show in the layer dialog
 without regenerating the map. Presets (copper, bronze, iron, coal, precious metals, clay, marble, etc.) toggle several ores at once.
@@ -94,6 +96,18 @@ Build your house so that your friend's room is in the unstable zone.
 Pick a butterfly in the layer dialog, and the map highlights the chunks where it may spawn:
 the climate (temperature, rainfall, forest cover) and height of at least one place in the chunk match its spawn conditions.
 Switching the butterfly does not regenerate the map.
+
+## GiMap: Underground
+
+Caves and Ore show what is hidden under the ground, so many servers do not allow them.
+They are moved to a separate add-on mod, **GiMap: Underground** (mod id `gimapunderground`), which needs GiMap installed:
+
+- players install GiMap alone, or GiMap + GiMap: Underground;
+- server owners who do not want caves and ores on their server can forbid only `gimapunderground`
+  (e.g. in `ModIdBlackList` of the server config) and keep GiMap allowed.
+
+The add-on keeps its settings in _\VintagestoryData\ModConfig\GiMapUndergroundConfig.json_,
+its mode switches are shown in the GiMap settings tab.
 
 ## Mix modes
 
@@ -191,7 +205,7 @@ You can disable unnecessary modes. To do it, set
 "isEnabled": false
 ```
 
-You can add your own ores from mods or remove unwanted ones.
+You can add your own ores from mods or remove unwanted ones (in _GiMapUndergroundConfig.json_).
 ```json
 "game:ore-.*-nativecopper-.*": "#b87333",
 "game:ore-.*-malachite-.*": "#0bda51",

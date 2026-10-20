@@ -1,12 +1,13 @@
+using GiMap.Client;
 using GiMap.Client.Lod;
-using GiMap.Config;
+using GiMap.Underground.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client.Caves;
+namespace GiMap.Underground.Caves;
 
 public enum CaveKind : byte
 {
@@ -43,7 +44,7 @@ public class CavesMapLayer : AMapLayer
     private const string LayerSliderKey = "caves-layer-slider";
     private const string FollowSwitchKey = "caves-follow-switch";
 
-    public override string Title => MapTypes.Caves;
+    public override string Title => UndergroundMapTypes.Caves;
 
     // Pieces hold floors of all layers, a LOD tile would be bound to one of them
     protected override LodMode LodMode => LodMode.PerChunk;
@@ -65,7 +66,7 @@ public class CavesMapLayer : AMapLayer
     {
         LayerCount = Math.Max(1, api.World.BlockAccessor.MapSizeY / LayerHeight);
 
-        var config = ConfigManager.ConfigInstance.CavesMode;
+        var config = UndergroundConfigManager.ConfigInstance.CavesMode;
         CurrentLayer = Math.Clamp(config.selectedLayer, 1, LayerCount);
 
         _colorByKind[(int)CaveKind.Solid] = ColorUtilExtensions.HexToColor(config.solidColor);
@@ -111,7 +112,7 @@ public class CavesMapLayer : AMapLayer
 
     public override void OnTick(float dt)
     {
-        if (Active && ConfigManager.ConfigInstance.CavesMode.followPlayer)
+        if (Active && UndergroundConfigManager.ConfigInstance.CavesMode.followPlayer)
         {
             var entity = _capi.World.Player?.Entity;
             if (entity != null)
@@ -241,7 +242,7 @@ public class CavesMapLayer : AMapLayer
             return;
 
         CurrentLayer = layer;
-        ConfigManager.ConfigInstance.CavesMode.selectedLayer = layer;
+        UndergroundConfigManager.ConfigInstance.CavesMode.selectedLayer = layer;
 
         foreach (var component in _loadedMapData.Values)
             (component as CavesChunkMapComponent)?.RefreshLayer();
@@ -275,7 +276,7 @@ public class CavesMapLayer : AMapLayer
 
         _isUpdatingDialog = true;
         _dialogComposer.GetSlider(LayerSliderKey)?.SetValues(CurrentLayer, 1, LayerCount, 1);
-        _dialogComposer.GetSwitch(FollowSwitchKey)?.SetValue(ConfigManager.ConfigInstance.CavesMode.followPlayer);
+        _dialogComposer.GetSwitch(FollowSwitchKey)?.SetValue(UndergroundConfigManager.ConfigInstance.CavesMode.followPlayer);
         _isUpdatingDialog = false;
     }
 
@@ -285,7 +286,7 @@ public class CavesMapLayer : AMapLayer
             return true;
 
         // Picking a layer by hand stops following the player
-        ConfigManager.ConfigInstance.CavesMode.followPlayer = false;
+        UndergroundConfigManager.ConfigInstance.CavesMode.followPlayer = false;
         SetLayer(value);
         UpdateDialog();
         return true;
@@ -296,13 +297,14 @@ public class CavesMapLayer : AMapLayer
         if (_isUpdatingDialog)
             return;
 
-        ConfigManager.ConfigInstance.CavesMode.followPlayer = isOn;
+        UndergroundConfigManager.ConfigInstance.CavesMode.followPlayer = isOn;
     }
 
     public override void OnMapClosedClient()
     {
         _dialogComposer = null;
         base.OnMapClosedClient();
+        UndergroundConfigManager.SaveModConfig(api);
     }
 
     // Floors are brighter the higher they are, floors below the layer are darker than any floor in it

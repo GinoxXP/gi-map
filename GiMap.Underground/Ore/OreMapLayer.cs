@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using GiMap.Config;
+using GiMap.Client;
+using GiMap.Underground.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -8,7 +9,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.Common;
 using Vintagestory.GameContent;
 
-namespace GiMap.Client.Ore;
+namespace GiMap.Underground.Ore;
 
 /// <summary>
 /// Shows ore deposits. An ore group is one entry of the config ore lists, every pixel stores up to
@@ -32,7 +33,7 @@ public class OreMapLayer : AMapLayer
     private const int PresetColumnWidth = GroupColumns * GroupColumnWidth / PresetColumns;
     private const int SectionGap = 10;
 
-    public override string Title => MapTypes.Ore;
+    public override string Title => UndergroundMapTypes.Ore;
 
     // Group indices are stored in the db, so it is bound to the order of the config ore lists
     protected override string DbSuffix => "-v2-" + HashGroupKeys();
@@ -86,7 +87,7 @@ public class OreMapLayer : AMapLayer
             }
         }
 
-        var hidden = ConfigManager.ConfigInstance.OreMode.hiddenOres ?? Array.Empty<string>();
+        var hidden = UndergroundConfigManager.ConfigInstance.OreMode.hiddenOres ?? Array.Empty<string>();
         _isGroupShown = new bool[_groups.Count];
         for (var i = 1; i < _groups.Count; i++)
             _isGroupShown[i] = _groups[i] is { } group && !hidden.Contains(group.Key);
@@ -97,7 +98,7 @@ public class OreMapLayer : AMapLayer
     // Presets keep only groups found among blocks, a preset without them is not shown
     private void LoadPresets()
     {
-        var presets = ConfigManager.ConfigInstance.OreMode.presets;
+        var presets = UndergroundConfigManager.ConfigInstance.OreMode.presets;
         if (presets == null)
             return;
 
@@ -265,7 +266,7 @@ public class OreMapLayer : AMapLayer
             if (_groups[i] is { } group && !_isGroupShown[i])
                 hidden.Add(group.Key);
         }
-        ConfigManager.ConfigInstance.OreMode.hiddenOres = hidden.ToArray();
+        UndergroundConfigManager.ConfigInstance.OreMode.hiddenOres = hidden.ToArray();
 
         foreach (var component in _loadedMapData.Values)
             (component as OreChunkMapComponent)?.RefreshFilter();
@@ -381,6 +382,7 @@ public class OreMapLayer : AMapLayer
     {
         _dialogComposer = null;
         base.OnMapClosedClient();
+        UndergroundConfigManager.SaveModConfig(api);
     }
 
     protected override int LodTexelToRgba(int texel)
@@ -504,7 +506,7 @@ public class OreMapLayer : AMapLayer
     // Ores first, then the whitelist, a block belongs to the first group it matches
     private static List<(string Key, string Color)> GetGroupKeys()
     {
-        var config = ConfigManager.ConfigInstance.OreMode;
+        var config = UndergroundConfigManager.ConfigInstance.OreMode;
         var keys = new List<(string, string)>();
         foreach (var (key, color) in config.ores)
             keys.Add((key, color));

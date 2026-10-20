@@ -6,10 +6,10 @@
   "authors": [
     "Ginox"
   ],
-  "description": "Caves and ore modes for GiMap. Separate mod so servers can forbid it and keep GiMap allowed",
+  "description": "Caves and ore addon for GiMap",
   "version": "1.0.0",
   "dependencies": {
     "game": "1.22.0",
-    "gimap": "3.0.0"
+    "gimapcore": "3.0.0"
   }
 }

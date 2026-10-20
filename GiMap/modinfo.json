@@ -1,6 +1,6 @@
 {
   "type": "Code",
-  "modid": "gimap",
+  "modid": "gimapcore",
   "name": "GiMap",
   "side": "Client",
   "authors": [

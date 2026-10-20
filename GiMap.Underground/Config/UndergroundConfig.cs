@@ -9,7 +9,7 @@ public class UndergroundConfig
 
     public struct Ore
     {
-        public bool isEnabled = false;
+        public bool isEnabled = true;
 
         public Dictionary<string, string> ores = new()
         {

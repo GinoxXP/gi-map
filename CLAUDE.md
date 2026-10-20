@@ -19,7 +19,7 @@ Release zips of both mods (validates JSON, builds, packages into `Releases/`, li
 ```bash
 dotnet run --project ZZCakeBuild
 ```
-There are no automated tests; verify changes in the game.
+There are no automated tests; verify changes in the game. The `Client` launch profile of `GiMap` (`Properties/launchSettings.json`) loads both mods; building `GiMap.csproj` also builds the add-on (target `BuildAddons`).
 
 ## Structure
 | Path                       | Purpose                                                        |

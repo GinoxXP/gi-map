@@ -47,7 +47,7 @@ New project `GiMap.Terrain/`:
 | `GiMap.Terrain/GiMap.Terrain.csproj`          | Same as `GiMap.Underground.csproj`: references `GiMap.csproj` with `Private=false` and the game DLLs, output `bin/$(Configuration)/Mods/mod` |
 | `GiMap.Terrain/modinfo.json`                  | modid `gimapterrain`, name "GiMap: Real Colors Terrain", `side: Client`, version `1.0.0`, dependencies `game 1.22.0`, `gimapcore 3.0.0` |
 | `GiMap.Terrain/modicon.png`                   | Icon (copy of the core one until a new one is drawn) |
-| `GiMap.Terrain/TerrainModSystem.cs`           | Client only, `ExecuteOrder` after the core (`base + 0.01`); `StartClientSide` applies `new Harmony("gimapterrain").PatchAll(...)` for its assembly, `Dispose` unpatches by that id |
+| `GiMap.Terrain/TerrainModSystem.cs`           | Client only, `ExecuteOrder` after the core (`base + 0.01`); `StartPre` (like the core, before the map layers are created) applies `new Harmony("gimapterrain").PatchAll(...)` for its own assembly (the core `PatchAll()` only patches the core assembly), `Dispose` unpatches by that id |
 | `GiMap.Terrain/Patches/ColorAccurateTerrainPatch.cs` | Forces `ChunkMapLayer.colorAccurate = true` |
 
 Build wiring:

@@ -6,7 +6,7 @@
   "authors": [
     "Ginox"
   ],
-  "description": "Real block colors for the terrain map of GiMap",
+  "description": "Real block colors addon for GiMap",
   "version": "1.0.0",
   "dependencies": {
     "game": "1.22.0",

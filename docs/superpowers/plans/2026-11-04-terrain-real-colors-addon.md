@@ -36,7 +36,7 @@
 - Create: `GiMap.Terrain/modicon.png` (copy of `GiMap/modicon.png`)
 - Create: `GiMap.Terrain/TerrainModSystem.cs`
 - Modify: `GiMap.sln` (add project, Debug/Release configs like `GiMap.Underground`)
-- Modify: `ZZCakeBuild/BuildContext.cs:33` → `ProjectNames = ["GiMap", "GiMap.Underground", "GiMap.Terrain"]`
+- Modify: `ZZCakeBuild/Program.cs:33` → `ProjectNames = ["GiMap", "GiMap.Underground", "GiMap.Terrain"]`
 - Modify: `GiMap/GiMap.csproj:68-74` (target `BuildAddons`: add the same Restore + Build `MSBuild` pair for `..\GiMap.Terrain\GiMap.Terrain.csproj`)
 - Modify: `GiMap/Properties/launchSettings.json` (profile `Client`: append `"$(ProjectDir)/../GiMap.Terrain/bin/$(Configuration)/Mods"` to `--addModPath`, after the Underground path)
 - Modify: `CLAUDE.md`
@@ -75,7 +75,7 @@ Expected: success, `Releases/` contains a zip for `gimapterrain` next to the cor
 - [ ] **Step 6: Commit**
 
 ```bash
-git add GiMap.Terrain GiMap.sln ZZCakeBuild/BuildContext.cs GiMap/GiMap.csproj GiMap/Properties/launchSettings.json CLAUDE.md
+git add GiMap.Terrain GiMap.sln ZZCakeBuild/Program.cs GiMap/GiMap.csproj GiMap/Properties/launchSettings.json CLAUDE.md
 git commit -m "add: GiMap.Terrain addon project"
 ```
 

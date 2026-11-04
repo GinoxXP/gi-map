@@ -1,10 +1,11 @@
 ﻿# GiMap
 Client-side mod for Vintage Story that adds new world map modes (map layers).
 
-The repository holds two mods: the core `GiMap/` (mod id `gimap`) and the add-on `GiMap.Underground/`
-(mod id `gimapunderground`, depends on `gimap`) with the Caves and Ore modes. They are split so servers
-can forbid the "x-ray" modes by mod id and keep the core allowed. Keep both `modinfo.json` versions
-(and the add-on's `gimap` dependency) in sync.
+The repository holds three mods: the core `GiMap/` (mod id `gimapcore`), the add-on `GiMap.Underground/`
+(mod id `gimapcavesnores`, depends on `gimapcore`) with the Caves and Ore modes, and the add-on `GiMap.Terrain/`
+(mod id `gimapterrain`, depends on `gimapcore`) with real block colors on the vanilla terrain map. They are split
+so servers can forbid the "x-ray" modes or the real colors by mod id and keep the core allowed. Keep all
+`modinfo.json` versions (and the add-ons' `gimapcore` dependency) in sync.
 
 ## Stack
 - C# / .NET 10 (`global.json`), Vintage Story API, Harmony
@@ -19,7 +20,7 @@ Release zips of both mods (validates JSON, builds, packages into `Releases/`, li
 ```bash
 dotnet run --project ZZCakeBuild
 ```
-There are no automated tests; verify changes in the game. The `Client` launch profile of `GiMap` (`Properties/launchSettings.json`) loads both mods; building `GiMap.csproj` also builds the add-on (target `BuildAddons`).
+There are no automated tests; verify changes in the game. The `Client` launch profile of `GiMap` (`Properties/launchSettings.json`) loads all mods; building `GiMap.csproj` also builds the add-ons (target `BuildAddons`).
 
 ## Structure
 | Path                       | Purpose                                                        |
@@ -28,6 +29,7 @@ There are no automated tests; verify changes in the game. The `Client` launch pr
 | `GiMap/GiMapModes.cs`      | Public registry of modes (id, tab order, enabled getter/setter, save) used by the settings switches, `WorldMapManagerPatch` tab order and `MapStorage`; add-ons register in `StartPre` and add reset handlers (`OnReset`) |
 | `GiMap/MapTypes.cs`        | String ids of core map layers                                  |
 | `GiMap.Underground/`       | Add-on mod: `UndergroundModSystem` (runs after the core, registers caves (order 40) and ore (110) in `GiMapModes` and their layers), `Config/` (`GiMapUndergroundConfig.json` with `CavesMode`, `OreMode`), `Caves/`, `Ore/`, own lang files with the caves/ore keys. References `GiMap.csproj` with `Private=false` |
+| `GiMap.Terrain/`           | Add-on mod: `TerrainModSystem` (own Harmony id `gimapterrain`, patches its own assembly in `StartPre`), `Patches/ColorAccurateTerrainPatch` forces the private vanilla `ChunkMapLayer.colorAccurate` on the client after `OnLoaded` and `OnMapOpenedClient` (texture color with climate tint + relief, written to the same `<save>.db`, core terrain LOD works unchanged). No config, no lang keys. References `GiMap.csproj` with `Private=false` |
 | `GiMap/Config/`            | `GiMapConfig` (one nested struct per mode), `ConfigManager` (`GiMapConfig.json`) and `GiMapSettingsTab` (content of the "GiMap" tab of the in-game settings: mode switches, opacity, min zoom, topographic/fertility options, "Reset settings" button that deletes the config after `GuiDialogConfirm`; baked options call `AMapLayer.Reload`, which purges the layer db and redraws) |
 | `GiMap/Patches/`           | Harmony patches (`WorldMapManagerPatch` orders mode tabs after "terrain" by `GiMapModes`; `GuiDialogWorldMapPatch` stretches the full-screen map to the window when big map is on; `GuiComposerHelpersPatch` widens its mode tabs to the longest name (vanilla cuts inactive names longer than 200); `GuiElementDialogTitleBarPatch` adds the toggle and "Map properties" to the map title bar menu; state is kept in client settings `gimapBigWorldMap`; `GuiElementMapPatch` lowers the min zoom to config `minZoom`, halving/doubling the step below vanilla 0.25, and remembers the map for `LodState`; `ChunkMapLayerPatch` gives the vanilla terrain layer LOD tiles; `GuiCompositeSettingsPatch` adds the "GiMap" tab button to the in-game settings; `MapContextMenuPatch` intercepts the vanilla "Add waypoint" dialog of a right click on the map and opens the context menu instead; `GuiDialogEditWayPointPatch` adds "Teleport here" (to the exact waypoint position, only with the `tp` privilege) under the buttons of the vanilla "Modify waypoint" dialog, injected in `GuiComposer.EndChildElements` of its composer; `WaypointNotesPatch` skips vanilla rendering and mouse handling of waypoints that store notes) |
 | `GiMap/Client/`            | Map modes and their base classes (`AMapLayer`, `ABlockMapLayer`, `AChunkMapComponent`) |

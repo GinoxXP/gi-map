@@ -1,7 +1,7 @@
 {
   "type": "Code",
   "modid": "gimapterrain",
-  "name": "GiMap: Real Colors Terrain",
+  "name": "GiMap: Color Terrain",
   "side": "Client",
   "authors": [
     "Ginox"

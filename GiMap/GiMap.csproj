@@ -71,6 +71,10 @@
                  Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
         <MSBuild Projects="..\GiMap.Underground\GiMap.Underground.csproj"
                  Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;BuildProjectReferences=false" />
+        <MSBuild Projects="..\GiMap.Terrain\GiMap.Terrain.csproj" Targets="Restore"
+                 Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+        <MSBuild Projects="..\GiMap.Terrain\GiMap.Terrain.csproj"
+                 Properties="Configuration=$(Configuration);GiMapBuildingAddon=true;BuildProjectReferences=false" />
     </Target>
 
 </Project>

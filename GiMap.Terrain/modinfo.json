@@ -1,0 +1,15 @@
+{
+  "type": "Code",
+  "modid": "gimapterrain",
+  "name": "GiMap: Color Terrain",
+  "side": "Client",
+  "authors": [
+    "Ginox"
+  ],
+  "description": "Real block colors addon for GiMap",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "1.22.0",
+    "gimapcore": "3.0.0"
+  }
+}

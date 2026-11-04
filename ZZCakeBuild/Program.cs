@@ -30,7 +30,7 @@ namespace CakeBuild
     public class BuildContext : FrostingContext
     {
         // The core mod and its add-ons, every one is packaged into its own zip
-        public static readonly string[] ProjectNames = ["GiMap", "GiMap.Underground"];
+        public static readonly string[] ProjectNames = ["GiMap", "GiMap.Underground", "GiMap.Terrain"];
 
         public string BuildConfiguration { get; }
         public bool SkipJsonValidation { get; }

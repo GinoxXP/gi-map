@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZZCakeBuild", "ZZCakeBuild\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiMap.Underground", "GiMap.Underground\GiMap.Underground.csproj", "{D8B2BF81-D69A-41A1-BC49-511C48C53806}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiMap.Terrain", "GiMap.Terrain\GiMap.Terrain.csproj", "{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,18 @@ Global
 		{D8B2BF81-D69A-41A1-BC49-511C48C53806}.Release|x64.Build.0 = Release|Any CPU
 		{D8B2BF81-D69A-41A1-BC49-511C48C53806}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8B2BF81-D69A-41A1-BC49-511C48C53806}.Release|x86.Build.0 = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|x64.Build.0 = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Debug|x86.Build.0 = Debug|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|x64.ActiveCfg = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|x64.Build.0 = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|x86.ActiveCfg = Release|Any CPU
+		{CF75D3DA-7972-47E3-AE4D-581A434C0FBA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

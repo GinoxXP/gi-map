@@ -249,6 +249,9 @@ public class GiMapConfig
     {
         public bool isEnabled = true;
 
+        // Notes are always drawn on the full-screen map, this also draws them on the minimap
+        public bool showOnMinimap = true;
+
         public Notes()
         {
         }

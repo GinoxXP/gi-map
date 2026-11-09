@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
+using GiMap.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -10,7 +11,8 @@ namespace GiMap.Client.Notes;
 
 /// <summary>
 /// Draws notes stored in vanilla waypoints over every map mode. It has no tab (see WorldMapManagerPatch),
-/// so it stays active, and draws only on the full-screen map
+/// so it stays active. Draws on the full-screen map and, with <c>NotesMode.showOnMinimap</c>, on the minimap;
+/// clicks, hover and drawing work only on the full-screen map
 /// </summary>
 public class NotesMapLayer : MapLayer
 {
@@ -47,7 +49,8 @@ public class NotesMapLayer : MapLayer
 
     public override void Render(GuiElementMap mapElem, float dt)
     {
-        if (!IsFullMap())
+        var isFullMap = IsFullMap();
+        if (!isFullMap && !(IsMinimap() && ConfigManager.ConfigInstance?.NotesMode.showOnMinimap == true))
             return;
 
         RefreshNotes();
@@ -61,7 +64,7 @@ public class NotesMapLayer : MapLayer
             });
         }
 
-        if (NoteDrawingSession.Current is { PointCount: > 0 } session)
+        if (isFullMap && NoteDrawingSession.Current is { PointCount: > 0 } session)
         {
             // Versions of different sessions are not comparable
             if (session != _previewSession)
@@ -151,8 +154,12 @@ public class NotesMapLayer : MapLayer
         base.Dispose();
     }
 
-    private bool IsFullMap()
-        => _capi.ModLoader.GetModSystem<WorldMapManager>().worldMapDlg?.DialogType == EnumDialogType.Dialog;
+    private bool IsFullMap() => GetDialogType() == EnumDialogType.Dialog;
+
+    private bool IsMinimap() => GetDialogType() == EnumDialogType.HUD;
+
+    private EnumDialogType? GetDialogType()
+        => _capi.ModLoader.GetModSystem<WorldMapManager>().worldMapDlg?.DialogType;
 
     private static bool InsideMap(GuiElementMap mapElem, MouseEvent args)
         => mapElem.Bounds.PointInside(args.X, args.Y);

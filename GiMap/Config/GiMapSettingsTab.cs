@@ -88,6 +88,8 @@ public static class GiMapSettingsTab
         right.Header(composer, "gimap-settings-fertility");
         right.Switch(composer, "gimap-settings-hatching", "hatching", OnHatchingChanged);
         right.Switch(composer, "gimap-settings-ignoresnow", "ignoreSnow", OnIgnoreSnowChanged);
+        right.Header(composer, "gimap-settings-notes");
+        right.Switch(composer, "gimap-settings-notesminimap", "notesOnMinimap", OnNotesOnMinimapChanged);
 
         composer.EndChildElements().Compose();
 
@@ -113,6 +115,7 @@ public static class GiMapSettingsTab
 
         composer.GetSwitch("hatching").SetValue(Config.FertilityMode.hatchingEnabled);
         composer.GetSwitch("ignoreSnow").SetValue(Config.FertilityMode.ignoreSnow);
+        composer.GetSwitch("notesOnMinimap").SetValue(Config.NotesMode.showOnMinimap);
 
         ComposerRef(settings) = composer;
         HandlerRef(settings).LoadComposer(composer);
@@ -308,6 +311,13 @@ public static class GiMapSettingsTab
     {
         Config.FertilityMode.ignoreSnow = on;
         ReloadFertility();
+    }
+
+    // Checked on render, no redraw is needed
+    private static void OnNotesOnMinimapChanged(bool on)
+    {
+        Config.NotesMode.showOnMinimap = on;
+        Save();
     }
 
     private static void ReloadTopographic()

@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Żyzność",
     "gimap-settings-hatching": "Kreskuj ściółkę leśną",
     "gimap-settings-ignoresnow": "Pokazuj glebę pod śniegiem",
+    "gimap-settings-notes": "Notatki",
+    "gimap-settings-notesminimap": "Pokazuj na minimapie",
     "gimap-settings-reset": "Resetuj ustawienia",
     "gimap-settings-reset-confirm": "Wszystkie ustawienia GiMap zostaną przywrócone do domyślnych, a plik konfiguracyjny zostanie usunięty. Tej operacji nie można cofnąć.\n\nWłączone lub wyłączone tryby zadziałają po ponownym wejściu do świata.",
     "worldmap-mapproperties": "Właściwości mapy",

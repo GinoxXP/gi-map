@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Fertilidad",
     "gimap-settings-hatching": "Sombrear suelo forestal",
     "gimap-settings-ignoresnow": "Mostrar suelo bajo la nieve",
+    "gimap-settings-notes": "Notas",
+    "gimap-settings-notesminimap": "Mostrar en el minimapa",
     "gimap-settings-reset": "Restablecer ajustes",
     "gimap-settings-reset-confirm": "Todos los ajustes de GiMap se restablecerán a sus valores predeterminados y se eliminará el archivo de configuración. Esta acción no se puede deshacer.\n\nLos modos activados o desactivados surten efecto tras volver a entrar en el mundo.",
     "worldmap-mapproperties": "Propiedades del mapa",

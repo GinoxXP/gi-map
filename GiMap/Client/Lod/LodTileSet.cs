@@ -90,7 +90,8 @@ public sealed class LodTileSet
                 var tile = _tiles.GetOrAdd(key, _ => new Tile());
                 tile.Seen = true;
 
-                if (tile.Pixels != null || tile.Requested)
+                // A dirty tile is requested again, its request is dropped by CancelRequests when the map closes
+                if ((tile.Pixels != null && !tile.Dirty) || tile.Requested)
                     continue;
 
                 lock (_requestLock)
@@ -520,7 +521,7 @@ public sealed class LodTileSet
         public volatile int[]? Pixels;
         public LoadedTexture? Texture;
         public volatile bool Requested;
-        public bool Dirty;
+        public volatile bool Dirty;
         public bool Seen = true;
         public float TTL = MaxTTL;
     }

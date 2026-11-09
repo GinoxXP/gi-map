@@ -161,15 +161,18 @@ static class ChunkMapLayerPatch
             var blockAccessor = ___api.World.BlockAccessor;
             lock (ChunksToGenLock!(__instance))
             {
+                // Chunks queued on the closer zoom are dropped with the queue, so every visible one is queued again
+                IEnumerable<FastVec2i> toLoad = nowVisible;
                 if (!state.WasLodZoom)
                 {
                     state.WasLodZoom = true;
                     curVisibleChunks.Clear();
                     chunksToGen.Clear();
+                    toLoad = state.Visible;
                 }
 
                 // Only chunks loaded around the player are generated, LOD tiles are rebuilt from them
-                foreach (var cord in nowVisible)
+                foreach (var cord in toLoad)
                 {
                     if (blockAccessor.GetMapChunk(cord.X, cord.Y) != null)
                         chunksToGen.Enqueue(cord.Copy());
@@ -201,6 +204,35 @@ static class ChunkMapLayerPatch
 
                     chunksToGen.Enqueue(cord.Copy());
                 }
+            }
+        }
+    }
+
+    // Vanilla queues a loaded or changed chunk only when it is in curVisibleChunks or has a per-chunk texture,
+    // both are empty on LOD zoom, so visible chunks are queued here to keep LOD tiles up to date
+    [HarmonyPatch(typeof(ChunkMapLayer), "Event_OnChunkDirty")]
+    static class EventOnChunkDirtyPatch
+    {
+        static bool Prepare() => AccessTools.Method(typeof(ChunkMapLayer), "Event_OnChunkDirty") != null;
+
+        static void Postfix(ChunkMapLayer __instance, Vec3i chunkCoord)
+        {
+            var state = GetState(__instance);
+            if (state == null)
+                return;
+
+            lock (ChunksToGenLock!(__instance))
+            {
+                if (!state.WasLodZoom || !state.Visible.Contains(new FastVec2i(chunkCoord.X, chunkCoord.Z)))
+                    return;
+
+                // Same set as vanilla: the chunk and the neighbours whose shading depends on it
+                var chunksToGen = ChunksToGen!(__instance);
+                chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z));
+                chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z - 1));
+                chunksToGen.Enqueue(new FastVec2i(chunkCoord.X - 1, chunkCoord.Z));
+                chunksToGen.Enqueue(new FastVec2i(chunkCoord.X, chunkCoord.Z + 1));
+                chunksToGen.Enqueue(new FastVec2i(chunkCoord.X + 1, chunkCoord.Z + 1));
             }
         }
     }

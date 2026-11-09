@@ -45,11 +45,23 @@ class GuiElementMapPatch
     }
 }
 
-// Remembers the opened map so layers know the zoom when picking a LOD level
+// Remembers the created map so layers know the zoom when picking a LOD level, until the dialog is opened
 [HarmonyPatch(typeof(GuiElementMap), MethodType.Constructor,
     typeof(List<MapLayer>), typeof(ICoreClientAPI), typeof(GuiDialogWorldMap), typeof(ElementBounds), typeof(bool))]
 class GuiElementMapConstructorPatch
 {
     static void Postfix(GuiElementMap __instance)
         => LodState.Map = __instance;
+}
+
+// The minimap element is created once and reused, the full-screen one on every opening,
+// so the map is taken from the opened dialog, otherwise the zoom of a closed full-screen map would stay in effect
+[HarmonyPatch(typeof(GuiDialogWorldMap), nameof(GuiDialogWorldMap.OnGuiOpened))]
+class GuiDialogWorldMapOpenedPatch
+{
+    static void Postfix(GuiDialogWorldMap __instance)
+    {
+        if (__instance.SingleComposer?.GetElement("mapElem") is GuiElementMap map)
+            LodState.Map = map;
+    }
 }

@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Fertilité",
     "gimap-settings-hatching": "Hachurer le sol forestier",
     "gimap-settings-ignoresnow": "Afficher le sol sous la neige",
+    "gimap-settings-notes": "Notes",
+    "gimap-settings-notesminimap": "Afficher sur la minicarte",
     "gimap-settings-reset": "Réinitialiser les paramètres",
     "gimap-settings-reset-confirm": "Tous les paramètres de GiMap seront réinitialisés et le fichier de configuration sera supprimé. Cette action est irréversible.\n\nLes modes activés ou désactivés prennent effet après avoir rejoint à nouveau le monde.",
     "worldmap-mapproperties": "Propriétés de la carte",

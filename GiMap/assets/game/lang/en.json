@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Fertility",
     "gimap-settings-hatching": "Hatch forest floor",
     "gimap-settings-ignoresnow": "Show soil under snow",
+    "gimap-settings-notes": "Notes",
+    "gimap-settings-notesminimap": "Show on minimap",
     "gimap-settings-reset": "Reset settings",
     "gimap-settings-reset-confirm": "All GiMap settings will be reset to defaults and the config file will be deleted. This cannot be undone.\n\nEnabled or disabled modes take effect after rejoining the world.",
     "worldmap-mapproperties": "Map properties",

@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Плодородие",
     "gimap-settings-hatching": "Штриховка лесной подстилки",
     "gimap-settings-ignoresnow": "Показывать почву под снегом",
+    "gimap-settings-notes": "Заметки",
+    "gimap-settings-notesminimap": "Показывать на миникарте",
     "gimap-settings-reset": "Сбросить настройки",
     "gimap-settings-reset-confirm": "Все настройки GiMap будут сброшены на значения по умолчанию, файл конфига будет удалён. Это действие необратимо.\n\nВключение и выключение режимов применится после перезахода в мир.",
     "worldmap-mapproperties": "Свойства карт",

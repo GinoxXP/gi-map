@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "الخصوبة",
     "gimap-settings-hatching": "تظليل أرضية الغابة",
     "gimap-settings-ignoresnow": "إظهار التربة تحت الثلج",
+    "gimap-settings-notes": "الملاحظات",
+    "gimap-settings-notesminimap": "إظهار على الخريطة المصغرة",
     "gimap-settings-reset": "إعادة ضبط الإعدادات",
     "gimap-settings-reset-confirm": "ستُعاد جميع إعدادات GiMap إلى قيمها الافتراضية وسيُحذف ملف الإعدادات. لا يمكن التراجع عن ذلك.\n\nيسري تفعيل الأوضاع أو تعطيلها بعد إعادة الدخول إلى العالم.",
     "worldmap-mapproperties": "خصائص الخريطة",

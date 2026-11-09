@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Verimlilik",
     "gimap-settings-hatching": "Orman tabanını tarala",
     "gimap-settings-ignoresnow": "Kar altındaki toprağı göster",
+    "gimap-settings-notes": "Notlar",
+    "gimap-settings-notesminimap": "Mini haritada göster",
     "gimap-settings-reset": "Ayarları sıfırla",
     "gimap-settings-reset-confirm": "Tüm GiMap ayarları varsayılana döndürülecek ve yapılandırma dosyası silinecek. Bu işlem geri alınamaz.\n\nAçılan veya kapatılan modlar dünyaya yeniden girdikten sonra etkili olur.",
     "worldmap-mapproperties": "Harita özellikleri",

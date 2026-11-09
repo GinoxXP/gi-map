@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Fruchtbarkeit",
     "gimap-settings-hatching": "Waldboden schraffieren",
     "gimap-settings-ignoresnow": "Boden unter Schnee anzeigen",
+    "gimap-settings-notes": "Notizen",
+    "gimap-settings-notesminimap": "Auf der Minikarte anzeigen",
     "gimap-settings-reset": "Einstellungen zurücksetzen",
     "gimap-settings-reset-confirm": "Alle GiMap-Einstellungen werden auf die Standardwerte zurückgesetzt und die Konfigurationsdatei wird gelöscht. Dies kann nicht rückgängig gemacht werden.\n\nAktivierte oder deaktivierte Modi werden nach dem erneuten Betreten der Welt wirksam.",
     "worldmap-mapproperties": "Karteneigenschaften",

@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Úrodnost",
     "gimap-settings-hatching": "Šrafovat lesní půdu",
     "gimap-settings-ignoresnow": "Zobrazit půdu pod sněhem",
+    "gimap-settings-notes": "Poznámky",
+    "gimap-settings-notesminimap": "Zobrazit na minimapě",
     "gimap-settings-reset": "Obnovit nastavení",
     "gimap-settings-reset-confirm": "Všechna nastavení GiMap budou obnovena na výchozí hodnoty a konfigurační soubor bude smazán. Tuto akci nelze vrátit.\n\nZapnuté nebo vypnuté režimy se projeví po opětovném vstupu do světa.",
     "worldmap-mapproperties": "Vlastnosti mapy",

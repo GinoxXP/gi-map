@@ -74,6 +74,8 @@
     "gimap-settings-fertility": "Rodovitnost",
     "gimap-settings-hatching": "Šrafiraj gozdna tla",
     "gimap-settings-ignoresnow": "Prikaži prst pod snegom",
+    "gimap-settings-notes": "Opombe",
+    "gimap-settings-notesminimap": "Prikaži na mini zemljevidu",
     "gimap-settings-reset": "Ponastavi nastavitve",
     "gimap-settings-reset-confirm": "Vse nastavitve GiMap bodo ponastavljene na privzete, konfiguracijska datoteka pa bo izbrisana. Tega ni mogoče razveljaviti.\n\nVklopljeni ali izklopljeni načini začnejo veljati po ponovnem vstopu v svet.",
     "worldmap-mapproperties": "Lastnosti zemljevida",

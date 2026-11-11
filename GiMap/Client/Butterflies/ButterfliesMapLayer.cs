@@ -9,7 +9,8 @@ using Vintagestory.GameContent;
 namespace GiMap.Client.Butterflies;
 
 /// <summary>
-/// Highlights chunks where the selected butterfly may spawn by climate and height.
+/// Highlights chunks where the selected butterfly may spawn by climate, forest and height, checked as the game
+/// spawner does: temperature and rain at 1.09 of the sea level, forest from the region map, Y above the worldgen terrain.
 /// Every pixel of a chunk stores the mask of condition groups matched by any column of the chunk
 /// plus <see cref="GeneratedBit"/>, so changing the butterfly does not regenerate chunks.
 /// </summary>
@@ -26,7 +27,8 @@ public class ButterfliesMapLayer : AMapLayer
     public override string Title => MapTypes.Butterflies;
 
     // Group indices are stored in the db, a change of the groups is detected by groupsHash in OnLoaded
-    protected override string DbSuffix => "-v1";
+    // v2: climate and forest as the game spawner, v1 masks were wrong
+    protected override string DbSuffix => "-v2";
 
     protected override bool HasLodTexelConversion => true;
 
@@ -83,34 +85,54 @@ public class ButterfliesMapLayer : AMapLayer
         var blockAccessor = api.World.BlockAccessor;
         int seaLevel = api.World.SeaLevel;
         int mapHeight = blockAccessor.MapSizeY;
-        var vec2i = new Vec2i();
-        var pos = new BlockPos(0);
+        int regionSize = blockAccessor.RegionSize;
         int baseWorldX = chunkPos.X * 32;
         int baseWorldZ = chunkPos.Y * 32;
+
+        // A chunk lies within one region. The client climate falls back to a constant without the region,
+        // such chunks would be stored wrong, so they are generated later
+        var region = blockAccessor.GetMapRegion(baseWorldX / regionSize, baseWorldZ / regionSize);
+        if (region?.ClimateMap?.Data == null || region.ClimateMap.Size == 0 ||
+            region.ForestMap?.Data == null || region.ForestMap.Size == 0)
+        {
+            ClearChunks();
+            return null;
+        }
+
+        // The game spawner takes the terrain height of the world generation (no trees, no player changes)
+        var heightMap = mc.WorldGenTerrainHeightMap ?? mc.RainHeightMap;
+        // and temperature and rain always at 1.09 of the sea level (ServerSystemEntitySpawner)
+        int climateY = (int)(seaLevel * 1.09);
+        var vec2i = new Vec2i();
+        var climate = new ClimateCondition();
         int mask = 0;
 
         for (var k = 0; k < ChunkPixelCount && mask != _allGroupsMask; k++)
         {
-            int topBlockHeight = mc.RainHeightMap[k];
-            int topChunkIndex = topBlockHeight / 32;
-            if (topBlockHeight <= 0 || topChunkIndex >= _chunksTmp.Length)
+            int terrainY = heightMap[k] > 0 ? heightMap[k] : mc.RainHeightMap[k];
+            int y = terrainY + 1;
+            int chunkIndex = y / 32;
+            if (y <= 1 || chunkIndex >= _chunksTmp.Length)
                 continue;
 
             MapUtil.PosInt2d(k, 32L, vec2i);
-            int blockId = _chunksTmp[topChunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, topBlockHeight % 32, vec2i.Y, 32, 32), 3);
+            int blockId = _chunksTmp[chunkIndex].UnpackAndReadBlock(MapUtil.Index3d(vec2i.X, y % 32, vec2i.Y, 32, 32), 3);
             var block = api.World.Blocks[blockId];
-            // Butterflies spawn in plants above the ground, never over water or ice
+            // Butterflies spawn in plants above the ground, never in water or ice (over the sea floor)
             if (block == null || block.IsLiquid() || block.BlockMaterial == EnumBlockMaterial.Ice)
-                continue;
-
-            int y = topBlockHeight + 1;
-            pos.Set(baseWorldX + vec2i.X, y, baseWorldZ + vec2i.Y);
-            var climate = blockAccessor.GetClimateAt(pos, EnumGetClimateMode.WorldGenValues);
-            if (climate == null)
                 continue;
 
             // 0..1 is world bottom to sea level, 1..2 is sea level to world top
             float relativeY = y <= seaLevel ? (float)y / seaLevel : 1 + (float)(y - seaLevel) / (mapHeight - seaLevel);
+
+            float nx = (float)((double)(baseWorldX + vec2i.X) / regionSize % 1.0);
+            float nz = (float)((double)(baseWorldZ + vec2i.Y) / regionSize % 1.0);
+            int climateColor = region.ClimateMap.GetUnpaddedColorLerpedForNormalizedPos(nx, nz);
+            float temperature = Climate.GetScaledAdjustedTemperatureFloat((climateColor >> 16) & 0xff, climateY - seaLevel);
+            float rain = GetRainFall((climateColor >> 8) & 0xff, climateY, seaLevel) / 255f;
+            climate.Temperature = climate.WorldGenTemperature = temperature;
+            climate.Rainfall = climate.WorldgenRainfall = rain;
+            float forest = region.ForestMap.GetUnpaddedColorLerpedForNormalizedPos(nx, nz) / 255f;
 
             for (var group = 0; group < _species.Groups.Count; group++)
             {
@@ -119,8 +141,10 @@ public class ButterfliesMapLayer : AMapLayer
                     continue;
 
                 var condition = _species.Groups[group];
+                // The shrub map is not sent to the client, so shrub conditions are taken as met
                 if (relativeY >= condition.MinY && relativeY <= condition.MaxY &&
-                    condition.MatchesClimate(climate) && condition.MatchesForestation(climate))
+                    forest >= condition.MinForest && forest <= condition.MaxForest &&
+                    condition.MatchesClimate(climate))
                     mask |= bit;
             }
         }
@@ -260,6 +284,10 @@ public class ButterfliesMapLayer : AMapLayer
         if (text != null)
             hoverText.Append(text);
     }
+
+    // Climate.GetRainFall with the world sea level, the static Climate.Sealevel may keep its default on the client
+    private static int GetRainFall(int rainfall, int y, int seaLevel)
+        => Math.Clamp(rainfall + (y - seaLevel) / 2 + 5 * Math.Clamp(8 + seaLevel - y, 0, 8), 0, 255);
 
     private static int Opaque(int color)
         => color | unchecked((int)0xff000000);
